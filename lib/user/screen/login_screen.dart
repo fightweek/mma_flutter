@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mma_flutter/user/screen/join_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -116,7 +117,11 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           GestureDetector(
             onTap: () {
-              print('hello');
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) {
+                  return JoinScreen();
+                },)
+              );
             },
             child: const Text(
               '계정이 없으신가요?',
