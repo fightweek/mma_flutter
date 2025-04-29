@@ -1,80 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mma_flutter/common/component/app_title.dart';
+import 'package:mma_flutter/common/component/custom_text_form_field.dart';
+import 'package:mma_flutter/common/layout/default_layout.dart';
+import 'package:mma_flutter/user/provider/user_provider.dart';
 import 'package:mma_flutter/user/screen/join_screen.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'login';
+
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final idController = TextEditingController();
-  final pwdController = TextEditingController();
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  String email = '';
+  String password = '';
   bool isRemainLogin = false;
 
   @override
-  void dispose() {
-    idController.dispose();
-    pwdController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.grey,
-        title: Image.asset('asset/img/logo/punch.png', width: 50),
-      ),
-      body: Column(
+    final state = ref.watch(userProvider);
+
+    return DefaultLayout(
+      child: Column(
         children: [
           const SizedBox(height: 70),
-          Column(
-            children: [
-              Center(
-                child: Text(
-                  'FightApp',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 40,
-                  ),
-                ),
+          AppTitle(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30),
+            child: Text(
+              '로그인',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 40,
               ),
-              const SizedBox(height: 30),
-              Text(
-                '로그인',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 40,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 30),
-          TextField(
-            style: TextStyle(color: Colors.white),
-            controller: idController,
-            maxLength: 20,
-            decoration: InputDecoration(
-              labelText: '아이디',
-              border: OutlineInputBorder(),
             ),
           ),
-          const SizedBox(height: 10),
-          TextField(
-            style: TextStyle(color: Colors.white),
-            controller: pwdController,
-            maxLength: 20,
-            decoration: InputDecoration(
-              labelText: '비밀번호',
-              border: OutlineInputBorder(),
-            ),
-            obscureText: true,
+          Row(children: [_inputLabel('이메일')]),
+          CustomTextFormField(
+            onChanged: (val) {
+              email = val;
+            },
+            hintText: 'example@fightweek.com',
+          ),
+          const SizedBox(height: 20),
+          Row(children: [_inputLabel('비밀번호')]),
+          CustomTextFormField(
+            onChanged: (val) {
+              password = val;
+            },
+            hintText: '********',
           ),
           Row(
             children: [
@@ -106,9 +85,11 @@ class _LoginScreenState extends State<LoginScreen> {
               minimumSize: Size.fromHeight(50),
               backgroundColor: Colors.green,
             ),
-            onPressed: () {
-              print('id : ${idController.text}');
-              print('pwd : ${pwdController.text}');
+            onPressed: () async {
+              print('email = $email, pwd = $password');
+              ref
+                  .read(userProvider.notifier)
+                  .login(email: email, password: password);
             },
             child: Text(
               '로그인',
@@ -118,14 +99,23 @@ class _LoginScreenState extends State<LoginScreen> {
           GestureDetector(
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) {
-                  return JoinScreen();
-                },)
+                MaterialPageRoute(
+                  builder: (context) {
+                    return JoinScreen();
+                  },
+                ),
               );
             },
-            child: const Text(
-              '계정이 없으신가요?',
-              style: TextStyle(color: Colors.blueAccent),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => JoinScreen()));
+              },
+              child: const Text(
+                '계정이 없으신가요?',
+                style: TextStyle(color: Colors.blueAccent),
+              ),
             ),
           ),
           Expanded(child: SizedBox()),
@@ -135,10 +125,16 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Widget _inputLabel(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 5, bottom: 5),
+      child: Text(label, style: TextStyle(color: Colors.white)),
+    );
+  }
 }
 
 class _SocialLogin extends StatelessWidget {
-  const _SocialLogin({super.key});
+  const _SocialLogin();
 
   @override
   Widget build(BuildContext context) {
