@@ -1,10 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:mma_flutter/common/component/app_title.dart';
+import 'package:mma_flutter/common/layout/default_layout.dart';
 
 class JoinScreen extends StatelessWidget {
   const JoinScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return DefaultLayout(child: Column(
+      children: [
+        const SizedBox(height: 50,),
+        AppTitle(),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Text(
+            '회원가입',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 40,
+            ),
+          ),
+        ),
+      ],
+    ));
   }
 }
