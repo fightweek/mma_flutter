@@ -4,6 +4,7 @@ import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/dio/dio_provider.dart';
 import 'package:mma_flutter/user/model/login_request.dart';
 import 'package:mma_flutter/user/model/login_response.dart';
+import 'package:mma_flutter/user/model/naver_login_request.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
 
@@ -21,6 +22,9 @@ abstract class AuthRepository {
 
   @POST('/login')
   Future<LoginResponse> login({@Body() required LoginRequest request});
+
+  @POST('/naver_token_verify')
+  Future<LoginResponse> naverTokenVerify({@Body() required NaverLoginRequest request});
 
   @POST('/logout')
   @Headers({'refreshToken': 'true'})
