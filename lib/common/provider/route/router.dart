@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/common/view/root_tab.dart';
@@ -28,7 +27,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
     initialLocation: '/splash',
-    refreshListenable: provider,
+    refreshListenable: provider, /// provider 상태 변경될 때 redirect 실행
     redirect: (context, state) {
       return provider.redirectLogic(state);
     },

@@ -3,9 +3,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/secure_storage_provider.dart';
 import 'package:mma_flutter/user/model/login_request.dart';
+import 'package:mma_flutter/user/model/naver_login_request.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:mma_flutter/user/repository/auth_repository.dart';
 import 'package:mma_flutter/user/repository/user_repository.dart';
+import 'package:flutter_logcat/flutter_logcat.dart';
 
 final userProvider = StateNotifierProvider<UserStateNotifier, UserModelBase?>((
   ref,
@@ -33,6 +35,10 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     getMe();
   }
 
+  void setStateLoading(){
+    state = UserModelLoading();
+  }
+
   // 앱 시작 시 사용자 상태 확인 및 서버로부터 (최신) 정보 가져오는 것이 주목적
   Future<void> getMe() async {
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
@@ -45,13 +51,32 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     state = resp;
   }
 
+  Future<UserModelBase> naverLogin({required NaverLoginRequest request}) async {
+    try {
+      state = UserModelLoading();
+      final resp = await authRepository.naverTokenVerify(request: request);
+      await storage.write(key: ACCESS_TOKEN_KEY, value: resp.accessToken);
+      await storage.write(key: REFRESH_TOKEN_KEY, value: resp.refreshToken);
+      Log.i(resp.accessToken);
+      Log.i(resp.refreshToken);
+      final userResp = await userRepository.getMe();
+      state = userResp;
+      return userResp;
+    } catch (e) {
+      state = UserModelError(message: '로그인 실패');
+      return Future.value(state);
+    }
+  }
+
   Future<UserModelBase> login({
     required String email,
     required String password,
   }) async {
     try {
       state = UserModelLoading();
-      final resp = await authRepository.login(request: LoginRequest(email: email, password: password));
+      final resp = await authRepository.login(
+        request: LoginRequest(email: email, password: password),
+      );
       await storage.write(key: ACCESS_TOKEN_KEY, value: resp.accessToken);
       await storage.write(key: REFRESH_TOKEN_KEY, value: resp.refreshToken);
       final userResp = await userRepository.getMe();
@@ -63,10 +88,8 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     }
   }
 
-  Future<void> logout({
-    bool withRefresh = true
-}) async {
-    if(withRefresh) {
+  Future<void> logout({bool withRefresh = true}) async {
+    if (withRefresh) {
       await authRepository.logout();
     }
     state = null;
@@ -75,4 +98,5 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       storage.delete(key: REFRESH_TOKEN_KEY),
     ]);
   }
+
 }
