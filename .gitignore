@@ -44,4 +44,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-/asset/config/.env
+asset/config/.env
+asset/img/logo/
