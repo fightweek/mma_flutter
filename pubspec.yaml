@@ -50,7 +50,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   webview_flutter: ^4.11.0
   naver_login_sdk: ^2.3.0
-
+  kakao_flutter_sdk: ^1.9.7+3
 
 dev_dependencies:
   flutter_test:

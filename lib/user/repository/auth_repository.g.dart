@@ -56,8 +56,8 @@ class _AuthRepository implements AuthRepository {
   }
 
   @override
-  Future<LoginResponse> naverTokenVerify(
-      {required NaverLoginRequest request}) async {
+  Future<LoginResponse> socialLogin(
+      {required SocialLoginRequest request}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -70,7 +70,7 @@ class _AuthRepository implements AuthRepository {
     )
         .compose(
           _dio.options,
-          '/naver_token_verify',
+          '/social_login',
           queryParameters: queryParameters,
           data: _data,
         )
