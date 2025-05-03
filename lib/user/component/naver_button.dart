@@ -36,8 +36,9 @@ class NaverButton extends ConsumerWidget {
                               response: response,
                             );
                             userNotifier.naverLogin(
-                              request: NaverLoginRequest(
-                                naverAccessToken: accessToken,
+                              request: SocialLoginRequest(
+                                domain: "NAVER",
+                                accessToken: accessToken,
                                 email: profile.email!,
                                 socialId: profile.id!,
                                 nickname: profile.nickName!,
@@ -47,8 +48,14 @@ class NaverButton extends ConsumerWidget {
                         ),
                       );
                     },
-                    onError: (errorCode, message) {},
-                    onFailure: (httpStatus, message) {},
+                    onError: (errorCode, message) {
+                      print('errorCode : $errorCode, message : $message');
+                      userNotifier.setStateNull();
+                    },
+                    onFailure: (httpStatus, message) {
+                      print('httpStatus : $httpStatus, message : $message');
+                      userNotifier.setStateNull();
+                    },
                   ),
                 );
               },

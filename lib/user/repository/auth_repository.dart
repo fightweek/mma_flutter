@@ -23,8 +23,8 @@ abstract class AuthRepository {
   @POST('/login')
   Future<LoginResponse> login({@Body() required LoginRequest request});
 
-  @POST('/naver_token_verify')
-  Future<LoginResponse> naverTokenVerify({@Body() required NaverLoginRequest request});
+  @POST('/social_login')
+  Future<LoginResponse> socialLogin({@Body() required SocialLoginRequest request});
 
   @POST('/logout')
   @Headers({'refreshToken': 'true'})
