@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/component/app_title.dart';
 import 'package:mma_flutter/common/component/custom_text_form_field.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
+import 'package:mma_flutter/user/component/naver_button.dart';
 import 'package:mma_flutter/user/provider/social_provider.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 import 'package:mma_flutter/user/screen/join_screen.dart';
-import 'package:mma_flutter/user/social_widget/naver_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   static String get routeName => 'login';
@@ -101,24 +101,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) {
-                    return JoinScreen();
-                  },
-                ),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => JoinScreen()));
             },
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => JoinScreen()));
-              },
-              child: const Text(
-                '계정이 없으신가요?',
-                style: TextStyle(color: Colors.blueAccent),
-              ),
+            child: const Text(
+              '계정이 없으신가요?',
+              style: TextStyle(color: Colors.blueAccent),
             ),
           ),
           _SocialLogin(),
@@ -147,7 +136,9 @@ class _SocialLogin extends ConsumerWidget {
     return Column(
       children: [
         InkWell(
-          onTap: () {},
+          onTap: () {
+            ref.read(userProvider.notifier).kakaoLogin();
+          },
           child: Image.asset(
             'asset/img/social/kakao_comp.png',
             height: 50,
