@@ -3,7 +3,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/secure_storage_provider.dart';
-import 'package:mma_flutter/user/component/kakao_login_service.dart';
+import 'package:mma_flutter/user/service/google_login_service.dart';
+import 'package:mma_flutter/user/service/kakao_login_service.dart';
+import 'package:mma_flutter/user/enumtype/login_platform.dart';
 import 'package:mma_flutter/user/model/login_request.dart';
 import 'package:mma_flutter/user/model/naver_login_request.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
@@ -56,28 +58,25 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     state = resp;
   }
 
-  Future<UserModelBase> kakaoLogin() async {
+  Future<UserModelBase> socialLogin(
+      LoginPlatform platform
+      ) async {
     try {
       state = UserModelLoading();
-      final accessToken = await KakaoLoginService.login();
-      User user = await UserApi.instance.me();
-      print(accessToken.toString());
-      final resp = await authRepository.socialLogin(
-        request: SocialLoginRequest(
-          domain: "KAKAO",
-          accessToken: accessToken,
-          email: user.kakaoAccount!.email!,
-          socialId: user.id.toString(),
-          nickname: user.kakaoAccount!.profile!.nickname!,
-        ),
-      );
+      SocialLoginRequest? request;
+      if(platform == LoginPlatform.google){
+        request = await GoogleLoginService.login();
+      }else if(platform == LoginPlatform.kakao){
+        request = await KakaoLoginService.login();
+      }
+      final resp = await authRepository.socialLogin(request: request!);
       await storage.write(key: ACCESS_TOKEN_KEY, value: resp.accessToken);
       await storage.write(key: REFRESH_TOKEN_KEY, value: resp.refreshToken);
       final userResp = await userRepository.getMe();
       state = userResp;
       return userResp;
     } catch (e) {
-      print('카카오 로그인 실패!, error = $e');
+      print('소셜 로그인 실패!, error = $e');
       state = UserModelError(message: '로그인 실패');
       return Future.value(state);
     }
