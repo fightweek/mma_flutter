@@ -4,6 +4,7 @@ import 'package:mma_flutter/common/component/app_title.dart';
 import 'package:mma_flutter/common/component/custom_text_form_field.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/user/component/naver_button.dart';
+import 'package:mma_flutter/user/enumtype/login_platform.dart';
 import 'package:mma_flutter/user/provider/social_provider.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 import 'package:mma_flutter/user/screen/join_screen.dart';
@@ -55,6 +56,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   password = val;
                 },
                 hintText: '********',
+                errorText: '비밀번호 입력 오류',
               ),
               Row(
                 children: [
@@ -137,7 +139,7 @@ class _SocialLogin extends ConsumerWidget {
       children: [
         InkWell(
           onTap: () {
-            ref.read(userProvider.notifier).kakaoLogin();
+            ref.read(userProvider.notifier).socialLogin(LoginPlatform.kakao);
           },
           child: Image.asset(
             'asset/img/social/kakao_comp.png',
@@ -148,7 +150,9 @@ class _SocialLogin extends ConsumerWidget {
         ),
         const SizedBox(height: 20),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            ref.read(userProvider.notifier).socialLogin(LoginPlatform.google);
+          },
           child: Image.asset(
             'asset/img/social/google_comp.png',
             height: 50,
