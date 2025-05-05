@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/common/view/root_tab.dart';
 import 'package:mma_flutter/common/view/splash_screen.dart';
 import 'package:mma_flutter/user/provider/auth_change_provider.dart';
+import 'package:mma_flutter/user/screen/join_screen.dart';
 import 'package:mma_flutter/user/screen/login_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {

@@ -5,14 +5,14 @@ import 'package:mma_flutter/common/component/input_label.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 
-class LoginInputForm extends ConsumerStatefulWidget {
-  const LoginInputForm({super.key});
+class JoinInputForm extends ConsumerStatefulWidget {
+  const JoinInputForm({super.key});
 
   @override
-  ConsumerState<LoginInputForm> createState() => _LoginInputFormState();
+  ConsumerState<JoinInputForm> createState() => _JoinInputFormState();
 }
 
-class _LoginInputFormState extends ConsumerState<LoginInputForm> {
+class _JoinInputFormState extends ConsumerState<JoinInputForm> {
   final _formKey = GlobalKey<FormState>();
 
   @override
