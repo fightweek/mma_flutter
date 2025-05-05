@@ -38,17 +38,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           ),
           LoginInputForm(),
-          GestureDetector(
-            onTap: () {
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              minimumSize: Size.fromHeight(50),
+              backgroundColor: Colors.white,
+            ),
+            onPressed: () {
               Navigator.of(
                 context,
-              ).push(MaterialPageRoute(builder: (_) => JoinScreen()));
+              ).push(MaterialPageRoute(builder: (context) => JoinScreen()));
+            },
+            child: Text('회원가입', style: TextStyle(fontSize: 20)),
+          ),
+          GestureDetector(
+            onTap: () {
+              print('hello');
             },
             child: const Text(
-              '계정이 없으신가요?',
-              style: TextStyle(color: Colors.blueAccent),
+              '아이디/비밀번호 찾기 >',
+              style: TextStyle(
+                color: Colors.blueAccent,
+                decoration: TextDecoration.underline,
+              ),
             ),
           ),
+          const SizedBox(height: 100),
           _SocialLogin(),
         ],
       ),
@@ -65,24 +79,28 @@ class _SocialLogin extends ConsumerWidget {
       children: [
         InkWell(
           onTap: () {
-            ref.read(userProvider.notifier).socialLogin(LoginPlatform.kakao);
+            ref
+                .read(userProvider.notifier)
+                .socialLogin(platform: LoginPlatform.kakao);
           },
           child: Image.asset(
             'asset/img/social/kakao_comp.png',
             height: 50,
-            width: MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width / 1.2,
             fit: BoxFit.cover,
           ),
         ),
         const SizedBox(height: 20),
         InkWell(
           onTap: () {
-            ref.read(userProvider.notifier).socialLogin(LoginPlatform.google);
+            ref
+                .read(userProvider.notifier)
+                .socialLogin(platform: LoginPlatform.google);
           },
           child: Image.asset(
             'asset/img/social/google_comp.png',
             height: 50,
-            width: MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width / 1.2,
             fit: BoxFit.cover,
           ),
         ),

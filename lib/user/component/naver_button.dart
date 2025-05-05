@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mma_flutter/user/enumtype/login_platform.dart';
 import 'package:mma_flutter/user/model/naver_login_request.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
@@ -35,7 +36,8 @@ class NaverButton extends ConsumerWidget {
                             final profile = NaverLoginProfile.fromJson(
                               response: response,
                             );
-                            userNotifier.naverLogin(
+                            userNotifier.socialLogin(
+                              platform: LoginPlatform.naver,
                               request: SocialLoginRequest(
                                 domain: "NAVER",
                                 accessToken: accessToken,
@@ -61,7 +63,7 @@ class NaverButton extends ConsumerWidget {
               },
       fit: BoxFit.cover,
       height: 50,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery.of(context).size.width/1.2,
       style: NaverLoginButtonStyle(
         mode: NaverButtonMode.white,
         type: NaverButtonType.rectangleBar,
