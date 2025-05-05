@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -58,15 +59,15 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     state = resp;
   }
 
-  Future<UserModelBase> socialLogin(
-      LoginPlatform platform
-      ) async {
+  Future<UserModelBase> socialLogin({
+    required LoginPlatform platform,
+    SocialLoginRequest? request,
+  }) async {
     try {
       state = UserModelLoading();
-      SocialLoginRequest? request;
-      if(platform == LoginPlatform.google){
+      if (platform == LoginPlatform.google) {
         request = await GoogleLoginService.login();
-      }else if(platform == LoginPlatform.kakao){
+      } else if (platform == LoginPlatform.kakao) {
         request = await KakaoLoginService.login();
       }
       final resp = await authRepository.socialLogin(request: request!);
@@ -75,26 +76,15 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       final userResp = await userRepository.getMe();
       state = userResp;
       return userResp;
-    } catch (e) {
+    } on DioException catch (e) {
       print('소셜 로그인 실패!, error = $e');
-      state = UserModelError(message: '로그인 실패');
-      return Future.value(state);
-    }
-  }
-
-  Future<UserModelBase> naverLogin({
-    required SocialLoginRequest request,
-  }) async {
-    try {
-      state = UserModelLoading();
-      final resp = await authRepository.socialLogin(request: request);
-      await storage.write(key: ACCESS_TOKEN_KEY, value: resp.accessToken);
-      await storage.write(key: REFRESH_TOKEN_KEY, value: resp.refreshToken);
-      final userResp = await userRepository.getMe();
-      state = userResp;
-      return userResp;
-    } catch (e) {
-      state = UserModelError(message: '로그인 실패');
+      if ((e.response?.statusCode!) == 403) {
+        state = UserModelError(
+          message: '중복된 이메일 계정이 이미 존재합니다.\n다른 플랫폼으로 다시 로그인해주세요.',
+        );
+      } else {
+        state = UserModelError(message: '로그인 실패');
+      }
       return Future.value(state);
     }
   }

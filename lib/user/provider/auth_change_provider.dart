@@ -34,6 +34,7 @@ class AuthNotifier extends ChangeNotifier {
       return state.location == '/splash' ? null : '/splash';
     }
     if(user == null){
+      print(state.location);
       return loggingIn ? null : '/login';
     }
 
