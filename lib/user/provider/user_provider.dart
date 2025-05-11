@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/secure_storage_provider.dart';
 import 'package:mma_flutter/user/service/google_login_service.dart';
@@ -57,6 +56,26 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     }
     final resp = await userRepository.getMe();
     state = resp;
+  }
+
+  Future<UserModelBase> join({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      state = UserModelLoading();
+      final resp = await authRepository.login(
+        request: LoginRequest(email: email, password: password),
+      );
+      await storage.write(key: ACCESS_TOKEN_KEY, value: resp.accessToken);
+      await storage.write(key: REFRESH_TOKEN_KEY, value: resp.refreshToken);
+      final userResp = await userRepository.getMe();
+      state = userResp;
+      return userResp;
+    } catch (e) {
+      state = UserModelError(message: '로그인 실패');
+      return Future.value(state);
+    }
   }
 
   Future<UserModelBase> socialLogin({
