@@ -20,6 +20,7 @@ class AuthNotifier extends ChangeNotifier {
   }
 
   String? redirectLogic(GoRouterState state){
+    print('redirect');
     final UserModelBase? user = ref.read(userProvider);
     final loggingIn = state.location == '/login';
 
