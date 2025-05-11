@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/component/custom_text_form_field.dart';
 import 'package:mma_flutter/common/component/input_label.dart';
+import 'package:mma_flutter/common/component/input_vaiidator.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
+import 'package:mma_flutter/user/provider/smtp_provider.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
+import 'package:mma_flutter/user/screen/verification_screen.dart';
 
 class JoinInputForm extends ConsumerStatefulWidget {
   const JoinInputForm({super.key});
@@ -17,44 +20,50 @@ class _JoinInputFormState extends ConsumerState<JoinInputForm> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.read(userProvider);
-    if (userState is UserModelError) {
-      /**
-       * Flutter의 build() 메서드는 위젯 트리 그리는 중간 단계
-       * addPostFrameCallback는 build 다 끝나고 위젯 트리가 안정화되고 나서 실행됨
-       */
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text('에러'),
-              content: Text(userState.message),
-              actions: [
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('닫기'),
-                ),
-              ],
-            );
-          },
-        );
-      });
-    }
-    bool isRemainLogin = false;
+    String nickname = '';
     String email = '';
     String password = '';
+    String passwordConfirm = '';
+
     return Form(
       key: _formKey,
       child: Column(
         children: [
+          InputLabel(title: '닉네임'),
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextFormField(
+                  onChanged: (val) {
+                    nickname = val;
+                  },
+                  hintText: '사용하실 닉네임을 입력해주세요.',
+                  validator: InputValidator.validator('닉네임'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                  child: Text('중복 확인'),
+                ),
+              ),
+            ],
+          ),
           InputLabel(title: '이메일'),
           CustomTextFormField(
             onChanged: (val) {
               email = val;
             },
             hintText: 'example@fightweek.com',
-            validator: validator('이메일'),
+            validator: InputValidator.validator('이메일'),
           ),
           InputLabel(title: '비밀번호'),
           CustomTextFormField(
@@ -62,7 +71,20 @@ class _JoinInputFormState extends ConsumerState<JoinInputForm> {
               password = val;
             },
             hintText: '********',
-            validator: validator('비밀번호'),
+            validator: InputValidator.validator('비밀번호'),
+          ),
+          const SizedBox(height: 10),
+          InputLabel(title: '비밀번호 확인'),
+          CustomTextFormField(
+            onChanged: (val) {
+              passwordConfirm = val;
+            },
+            hintText: '********',
+            validator: combineValidators([
+              InputValidator.validator('비밀번호'),
+              (String? value) =>
+                  validatePasswordConfirm(password, passwordConfirm),
+            ]),
           ),
           const SizedBox(height: 10),
           OutlinedButton(
@@ -72,13 +94,21 @@ class _JoinInputFormState extends ConsumerState<JoinInputForm> {
             ),
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                ref
-                    .read(userProvider.notifier)
-                    .login(email: email, password: password);
+                ref.read(smtpProvider.notifier).sendJoinCode(email);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder:
+                        (context) => VerificationScreen(
+                          email: email,
+                          nickname: nickname,
+                          password: password,
+                        ),
+                  ),
+                );
               }
             },
             child: Text(
-              '로그인',
+              '회원가입',
               style: TextStyle(fontSize: 20, color: Colors.white),
             ),
           ),
@@ -88,15 +118,28 @@ class _JoinInputFormState extends ConsumerState<JoinInputForm> {
     );
   }
 
-  FormFieldValidator<dynamic> validator(String theme) {
-    return (value) {
-      if (value == null || value.isEmpty) {
-        return '$theme을 입력하세요';
-      }
-      if (theme == '이메일' && !value.contains('@')) {
-        return '유효한 $theme 형식이 아닙니다';
+  // string 타입을 반환하는 함수를 반환하는 함수
+  String? Function(String?) combineValidators(
+    List<String? Function(String?)> validators,
+  ) {
+    return (String? value) {
+      for (final validator in validators) {
+        final result = validator(value);
+        if (result != null) {
+          return result; // 첫번째로 에러나는 validator만 표시
+        }
       }
       return null;
     };
+  }
+
+  String? validatePasswordConfirm(String password, String passwordConfirm) {
+    if (passwordConfirm.isEmpty) {
+      return '비밀번호 확인칸을 입력하세요';
+    } else if (password != passwordConfirm) {
+      return '입력한 비밀번호가 서로 다릅니다.';
+    } else {
+      return null;
+    }
   }
 }

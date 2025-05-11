@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/component/custom_text_form_field.dart';
 import 'package:mma_flutter/common/component/input_label.dart';
+import 'package:mma_flutter/common/component/input_vaiidator.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 
@@ -41,7 +42,6 @@ class _LoginInputFormState extends ConsumerState<LoginInputForm> {
         );
       });
     }
-    bool isRemainLogin = false;
     String email = '';
     String password = '';
     return Form(
@@ -54,7 +54,7 @@ class _LoginInputFormState extends ConsumerState<LoginInputForm> {
               email = val;
             },
             hintText: 'example@fightweek.com',
-            validator: validator('이메일'),
+            validator: InputValidator.validator('이메일'),
           ),
           InputLabel(title: '비밀번호'),
           CustomTextFormField(
@@ -62,7 +62,7 @@ class _LoginInputFormState extends ConsumerState<LoginInputForm> {
               password = val;
             },
             hintText: '********',
-            validator: validator('비밀번호'),
+            validator: InputValidator.validator('비밀번호'),
           ),
           const SizedBox(height: 10),
           OutlinedButton(
@@ -86,17 +86,5 @@ class _LoginInputFormState extends ConsumerState<LoginInputForm> {
         ],
       ),
     );
-  }
-
-  FormFieldValidator<dynamic> validator(String theme) {
-    return (value) {
-      if (value == null || value.isEmpty) {
-        return '$theme을 입력하세요';
-      }
-      if (theme == '이메일' && !value.contains('@')) {
-        return '유효한 $theme 형식이 아닙니다';
-      }
-      return null;
-    };
   }
 }

@@ -6,7 +6,7 @@ class CustomTextFormField extends StatelessWidget {
   final String? theme;
   final bool obscureText;
   final bool autofocus;
-  final FormFieldValidator? validator;
+  final String? Function(String?)? validator;
   final ValueChanged<String>? onChanged;
 
   const CustomTextFormField({
@@ -25,8 +25,11 @@ class CustomTextFormField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
+        style: TextStyle(
+          color: Colors.white,
+        ),
         validator: validator,
-        cursorColor: PRIMARY_COLOR,
+        cursorColor: Colors.white,
         // 비밀번호 입력할 때
         obscureText: obscureText,
         autofocus: autofocus,
@@ -35,7 +38,7 @@ class CustomTextFormField extends StatelessWidget {
           contentPadding: EdgeInsets.all(20),
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey, fontSize: 14.0),
-          fillColor: Colors.white,
+          fillColor: BOX_COLOR,
           filled: true,
           border: baseBorder,
           // 텍스트 필드 선택 시 border 적용
