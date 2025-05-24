@@ -40,8 +40,8 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      backGroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: MY_DARK_GREY_COLOR,
         selectedItemColor: RED_COLOR,
         unselectedItemColor: PRIMARY_COLOR,
         selectedFontSize: 10,
@@ -58,9 +58,8 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
             label: '게임',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: '뉴스'),
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: '게시판'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: '검색'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: '프로필'),
-          BottomNavigationBarItem(icon: Icon(Icons.circle_outlined),label: '로딩'),
         ],
       ),
       child: TabBarView(
@@ -71,9 +70,8 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
           Center(child: Text('홈 화면')),
           Center(child: Text('게임 화면')),
           Center(child: Text('뉴스 화면')),
-          Center(child: Text('게시판')),
+          Center(child: Text('검색')),
           LogoutScreen(),
-          SplashScreen(),
         ],
       ),
     );
