@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mma_flutter/common/component/custom_alert_dialog.dart';
 import 'package:mma_flutter/common/component/custom_text_form_field.dart';
 import 'package:mma_flutter/common/component/input_label.dart';
 import 'package:mma_flutter/common/component/input_vaiidator.dart';
@@ -28,15 +29,9 @@ class _LoginInputFormState extends ConsumerState<LoginInputForm> {
         showDialog(
           context: context,
           builder: (context) {
-            return AlertDialog(
-              title: Text('에러'),
-              content: Text(userState.message),
-              actions: [
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('닫기'),
-                ),
-              ],
+            return CustomAlertDialog(
+              titleMsg: '에러',
+              contentMsg: userState.message,
             );
           },
         );

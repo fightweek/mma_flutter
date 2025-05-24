@@ -43,7 +43,6 @@ class NaverButton extends ConsumerWidget {
                                 accessToken: accessToken,
                                 email: profile.email!,
                                 socialId: profile.id!,
-                                nickname: profile.nickName!,
                               ),
                             );
                           },

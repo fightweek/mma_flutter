@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
+import 'package:mma_flutter/user/provider/smtp_provider.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 
 final authChangeProvider = ChangeNotifierProvider<AuthNotifier>((ref) {
@@ -39,9 +40,15 @@ class AuthNotifier extends ChangeNotifier {
       return loggingIn ? null : '/login';
     }
 
+    if(user is UserModelNicknameSetting){
+      print('user model nickname setting');
+      return state.location == '/init_nickname' ? null : '/init_nickname';
+    }
+
     if(user is UserModel){
       // '/splash' 는 처음 앱 시작할 때 라우팅되는 경로
-      return (loggingIn || (state.location == '/splash')) ? '/' : null;
+      print('user is usermodel');
+      return (loggingIn || (state.location == '/splash') || (state.location == '/init_nickname')) ? '/' : null;
     }
     if(user is UserModelError){
       return !loggingIn ? '/login' : null;
