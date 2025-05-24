@@ -10,16 +10,27 @@ part 'user_repository.g.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final dio = ref.read(dioProvider);
-  return UserRepository(dio,baseUrl: 'http://$ip/user/me');
-},);
+  return UserRepository(dio, baseUrl: 'http://$ip/user');
+});
 
 // http://$ip/user/me
 @RestApi()
-abstract class UserRepository{
+abstract class UserRepository {
   factory UserRepository(Dio dio, {String baseUrl}) = _UserRepository;
 
-  @GET('')
-  @Headers({'accessToken' : 'true'})
+  @GET('/me')
+  @Headers({'accessToken': 'true'})
   Future<UserModel> getMe();
 
+  @GET('/check_dup_nickname')
+  @Headers({'accessToken':'true'})
+  Future<bool> checkDuplicatedNickname({
+    @Body() required Map<String, String> nickname
+  });
+
+  @POST('/update_nickname')
+  @Headers({'accessToken':'true'})
+  Future<UserModel> updateNickname({
+    @Body() required Map<String, String> nickname
+  });
 }

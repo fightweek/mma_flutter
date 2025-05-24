@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mma_flutter/common/component/custom_alert_dialog.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/user/model/verify_code_request.dart';
@@ -119,9 +120,9 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return AlertDialog(
-                      title: Text('성공'),
-                      content: Text('회원가입 성공!'),
+                    return CustomAlertDialog(
+                      titleMsg: '성공',
+                      contentMsg: '회원가입 성공!',
                       actions: [
                         ElevatedButton(
                           onPressed:
@@ -137,21 +138,9 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                   },
                 );
               } else {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('에러'),
-                      content: Text('인증코드 오류'),
-                      actions: [
-                        ElevatedButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: Text('닫기'),
-                        ),
-                      ],
-                    );
-                  },
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('입력된 코드가 올바르지 않습니다.')));
               }
             },
             style: ElevatedButton.styleFrom(
