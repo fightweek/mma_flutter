@@ -49,4 +49,4 @@ asset/img/logo/
 pubspec.yaml
 
 # Code generation file
-**/*/.g.dart
+**/*.g.dart
