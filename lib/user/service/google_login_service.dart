@@ -13,7 +13,6 @@ class GoogleLoginService {
         accessToken: googleAuth.accessToken!,
         email: user.email,
         socialId: user.id,
-        nickname: user.displayName!,
       );
     }else{
       throw Exception("구글 로그인 에러!");
