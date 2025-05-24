@@ -39,7 +39,7 @@ class _InitNicknameScreenState extends ConsumerState<InitNicknameScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              backgroundColor: BOX_COLOR,
+              backgroundColor: MY_DARK_GREY_COLOR,
               title: const Text('닉네임 설정',style: TextStyle(
                 color: Colors.white
               ),),

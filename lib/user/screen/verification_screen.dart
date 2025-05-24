@@ -80,7 +80,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                             color: Colors.grey,
                             fontSize: 14.0,
                           ),
-                          fillColor: BOX_COLOR,
+                          fillColor: MY_DARK_GREY_COLOR,
                           filled: true,
                           // 텍스트 필드 선택 시 border 적용
                         ),
@@ -145,7 +145,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
             },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
-              backgroundColor: BOX_COLOR,
+              backgroundColor: MY_DARK_GREY_COLOR,
               padding: EdgeInsets.symmetric(vertical: 14, horizontal: 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
