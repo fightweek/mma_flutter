@@ -19,8 +19,13 @@ abstract class SmtpRepository {
   factory SmtpRepository(Dio dio, {String baseUrl}) = _SmtpRepository;
 
   @POST('/send_join_code')
-  Future<String> sendJoinCode({@Body() required Map<String, String> emailTo});
+  Future<bool> sendJoinCode({@Body() required Map<String, String> emailTo});
 
   @POST('/verify_code')
   Future<String> verifyCode({@Body() required VerifyCodeRequest request});
+
+  @GET('/check_dup_nickname')
+  Future<bool> checkDuplicatedNickname({
+    @Body() required Map<String, String> nickname,
+  });
 }

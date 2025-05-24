@@ -22,13 +22,13 @@ class _SmtpRepository implements SmtpRepository {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<String> sendJoinCode({required Map<String, String> emailTo}) async {
+  Future<bool> sendJoinCode({required Map<String, String> emailTo}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(emailTo);
-    final _options = _setStreamType<String>(Options(
+    final _options = _setStreamType<bool>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -44,8 +44,8 @@ class _SmtpRepository implements SmtpRepository {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    final _result = await _dio.fetch<String>(_options);
-    late String _value;
+    final _result = await _dio.fetch<bool>(_options);
+    late bool _value;
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
@@ -80,6 +80,41 @@ class _SmtpRepository implements SmtpRepository {
         )));
     final _result = await _dio.fetch<String>(_options);
     late String _value;
+    try {
+      _value = _result.data!;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<bool> checkDuplicatedNickname(
+      {required Map<String, String> nickname}) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(nickname);
+    final _options = _setStreamType<bool>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/check_dup_nickname',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<bool>(_options);
+    late bool _value;
     try {
       _value = _result.data!;
     } on Object catch (e, s) {

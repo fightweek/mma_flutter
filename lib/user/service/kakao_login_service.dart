@@ -16,7 +16,6 @@ class KakaoLoginService {
       accessToken: accessToken.accessToken,
       email: user.kakaoAccount!.email!,
       socialId: user.id.toString(),
-      nickname: user.kakaoAccount!.profile!.nickname!,
     );
   }
 }

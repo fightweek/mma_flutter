@@ -3,14 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/secure_storage_provider.dart';
-import 'package:mma_flutter/user/service/google_login_service.dart';
-import 'package:mma_flutter/user/service/kakao_login_service.dart';
 import 'package:mma_flutter/user/enumtype/login_platform.dart';
 import 'package:mma_flutter/user/model/login_request.dart';
 import 'package:mma_flutter/user/model/naver_login_request.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:mma_flutter/user/repository/auth_repository.dart';
 import 'package:mma_flutter/user/repository/user_repository.dart';
+import 'package:mma_flutter/user/service/google_login_service.dart';
+import 'package:mma_flutter/user/service/kakao_login_service.dart';
 
 final userProvider = StateNotifierProvider<UserStateNotifier, UserModelBase?>((
   ref,
@@ -46,6 +46,17 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     state = null;
   }
 
+  Future<bool> checkDupNickname(String nickname) async {
+    return await userRepository.checkDuplicatedNickname(
+      nickname: {'nickname': nickname},
+    );
+  }
+
+  Future<void> updateNickname(String nickname) async {
+    await userRepository.updateNickname(nickname: {'nickname': nickname});
+    await getMe();
+  }
+
   // 앱 시작 시 사용자 상태 확인 및 서버로부터 (최신) 정보 가져오는 것이 주목적
   Future<void> getMe() async {
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
@@ -54,8 +65,18 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       state = null;
       return;
     }
-    final resp = await userRepository.getMe();
-    state = resp;
+    try {
+      final resp = await userRepository.getMe();
+      if (resp.nickname == null) {
+        state = UserModelNicknameSetting();
+      } else {
+        state = resp;
+      }
+    } on DioException catch (e) {
+      storage.delete(key: ACCESS_TOKEN_KEY);
+      storage.delete(key: REFRESH_TOKEN_KEY);
+      state = null;
+    }
   }
 
   Future<UserModelBase> join({
@@ -78,7 +99,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     }
   }
 
-  Future<UserModelBase> socialLogin({
+  Future<void> socialLogin({
     required LoginPlatform platform,
     SocialLoginRequest? request,
   }) async {
@@ -92,9 +113,12 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       final resp = await authRepository.socialLogin(request: request!);
       await storage.write(key: ACCESS_TOKEN_KEY, value: resp.accessToken);
       await storage.write(key: REFRESH_TOKEN_KEY, value: resp.refreshToken);
-      final userResp = await userRepository.getMe();
-      state = userResp;
-      return userResp;
+      UserModel userResp = await userRepository.getMe();
+      if (userResp.nickname == null) {
+        state = UserModelNicknameSetting();
+      } else {
+        state = userResp;
+      }
     } on DioException catch (e) {
       print('소셜 로그인 실패!, error = $e');
       if ((e.response?.statusCode!) == 403) {
@@ -104,7 +128,8 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       } else {
         state = UserModelError(message: '로그인 실패');
       }
-      return Future.value(state);
+    }on Exception catch(e){
+      state = UserModelError(message: '로그인 실패');
     }
   }
 
