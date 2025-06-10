@@ -1,0 +1,25 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'async_state.g.dart';
+
+abstract class StateBase<T> {}
+
+class StateLoading<T> extends StateBase<T> {}
+
+class StateError<T> extends StateBase<T> {
+  final String message;
+
+  StateError({required this.message});
+}
+
+@JsonSerializable(genericArgumentFactories: true)
+class StateData<T> extends StateBase<T> {
+  final T? data;
+
+  StateData({required this.data});
+
+  factory StateData.fromJson(
+    Map<String, dynamic> json,
+    T Function(Object? json) fromJsonT,
+  ) => _$StateDataFromJson(json, fromJsonT);
+}
