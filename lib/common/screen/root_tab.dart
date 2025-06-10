@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
-import 'package:mma_flutter/common/view/splash_screen.dart';
+import 'package:mma_flutter/event/screen/schedule_screen.dart';
 import 'package:mma_flutter/user/screen/logout_screen.dart';
 
 class RootTab extends StatefulWidget {
@@ -19,7 +19,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 6, vsync: this);
+    controller = TabController(length: 5, vsync: this);
     controller.addListener(tabListener);
   }
 
@@ -53,10 +53,11 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         currentIndex: index,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: '홈'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.gamepad_outlined),
-            label: '게임',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.gamepad_outlined),
+          //   label: '게임',
+          // ),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month_outlined),label: '경기 일정'),
           BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: '뉴스'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: '검색'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: '프로필'),
@@ -68,7 +69,8 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         controller: controller,
         children: [
           Center(child: Text('홈 화면')),
-          Center(child: Text('게임 화면')),
+          ScheduleScreen(),
+          // Center(child: Text('게임 화면')),
           Center(child: Text('뉴스 화면')),
           Center(child: Text('검색')),
           LogoutScreen(),
