@@ -60,6 +60,7 @@ class CustomInterceptor extends Interceptor {
         );
         final newAccessToken = resp.data['accessToken'];
         final newRefreshToken = resp.data['refreshToken'];
+        print(resp.statusMessage);
         final options = err.requestOptions;
         await storage.write(key: ACCESS_TOKEN_KEY, value: newAccessToken);
         await storage.write(key: REFRESH_TOKEN_KEY, value: newRefreshToken);
