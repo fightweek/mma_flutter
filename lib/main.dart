@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:mma_flutter/common/provider/route/router.dart';
 import 'package:naver_login_sdk/naver_login_sdk.dart';
 
 void main() async {
+  await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: "asset/config/.env");
   KakaoSdk.init(

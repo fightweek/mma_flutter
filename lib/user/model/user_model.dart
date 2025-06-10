@@ -1,11 +1,8 @@
-import 'dart:ffi';
-
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mma_flutter/common/model/request_model.dart';
 
 part 'user_model.g.dart';
 
-abstract class UserModelBase extends RequestModelBase{}
+abstract class UserModelBase{}
 
 class UserModelError extends UserModelBase {
   final String message;
