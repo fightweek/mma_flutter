@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/common/screen/root_tab.dart';
 import 'package:mma_flutter/common/screen/splash_screen.dart';
+import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
 import 'package:mma_flutter/user/provider/auth_change_provider.dart';
 import 'package:mma_flutter/user/screen/init_nickname_screen.dart';
 import 'package:mma_flutter/user/screen/login_screen.dart';
@@ -14,7 +15,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/',
         name: 'home',
         builder: (context, state) => RootTab(),
-        routes: [],
+        routes: [
+          GoRoute(
+            path: 'detail/:id',
+            name: FighterDetailScreen.routeName,
+            builder: (context, state) {
+              return FighterDetailScreen(
+                id: int.parse(state.pathParameters['id']!),
+              );
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/login',
@@ -33,7 +44,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
     initialLocation: '/splash',
-    refreshListenable: provider, /// provider 상태 변경될 때 redirect 실행
+    refreshListenable: provider,
+
+    /// provider 상태 변경될 때 redirect 실행
     redirect: (context, state) {
       return provider.redirectLogic(state);
     },
