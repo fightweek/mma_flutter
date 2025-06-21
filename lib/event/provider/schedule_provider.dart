@@ -2,25 +2,30 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
-import 'package:mma_flutter/common/model/async_state.dart';
+import 'package:mma_flutter/common/model/base_state.dart';
 import 'package:mma_flutter/event/model/schedule_model.dart';
 import 'package:mma_flutter/event/repository/schedule_repository.dart';
+import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
 
 final scheduleProvider = StateNotifierProvider<
   ScheduleStateNotifier,
   Map<String, StateBase<FightEventModel>>
 >((ref) {
   final scheduleRepository = ref.read(scheduleRepositoryProvider);
-  return ScheduleStateNotifier(scheduleRepository: scheduleRepository);
+  return ScheduleStateNotifier(
+    ref: ref,
+    scheduleRepository: scheduleRepository,
+  );
 });
 
 class ScheduleStateNotifier
     extends StateNotifier<Map<String, StateBase<FightEventModel>>> {
   final ScheduleRepository scheduleRepository;
+  final Ref ref;
 
-  ScheduleStateNotifier({required this.scheduleRepository})
+  ScheduleStateNotifier({required this.ref, required this.scheduleRepository})
     : super({'${DateTime.now()}': StateLoading()}) {
-    print('🟢 ScheduleStateNotifier 생성됨');
+    print('ScheduleStateNotifier 생성됨');
     getSchedule(date: DateTime.now());
   }
 
@@ -34,9 +39,18 @@ class ScheduleStateNotifier
       if (isRefresh != null || state[key] is! StateData) {
         state = {...state, key: StateLoading()};
         final resp = await scheduleRepository.getSchedule(date: key);
-        print(resp);
         state = {...state, key: StateData(data: resp)};
-        print(state[key].runtimeType);
+        if (resp != null) {
+          resp.fighterFightEvents.forEach((e) {
+            ref
+                .read(fighterProvider(e.winner.id).notifier)
+
+                .updateFighter(e.winner);
+            ref
+                .read(fighterProvider(e.loser.id).notifier)
+                .updateFighter(e.loser);
+          });
+        }
       } else {
         // 이미 데이터가 있음과 동시에 refresh 하는 것도 아닌 경우, 그대로 빠져나감
         return;
@@ -47,7 +61,7 @@ class ScheduleStateNotifier
     } catch (e, stack) {
       print('예외 발생: $e');
       print('스택: $stack');
-      state['$date'] = StateError(message: '스케줄 가져오기 실패');
+      state = {...state, _stringDate(date): StateError(message: '스케줄 못 불러옴')};
     }
   }
 
