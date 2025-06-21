@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'async_state.g.dart';
+part 'base_state.g.dart';
 
 abstract class StateBase<T> {}
 
@@ -22,4 +22,11 @@ class StateData<T> extends StateBase<T> {
     Map<String, dynamic> json,
     T Function(Object? json) fromJsonT,
   ) => _$StateDataFromJson(json, fromJsonT);
+}
+
+class StateDataDetail<T> extends StateData<T> {
+  final T? meta;
+
+  StateDataDetail({required this.meta, required super.data});
+
 }

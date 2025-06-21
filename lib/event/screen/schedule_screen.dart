@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mma_flutter/common/const/colors.dart';
-import 'package:mma_flutter/common/model/async_state.dart';
+import 'package:mma_flutter/common/const/style.dart';
+import 'package:mma_flutter/common/model/base_state.dart';
 import 'package:mma_flutter/event/component/schedule_card.dart';
 import 'package:mma_flutter/event/model/schedule_model.dart';
 import 'package:mma_flutter/event/provider/schedule_provider.dart';
@@ -26,10 +27,6 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     final defaultBoxDecoration = BoxDecoration(
       borderRadius: BorderRadius.circular(6.0),
       border: Border.all(color: Colors.grey[500]!, width: 1.0),
-    );
-    final defaultTextStyle = TextStyle(
-      color: Colors.grey[600],
-      fontWeight: FontWeight.w700,
     );
 
     return RefreshIndicator(
@@ -76,7 +73,10 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                     lastDay: DateTime(DateTime.now().year + 1),
                     calendarStyle: CalendarStyle(
                       todayDecoration: defaultBoxDecoration.copyWith(
-                        border: Border.all(color: Colors.grey[500]!, width: 1.0),
+                        border: Border.all(
+                          color: Colors.grey[500]!,
+                          width: 1.0,
+                        ),
                       ),
                       defaultDecoration: defaultBoxDecoration,
                       weekendDecoration: defaultBoxDecoration,
@@ -130,9 +130,16 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
         child: Text('다시시도'),
       );
     }
-    final currentStateData = state as StateData;
+    final currentStateData = state as StateData<FightEventModel>;
     if (currentStateData.data != null) {
-      return ScheduleCard(schedule: currentStateData.data);
+      return Column(
+        children: [
+          ScheduleCard.header(currentStateData.data!.name),
+          ...currentStateData.data!.fighterFightEvents.map(
+            (e) => ScheduleCard(ffe: e),
+          ),
+        ],
+      );
     } else {
       return _EmptyCard();
     }
@@ -142,7 +149,6 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
 }
 
 class _EmptyCard extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Container(

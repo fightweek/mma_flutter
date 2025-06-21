@@ -1,16 +1,19 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/common/const/colors.dart';
-import 'package:mma_flutter/event/provider/schedule_provider.dart';
+import 'package:mma_flutter/common/const/style.dart';
+import 'package:mma_flutter/fighter/model/fighter_model.dart';
+import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
 
 import '../model/schedule_model.dart';
 
 class ScheduleCard extends ConsumerWidget {
-  final FightEventModel schedule;
-  bool _hasTriggeredRefresh = false;
-  final _defaultTextStyle = TextStyle(color: Colors.white, fontSize: 14);
+  final FighterFightEventModel ffe;
+  final bool? isDetail;
 
-  ScheduleCard({super.key, required this.schedule});
+  const ScheduleCard({super.key, required this.ffe, this.isDetail});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,95 +25,90 @@ class ScheduleCard extends ConsumerWidget {
       width: MediaQuery.of(context).size.width,
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Text(
-                  schedule.name,
-                  style: _defaultTextStyle.copyWith(fontSize: 24),
-                ),
-                if (schedule.date.isBefore(DateTime.now()))
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          '승자',
-                          style: _defaultTextStyle.copyWith(fontSize: 20),
-                        ),
-                        Text(
-                          '패자',
-                          style: _defaultTextStyle.copyWith(fontSize: 20),
-                        ),
-                      ],
+          if(isDetail!=null)
+            header(ffe.eventName,isDetail: true),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _imageCard(context, ffe.winner, ref),
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      '${_splitName(ffe.winner.name)}\n${ffe.winner.record.win}-${ffe.winner.record.loss}-${ffe.winner.record.draw}',
+                      style: defaultTextStyle,
                     ),
-                  ),
-              ],
-            ),
-          ),
-          ...schedule.fighterFightEvents.map(
-            (e) => Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _imageCard(e.winnerImgPresignedUrl, ref),
-                SizedBox(
-                  height: 80,
-                  width: 80,
-                  child: Text(
-                    '${e.winnerName.split(' ')[0]}\n${e.winnerName.split(' ')[1]}\n${e.winnerRecord.win}-${e.winnerRecord.loss}-${e.winnerRecord.draw}',
-                    style: _defaultTextStyle,
-                  ),
+                    Row(
+                      children: [
+                        Icon(Icons.check, size: 16, color: Colors.green),
+                        SizedBox(width: 4),
+                        Text(ffe.result.winMethod,style: defaultTextStyle,),
+                      ],
+                    )
+                  ],
                 ),
-                SizedBox(
-                  height: 80,
-                  width: 80,
-                  child: Text(
-                    '${e.loserName.split(' ')[0]}\n${e.loserName.split(' ')[1]}\n${e.loserRecord.win}-${e.loserRecord.loss}-${e.loserRecord.draw}',
-                    style: _defaultTextStyle,
-                  ),
+              ),
+              SizedBox(width: 12.0,),
+              Expanded(
+                child: Text(
+                  '${_splitName(ffe.loser.name)}\n${ffe.loser.record.win}-${ffe.loser.record.loss}-${ffe.loser.record.draw}',
+                  style: defaultTextStyle,
                 ),
-                _imageCard(e.loserImgPresignedUrl, ref),
-              ],
-            ),
+              ),
+              _imageCard(context, ffe.loser, ref),
+            ],
           ),
         ],
       ),
     );
   }
 
+  String _splitName(String name) {
+    if (name.contains(' ')) {
+      List<String> names = name.split(' ');
+      return '${names[0]}\n${names.sublist(1).join(' ')}';
+    }
+    return name;
+  }
+
   bool _isPresignedUrlExpired(Object error) {
     return error.toString().contains('403');
   }
 
-   _imageCard(String presignedUrl, WidgetRef ref) {
+  _imageCard(BuildContext context, FighterModel fighter, WidgetRef ref) {
     return GestureDetector(
       onTap: () {
-        print('hello');
+        print(fighter.id);
+        context.pushNamed(
+          FighterDetailScreen.routeName,
+          pathParameters: {'id': fighter.id.toString()},
+        );
       },
-      child: Image.network(
-        height: 150,
+      child: CachedNetworkImage(
         width: 150,
-        presignedUrl,
-        errorBuilder: (context, error, stackTrace) {
-          print('----error-----');
-          if (!_hasTriggeredRefresh && _isPresignedUrlExpired(error)) {
-            print('--------403 error!!---------');
-            _hasTriggeredRefresh = true;
-            ref
-                .read(scheduleProvider.notifier)
-                .getSchedule(date: schedule.date, isRefresh: true);
-            return CircularProgressIndicator();
-          } else {
-            return Container(
-              color: MY_MIDDLE_GREY_COLOR,
-              height: 150,
-              width: 150,
-            );
-          }
+        height: 150,
+        imageUrl: fighter.imgPresignedUrl,
+        placeholder: (context, url) => CircularProgressIndicator(),
+        errorWidget: (context, url, error) {
+          print('no such image.${fighter.name}');
+          return Image.asset('asset/img/logo/fight_week.png');
         },
       ),
     );
   }
+
+  static Widget header(String eventName, {bool? isDetail}) => Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          eventName,
+          style: defaultTextStyle.copyWith(
+            fontSize: isDetail != null ? 20 : 28,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ),
+    ],
+  );
 }
