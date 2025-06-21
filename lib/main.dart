@@ -5,8 +5,14 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:mma_flutter/common/provider/route/router.dart';
 import 'package:naver_login_sdk/naver_login_sdk.dart';
-
+import 'package:stack_trace/stack_trace.dart' as stack_trace;
 void main() async {
+  FlutterError.demangleStackTrace = (StackTrace stack) {
+    if (stack is stack_trace.Chain) {
+      return stack.toTrace();
+    }
+    return stack;
+  };
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: "asset/config/.env");

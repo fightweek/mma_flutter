@@ -15,6 +15,7 @@ class RootTab extends StatefulWidget {
 
 class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   late TabController controller;
+  int index = 0;
 
   @override
   void initState() {
@@ -34,8 +35,6 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
       index = controller.index;
     });
   }
-
-  int index = 0;
 
   @override
   Widget build(BuildContext context) {

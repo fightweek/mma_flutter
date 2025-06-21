@@ -128,7 +128,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       } else {
         state = UserModelError(message: '로그인 실패');
       }
-    }on Exception catch(e){
+    } on Exception catch (e) {
       state = UserModelError(message: '로그인 실패');
     }
   }
@@ -155,7 +155,8 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
 
   Future<void> logout({bool withRefresh = true}) async {
     if (withRefresh) {
-      await authRepository.logout();
+      print('withRefresh');
+      authRepository.logout();
     }
     state = null;
     await Future.wait([
