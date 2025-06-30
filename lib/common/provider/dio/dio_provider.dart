@@ -53,6 +53,7 @@ class CustomInterceptor extends Interceptor {
     if (isStatus401 && !isPathReissue) {
       print('accesstoken is invalid!');
       final dio = Dio();
+      print('refresh=$refreshToken');
       try {
         final resp = await dio.post(
           'http://$ip/reissue',

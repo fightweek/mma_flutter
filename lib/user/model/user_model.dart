@@ -16,11 +16,12 @@ class UserModelNicknameSetting extends UserModelBase{}
 
 @JsonSerializable()
 class UserModel extends UserModelBase {
+  final String role;
   final int id;
   final String? nickname;
   final String email;
 
-  UserModel({required this.id, required this.nickname, required this.email});
+  UserModel({required this.role, required this.id, required this.nickname, required this.email});
 
   factory UserModel.fromJson(Map<String, dynamic> json)
   => _$UserModelFromJson(json);

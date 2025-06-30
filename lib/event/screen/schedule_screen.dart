@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
-import 'package:mma_flutter/common/model/base_state.dart';
+import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/event/component/schedule_card.dart';
 import 'package:mma_flutter/event/model/schedule_model.dart';
 import 'package:mma_flutter/event/provider/schedule_provider.dart';
@@ -136,7 +136,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
         children: [
           ScheduleCard.header(currentStateData.data!.name),
           ...currentStateData.data!.fighterFightEvents.map(
-            (e) => ScheduleCard(ffe: e),
+            (e) => ScheduleCard(ffe: e,isDetail: false,isUpcoming: currentStateData.data!.upcoming,),
           ),
         ],
       );

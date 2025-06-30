@@ -8,32 +8,40 @@ import 'package:mma_flutter/user/screen/login_screen.dart';
 
 class JoinScreen extends ConsumerWidget {
   static String get routeName => '/join';
+
   const JoinScreen({super.key});
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(smtpProvider);
-    if(state == SmtpStatus.error){
+    if (state == SmtpStatus.error) {
       ref.read(smtpProvider.notifier).setStateNone();
       return LoginScreen();
     }
-    return DefaultLayout(child: Column(
-      children: [
-        const SizedBox(height: 50,),
-        AppTitle(),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Text(
-            '회원가입',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 40,
-            ),
+    return DefaultLayout(
+      child: SizedBox.expand(
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              AppTitle(),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  '회원가입',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 32,
+                  ),
+                ),
+              ),
+              JoinInputForm(),
+            ],
           ),
         ),
-        JoinInputForm(),
-      ],
-    ));
+      ),
+    );
   }
 }

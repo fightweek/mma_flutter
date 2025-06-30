@@ -11,54 +11,70 @@ import '../model/schedule_model.dart';
 
 class ScheduleCard extends ConsumerWidget {
   final FighterFightEventModel ffe;
-  final bool? isDetail;
+  final bool isUpcoming;
+  final bool isDetail;
 
-  const ScheduleCard({super.key, required this.ffe, this.isDetail});
+  const ScheduleCard({
+    super.key,
+    required this.ffe,
+    required this.isUpcoming,
+    required this.isDetail,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      decoration: BoxDecoration(
-        color: MY_DARK_GREY_COLOR,
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        children: [
-          if(isDetail!=null)
-            header(ffe.eventName,isDetail: true),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _imageCard(context, ffe.winner, ref),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      '${_splitName(ffe.winner.name)}\n${ffe.winner.record.win}-${ffe.winner.record.loss}-${ffe.winner.record.draw}',
-                      style: defaultTextStyle,
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.check, size: 16, color: Colors.green),
-                        SizedBox(width: 4),
-                        Text(ffe.result.winMethod,style: defaultTextStyle,),
-                      ],
-                    )
-                  ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: MY_DARK_GREY_COLOR,
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          children: [
+            if (isDetail) header(ffe.eventName, isDetail: true),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _imageCard(context, ffe.winner, ref),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        '${_splitName(ffe.winner.name)}\n${ffe.winner.record.win}-${ffe.winner.record.loss}-${ffe.winner.record.draw}',
+                        style: defaultTextStyle,
+                      ),
+                      Row(
+                        children: [
+                          if (ffe.result != null)
+                            Icon(Icons.check, size: 16, color: Colors.green),
+                          SizedBox(width: 4),
+                          if (ffe.result != null)
+                            Text(
+                              ffe.result!.winMethod,
+                              style: defaultTextStyle,
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(width: 12.0,),
-              Expanded(
-                child: Text(
-                  '${_splitName(ffe.loser.name)}\n${ffe.loser.record.win}-${ffe.loser.record.loss}-${ffe.loser.record.draw}',
-                  style: defaultTextStyle,
+                SizedBox(
+                  width: 32.0,
+                  child: Text('VS', style: defaultTextStyle),
                 ),
-              ),
-              _imageCard(context, ffe.loser, ref),
-            ],
-          ),
-        ],
+                Expanded(
+                  child: Text(
+                    '${_splitName(ffe.loser.name)}\n${ffe.loser.record.win}-${ffe.loser.record.loss}-${ffe.loser.record.draw}',
+                    style: defaultTextStyle,
+                  ),
+                ),
+                _imageCard(context, ffe.loser, ref),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -71,10 +87,6 @@ class ScheduleCard extends ConsumerWidget {
     return name;
   }
 
-  bool _isPresignedUrlExpired(Object error) {
-    return error.toString().contains('403');
-  }
-
   _imageCard(BuildContext context, FighterModel fighter, WidgetRef ref) {
     return GestureDetector(
       onTap: () {
@@ -85,12 +97,11 @@ class ScheduleCard extends ConsumerWidget {
         );
       },
       child: CachedNetworkImage(
-        width: 150,
-        height: 150,
+        width: 80,
+        height: 80,
         imageUrl: fighter.imgPresignedUrl,
         placeholder: (context, url) => CircularProgressIndicator(),
         errorWidget: (context, url, error) {
-          print('no such image.${fighter.name}');
           return Image.asset('asset/img/logo/fight_week.png');
         },
       ),

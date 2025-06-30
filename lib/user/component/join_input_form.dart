@@ -4,6 +4,7 @@ import 'package:mma_flutter/common/component/custom_text_form_field.dart';
 import 'package:mma_flutter/common/component/input_label.dart';
 import 'package:mma_flutter/common/component/input_vaiidator.dart';
 import 'package:mma_flutter/user/provider/smtp_provider.dart';
+import 'package:mma_flutter/user/provider/user_provider.dart';
 import 'package:mma_flutter/user/repository/smtp_repository.dart';
 import 'package:mma_flutter/user/screen/verification_screen.dart';
 
@@ -64,10 +65,8 @@ class _JoinInputFormState extends ConsumerState<JoinInputForm> {
                     }
                     print('nickname : $nickname');
                     final resp = await ref
-                        .read(smtpRepositoryProvider)
-                        .checkDuplicatedNickname(
-                          nickname: {'nickname': nickname},
-                        );
+                        .read(userProvider.notifier)
+                        .checkDupNickname(nickname);
                     print('resp = $resp');
                     setState(() {
                       final message = resp ? '중복된 닉네임입니다.' : '사용 가능한 닉네임입니다.';
@@ -198,5 +197,4 @@ class _JoinInputFormState extends ConsumerState<JoinInputForm> {
       return null;
     }
   }
-
 }

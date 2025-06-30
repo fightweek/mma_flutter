@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mma_flutter/news/screen/news_screen.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/event/screen/schedule_screen.dart';
+import 'package:mma_flutter/fighter/screen/search_screen.dart';
 import 'package:mma_flutter/user/screen/logout_screen.dart';
 
 class RootTab extends StatefulWidget {
@@ -70,8 +72,8 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
           Center(child: Text('홈 화면')),
           ScheduleScreen(),
           // Center(child: Text('게임 화면')),
-          Center(child: Text('뉴스 화면')),
-          Center(child: Text('검색')),
+          NewsScreen(),
+          SearchScreen(),
           LogoutScreen(),
         ],
       ),

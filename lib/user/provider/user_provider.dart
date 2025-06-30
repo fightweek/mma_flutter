@@ -46,8 +46,8 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     state = null;
   }
 
-  Future<bool> checkDupNickname(String nickname) async {
-    return await userRepository.checkDuplicatedNickname(
+  Future<bool> checkDupNickname(String nickname) {
+    return userRepository.checkDuplicatedNickname(
       nickname: {'nickname': nickname},
     );
   }
@@ -111,6 +111,8 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
         request = await KakaoLoginService.login();
       }
       final resp = await authRepository.socialLogin(request: request!);
+      print('accessToken=${resp.accessToken}');
+      print('refreshToken=${resp.refreshToken}');
       await storage.write(key: ACCESS_TOKEN_KEY, value: resp.accessToken);
       await storage.write(key: REFRESH_TOKEN_KEY, value: resp.refreshToken);
       UserModel userResp = await userRepository.getMe();

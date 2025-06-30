@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/common/screen/root_tab.dart';
 import 'package:mma_flutter/common/screen/splash_screen.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
+import 'package:mma_flutter/news/screen/news_screen.dart';
+import 'package:mma_flutter/admin/news/screen/news_upload_screen.dart';
 import 'package:mma_flutter/user/provider/auth_change_provider.dart';
 import 'package:mma_flutter/user/screen/init_nickname_screen.dart';
 import 'package:mma_flutter/user/screen/login_screen.dart';
@@ -23,6 +25,20 @@ final routerProvider = Provider<GoRouter>((ref) {
               return FighterDetailScreen(
                 id: int.parse(state.pathParameters['id']!),
               );
+            },
+          ),
+          GoRoute(
+            path: 'news_upload',
+            name: NewsUploadScreen.routeName,
+            builder: (context, state) {
+              return NewsUploadScreen();
+            },
+          ),
+          GoRoute(
+            path: 'news',
+            name: NewsScreen.routeName,
+            builder: (context, state) {
+              return NewsScreen();
             },
           ),
         ],

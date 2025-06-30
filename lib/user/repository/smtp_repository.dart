@@ -24,8 +24,4 @@ abstract class SmtpRepository {
   @POST('/verify_code')
   Future<String> verifyCode({@Body() required VerifyCodeRequest request});
 
-  @GET('/check_dup_nickname')
-  Future<bool> checkDuplicatedNickname({
-    @Body() required Map<String, String> nickname,
-  });
 }

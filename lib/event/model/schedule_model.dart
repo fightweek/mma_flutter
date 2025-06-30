@@ -15,6 +15,7 @@ class FightEventModel {
   final DateTime date;
   final String location;
   final List<FighterFightEventModel> fighterFightEvents;
+  final bool upcoming;
 
   FightEventModel({
     required this.id,
@@ -22,6 +23,7 @@ class FightEventModel {
     required this.date,
     required this.location,
     required this.fighterFightEvents,
+    required this.upcoming,
   });
 
   factory FightEventModel.fromJson(Map<String, dynamic> json) =>
@@ -34,7 +36,7 @@ class FighterFightEventModel {
   final String fightWeight;
   final FighterModel winner;
   final FighterModel loser;
-  final FightResultModel result;
+  final FightResultModel? result;
 
   FighterFightEventModel({
     required this.eventName,
