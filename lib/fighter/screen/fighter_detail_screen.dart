@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mma_flutter/common/const/colors.dart';
-import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
-import 'package:mma_flutter/common/model/base_state.dart';
+import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/event/component/schedule_card.dart';
+import 'package:mma_flutter/event/model/schedule_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_detail_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
+import 'package:mma_flutter/fighter/model/update_preference_model.dart';
 import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
 
 class FighterDetailScreen extends ConsumerStatefulWidget {
@@ -25,11 +27,16 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController controller;
   int index = 0;
+  IconData? _heart;
+  IconData? _alert;
 
   @override
   void initState() {
+    print('initialize detail screen');
     super.initState();
-    ref.read(fighterProvider(widget.id).notifier).detail();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(fighterProvider.notifier).detail(widget.id);
+    });
     controller = TabController(length: 2, vsync: this);
     controller.addListener(tabListener);
   }
@@ -37,6 +44,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
   @override
   void dispose() {
     controller.removeListener(tabListener);
+    controller.dispose();
     super.dispose();
   }
 
@@ -48,10 +56,10 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(fighterProvider(widget.id))[widget.id];
+    final state = ref.watch(fighterProvider)[widget.id];
 
     if (state is StateLoading) {
-      return CircularProgressIndicator();
+      return Center(child: CircularProgressIndicator());
     }
 
     if (state is StateError) {
@@ -75,13 +83,29 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
         physics: AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
-            Text(
-              '${data.name}\nUFC ${weightMap[int.parse(data.weight)] ?? '헤비급'}',
-              style: defaultTextStyle.copyWith(fontSize: 40),
+            Column(
+              children: [
+                Row(
+                  children: [
+                    _headerText(data.name),
+                    _alert != null
+                        ? _headerIcon(icon: _alert!, isAlert: true)
+                        : const SizedBox.shrink(),
+                  ],
+                ),
+                Row(
+                  children: [
+                    _headerText('${data.weight} 파운드'),
+                    _heart != null
+                        ? _headerIcon(icon: _heart!, isAlert: false)
+                        : const SizedBox.shrink(),
+                  ],
+                ),
+                if (data.ranking != null)
+                  Text('랭킹 ${data.ranking} 위', style: defaultTextStyle),
+                _imageCard(data.imgPresignedUrl),
+              ],
             ),
-            _imageCard(data.imgPresignedUrl),
-            if (data.ranking != null) Text('랭킹 ${data.ranking} 위'),
-            // _imageCard(data.imgPresignedUrl),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -108,7 +132,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
       width: 200,
       presignedUrl,
       errorBuilder: (context, error, stackTrace) {
-        return Container(color: MY_MIDDLE_GREY_COLOR, height: 150, width: 150);
+        return Container(color: MY_MIDDLE_GREY_COLOR, height: 70, width: 70);
       },
     );
   }
@@ -124,6 +148,20 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
   }
 
   _renderDetailInfo(FighterDetailModel fighter) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_alert == null && _heart == null) {
+        setState(() {
+          _alert =
+              fighter.alert
+                  ? FontAwesomeIcons.solidBell
+                  : FontAwesomeIcons.bell;
+          _heart =
+              fighter.like
+                  ? FontAwesomeIcons.solidHeart
+                  : FontAwesomeIcons.heart;
+        });
+      }
+    });
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Container(
@@ -183,6 +221,14 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     return age;
   }
 
+  Widget _headerText(String data) {
+    return Expanded(
+      child: Center(
+        child: Text(data, style: defaultTextStyle.copyWith(fontSize: 40)),
+      ),
+    );
+  }
+
   Widget _footer(FighterDetailModel data) {
     return Column(
       children: [
@@ -197,14 +243,65 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
           ),
         ),
         index == 0
-            ? Column(
-              children:
-                  (data.fighterFightEvents ?? [])
-                      .map((event) => ScheduleCard(ffe: event, isDetail: true))
-                      .toList(),
-            )
-            : Text('hello ufc',style: defaultTextStyle,),
+            ? _filterFightEvent(data: data, isUpcoming: false)
+            : _filterFightEvent(data: data, isUpcoming: true),
       ],
+    );
+  }
+
+  Widget _filterFightEvent({
+    required FighterDetailModel data,
+    required bool isUpcoming,
+  }) {
+    return Column(
+      children:
+          (data.fighterFightEvents ?? [])
+              .where(
+                (ffe) => isUpcoming ? ffe.result == null : ffe.result != null,
+              )
+              .map(
+                (ffe) => ScheduleCard(
+                  ffe: ffe,
+                  isDetail: true,
+                  isUpcoming: isUpcoming,
+                ),
+              )
+              .toList(),
+    );
+  }
+
+  _headerIcon({required bool isAlert, required IconData icon}) {
+    return GestureDetector(
+      child: FaIcon(icon, size: 24.0, color: Colors.white),
+      onTap: () {
+        final category =
+            isAlert ? PreferenceCategory.alert : PreferenceCategory.like;
+        final isOn =
+            icon == (isAlert ? FontAwesomeIcons.bell : FontAwesomeIcons.heart);
+        print('isOn=$isOn');
+        if (isOn && category == PreferenceCategory.alert) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('이제부터 해당 선수에 대한 경기 알림을 받습니다.')),
+          );
+        }
+        ref
+            .read(fighterProvider.notifier)
+            .updatePreference(
+              UpdatePreferenceModel(
+                category: category,
+                targetId: widget.id,
+                isOn: isOn,
+              ),
+            );
+        setState(() {
+          if (isAlert) {
+            _alert = isOn ? FontAwesomeIcons.solidBell : FontAwesomeIcons.bell;
+          } else {
+            _heart =
+                isOn ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart;
+          }
+        });
+      },
     );
   }
 }

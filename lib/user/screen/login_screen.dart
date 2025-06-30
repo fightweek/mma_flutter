@@ -22,49 +22,53 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      child: Column(
-        children: [
-          const SizedBox(height: 70),
-          AppTitle(),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30),
-            child: Text(
-              '로그인',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 40,
+      child: SizedBox.expand(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 30),
+              AppTitle(),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30),
+                child: Text(
+                  '로그인',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 40,
+                  ),
+                ),
               ),
-            ),
-          ),
-          LoginInputForm(),
-          OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              minimumSize: Size.fromHeight(50),
-              backgroundColor: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (context) => JoinScreen()));
-            },
-            child: Text('회원가입', style: TextStyle(fontSize: 20)),
-          ),
-          GestureDetector(
-            onTap: () {
-              print('hello');
-            },
-            child: const Text(
-              '아이디/비밀번호 찾기 >',
-              style: TextStyle(
-                color: Colors.blueAccent,
-                decoration: TextDecoration.underline,
+              LoginInputForm(),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: Size.fromHeight(50),
+                  backgroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (context) => JoinScreen()));
+                },
+                child: Text('회원가입', style: TextStyle(fontSize: 20)),
               ),
-            ),
+              GestureDetector(
+                onTap: () {
+                  print('hello');
+                },
+                child: const Text(
+                  '아이디/비밀번호 찾기 >',
+                  style: TextStyle(
+                    color: Colors.blueAccent,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 50),
+              _SocialLogin(),
+            ],
           ),
-          const SizedBox(height: 100),
-          _SocialLogin(),
-        ],
+        ),
       ),
     );
   }
@@ -85,12 +89,12 @@ class _SocialLogin extends ConsumerWidget {
           },
           child: Image.asset(
             'asset/img/social/kakao_comp.png',
-            height: 50,
+            height: 30,
             width: MediaQuery.of(context).size.width / 1.2,
             fit: BoxFit.cover,
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
         InkWell(
           onTap: () {
             ref
@@ -99,12 +103,12 @@ class _SocialLogin extends ConsumerWidget {
           },
           child: Image.asset(
             'asset/img/social/google_comp.png',
-            height: 50,
+            height: 30,
             width: MediaQuery.of(context).size.width / 1.2,
             fit: BoxFit.cover,
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
         NaverButton(),
       ],
     );

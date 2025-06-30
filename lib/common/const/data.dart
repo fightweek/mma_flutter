@@ -7,8 +7,9 @@ const REFRESH_TOKEN_KEY = 'REFRESH_TOKEN';
 
 final emulatorIp = '10.0.2.2:8080';
 final simulatorIp = '127.0.0.1:8080';
-final ip = data.Platform.isIOS ? simulatorIp : emulatorIp;
-
+// final ip = data.Platform.isIOS ? simulatorIp : emulatorIp;
+final ip = '192.168.0.13:8080';
+// final ip = '192.168.219.59:8080';
 final storage = FlutterSecureStorage();
 
 final Map<int, String> weightMap = {
@@ -21,3 +22,6 @@ final Map<int, String> weightMap = {
   185: '미들급',
   205: '라이트 헤비급',
 };
+
+final newsSources = ['MMA_JUNKIE','MMA_FIGHTING','UFC','ESPN_MMA','MMA_PROS_PICK','ELSE'];
+final newsTypes = ['IMAGES','IMAGES_TRANSLATION','NO_IMAGES'];

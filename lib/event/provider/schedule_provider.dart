@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
-import 'package:mma_flutter/common/model/base_state.dart';
+import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/event/model/schedule_model.dart';
 import 'package:mma_flutter/event/repository/schedule_repository.dart';
 import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
@@ -43,11 +42,10 @@ class ScheduleStateNotifier
         if (resp != null) {
           resp.fighterFightEvents.forEach((e) {
             ref
-                .read(fighterProvider(e.winner.id).notifier)
-
+                .read(fighterProvider.notifier)
                 .updateFighter(e.winner);
             ref
-                .read(fighterProvider(e.loser.id).notifier)
+                .read(fighterProvider.notifier)
                 .updateFighter(e.loser);
           });
         }

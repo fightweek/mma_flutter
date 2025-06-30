@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/const/colors.dart';
+import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 
@@ -17,17 +18,19 @@ class _InitNicknameScreenState extends ConsumerState<InitNicknameScreen> {
   final _controller = TextEditingController();
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    print('initstate');
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showNicknameDialog();
+      if (mounted) {
+        _showNicknameDialog();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(child: Container(
-    ));
+    return DefaultLayout(child: SizedBox.shrink());
   }
 
   void _showNicknameDialog() {
@@ -35,25 +38,30 @@ class _InitNicknameScreenState extends ConsumerState<InitNicknameScreen> {
       context: context,
       builder: (context) {
         String? errorText;
-
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              backgroundColor: MY_DARK_GREY_COLOR,
-              title: const Text('닉네임 설정',style: TextStyle(
-                color: Colors.white
-              ),),
+              backgroundColor: MY_MIDDLE_GREY_COLOR,
+              title: const Text(
+                '닉네임 설정',
+                style: TextStyle(color: Colors.white),
+              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: _controller,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
 
                       fillColor: Color(0xFF2C2C2C),
                       hintText: '닉네임을 입력하세요',
-                      hintStyle: const TextStyle(color: Colors.white, fontSize: 14.0),
+                      hintStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14.0,
+                      ),
                     ),
                     style: const TextStyle(color: Colors.white),
                   ),
@@ -90,7 +98,6 @@ class _InitNicknameScreenState extends ConsumerState<InitNicknameScreen> {
                       });
                     }
                   },
-
                   child: const Text('확인'),
                 ),
               ],
