@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'base_state.g.dart';
+part 'base_state_model.g.dart';
 
 abstract class StateBase<T> {}
 
