@@ -10,6 +10,8 @@ class FighterDetailModel extends FighterModel {
   final DateTime birthday;
   final int? reach;
   final String? nation;
+  final bool like;
+  final bool alert;
   final List<FighterFightEventModel>? fighterFightEvents;
 
   FighterDetailModel({
@@ -18,10 +20,13 @@ class FighterDetailModel extends FighterModel {
     required super.ranking,
     required super.record,
     required super.weight,
+    required super.nickname,
     required super.imgPresignedUrl,
     required this.height,
     required this.birthday,
     required this.reach,
+    required this.like,
+    required this.alert,
     required this.nation,
     required this.fighterFightEvents,
   });

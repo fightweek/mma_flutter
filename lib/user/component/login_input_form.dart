@@ -58,6 +58,7 @@ class _LoginInputFormState extends ConsumerState<LoginInputForm> {
             },
             hintText: '********',
             validator: InputValidator.validator('비밀번호'),
+            obscureText: true,
           ),
           const SizedBox(height: 10),
           OutlinedButton(

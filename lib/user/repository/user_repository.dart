@@ -23,7 +23,6 @@ abstract class UserRepository {
   Future<UserModel> getMe();
 
   @GET('/check_dup_nickname')
-  @Headers({'accessToken':'true'})
   Future<bool> checkDuplicatedNickname({
     @Body() required Map<String, String> nickname
   });
