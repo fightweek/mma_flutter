@@ -15,7 +15,7 @@ class FighterCard extends StatelessWidget {
         CachedNetworkImage(
           width: 80,
           height: 80,
-          imageUrl: fighter.imgPresignedUrl,
+          imageUrl: fighter.headshotUrl,
           placeholder: (context, url) => CircularProgressIndicator(),
           errorWidget: (context, url, error) {
             print('no such image.${fighter.name}');

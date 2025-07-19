@@ -3,9 +3,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/route/router.dart';
 import 'package:naver_login_sdk/naver_login_sdk.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
+
 void main() async {
   FlutterError.demangleStackTrace = (StackTrace stack) {
     if (stack is stack_trace.Chain) {
@@ -15,6 +17,7 @@ void main() async {
   };
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
+  ip = await isEmulator() ? emulatorIp : localNetworkIp;
   await dotenv.load(fileName: "asset/config/.env");
   KakaoSdk.init(
     nativeAppKey: dotenv.get('KAKAO_NATIVE_APP_KEY'),

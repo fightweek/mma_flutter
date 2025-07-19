@@ -5,15 +5,15 @@ import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
-import 'package:mma_flutter/event/component/schedule_card.dart';
-import 'package:mma_flutter/event/model/schedule_model.dart';
+import 'package:mma_flutter/common/utils/data_utils.dart';
+import 'package:mma_flutter/fight_event/component/fight_event_card.dart';
 import 'package:mma_flutter/fighter/model/fighter_detail_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/model/update_preference_model.dart';
 import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
 
 class FighterDetailScreen extends ConsumerStatefulWidget {
-  static String get routeName => '/detail';
+  static String get routeName => 'fighter_detail';
   final int id;
 
   const FighterDetailScreen({required this.id, super.key});
@@ -58,14 +58,18 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
   Widget build(BuildContext context) {
     final state = ref.watch(fighterProvider)[widget.id];
 
-    if (state is StateLoading) {
-      return Center(child: CircularProgressIndicator());
+    if (state == null || state is StateLoading) {
+      return DefaultLayout(child: Center(child: CircularProgressIndicator()));
     }
 
     if (state is StateError) {
-      final fState = state as StateError;
       return DefaultLayout(
-        child: Center(child: Text(fState.message, style: defaultTextStyle)),
+        child: ElevatedButton(
+          onPressed: () {
+            ref.read(fighterProvider.notifier).detail(widget.id);
+          },
+          child: Text('다시시도'),
+        ),
       );
     }
 
@@ -103,7 +107,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                 ),
                 if (data.ranking != null)
                   Text('랭킹 ${data.ranking} 위', style: defaultTextStyle),
-                _imageCard(data.imgPresignedUrl),
+                _imageCard(data.headshotUrl),
               ],
             ),
             Row(
@@ -126,11 +130,11 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     );
   }
 
-  _imageCard(String presignedUrl) {
+  _imageCard(String imgUrl) {
     return Image.network(
       height: 200,
       width: 200,
-      presignedUrl,
+      imgUrl,
       errorBuilder: (context, error, stackTrace) {
         return Container(color: MY_MIDDLE_GREY_COLOR, height: 70, width: 70);
       },
@@ -172,17 +176,17 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
             Column(
               children: [
                 Text(
-                  '신장: ${fighter.height}',
+                  '신장: ${fighter.height} cm',
                   style: defaultTextStyle.copyWith(fontSize: 20),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  '무게: ${fighter.weight}',
+                  '무게: ${fighter.weight} 파운드',
                   style: defaultTextStyle.copyWith(fontSize: 20),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  '생일: ${fighter.birthday.year}-${fighter.birthday.month}-${fighter.birthday.day}',
+                  '생일: ${DataUtils.formatDateTime(fighter.birthday)}',
                   style: defaultTextStyle.copyWith(fontSize: 20),
                 ),
               ],
@@ -190,7 +194,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
             Column(
               children: [
                 Text(
-                  '팔길이: ${fighter.reach}',
+                  '팔길이: ${fighter.reach} cm',
                   style: defaultTextStyle.copyWith(fontSize: 20),
                 ),
                 SizedBox(height: 8),
@@ -260,10 +264,11 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                 (ffe) => isUpcoming ? ffe.result == null : ffe.result != null,
               )
               .map(
-                (ffe) => ScheduleCard(
+                (ffe) => FightEventCard(
                   ffe: ffe,
                   isDetail: true,
                   isUpcoming: isUpcoming,
+                  isStream: false,
                 ),
               )
               .toList(),

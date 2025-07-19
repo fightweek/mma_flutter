@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mma_flutter/common/model/model_with_id.dart';
-import 'package:mma_flutter/event/model/schedule_model.dart';
+import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
 
 part 'fighter_model.g.dart';
 
@@ -12,8 +12,8 @@ class FighterModel implements ModelWithId{
   final String? nickname;
   final int? ranking;
   final FightRecordModel record;
-  final String? weight;
-  final String imgPresignedUrl;
+  final String weight;
+  final String headshotUrl;
 
   FighterModel({
     required this.id,
@@ -22,7 +22,7 @@ class FighterModel implements ModelWithId{
     required this.nickname,
     required this.record,
     required this.weight,
-    required this.imgPresignedUrl,
+    required this.headshotUrl,
   });
 
   factory FighterModel.fromJson(Map<String, dynamic> json){

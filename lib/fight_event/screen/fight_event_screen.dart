@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
-import 'package:mma_flutter/event/component/schedule_card.dart';
-import 'package:mma_flutter/event/model/schedule_model.dart';
-import 'package:mma_flutter/event/provider/schedule_provider.dart';
+import 'package:mma_flutter/fight_event/component/fight_event_card.dart';
+import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
+import 'package:mma_flutter/fight_event/provider/fight_event_provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class ScheduleScreen extends ConsumerStatefulWidget {
-  const ScheduleScreen({super.key});
+class FightEventScreen extends ConsumerStatefulWidget {
+  const FightEventScreen({super.key});
 
   @override
-  ConsumerState<ScheduleScreen> createState() => _ScheduleScreenState();
+  ConsumerState<FightEventScreen> createState() => _ScheduleScreenState();
 }
 
-class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
+class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(scheduleProvider);
+    final state = ref.watch(fightEventProvider);
 
     final defaultBoxDecoration = BoxDecoration(
       borderRadius: BorderRadius.circular(6.0),
@@ -32,7 +33,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     return RefreshIndicator(
       onRefresh: () async {
         ref
-            .read(scheduleProvider.notifier)
+            .read(fightEventProvider.notifier)
             .getSchedule(date: _selectedDay, isRefresh: true);
       },
       child: SizedBox.expand(
@@ -109,7 +110,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
       print('selectedDay=$selectedDay');
       print('focusedDay=$focusedDay');
     });
-    ref.read(scheduleProvider.notifier).getSchedule(date: _selectedDay);
+    ref.read(fightEventProvider.notifier).getSchedule(date: _selectedDay);
   }
 
   bool selectedDayPredicate(DateTime day) {
@@ -124,7 +125,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
       return ElevatedButton(
         onPressed: () {
           ref
-              .read(scheduleProvider.notifier)
+              .read(fightEventProvider.notifier)
               .getSchedule(date: _selectedDay, isRefresh: true);
         },
         child: Text('다시시도'),
@@ -134,9 +135,19 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     if (currentStateData.data != null) {
       return Column(
         children: [
-          ScheduleCard.header(currentStateData.data!.name),
+          FightEventCard.header(
+            context,
+            eventDate: currentStateData.data!.date,
+            eventName: currentStateData.data!.name,
+            isDetail: false,
+          ),
           ...currentStateData.data!.fighterFightEvents.map(
-            (e) => ScheduleCard(ffe: e,isDetail: false,isUpcoming: currentStateData.data!.upcoming,),
+            (e) => FightEventCard(
+              ffe: e,
+              isDetail: false,
+              isUpcoming: currentStateData.data!.upcoming,
+              isStream: false,
+            ),
           ),
         ],
       );
