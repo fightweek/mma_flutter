@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:mma_flutter/news/screen/news_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
-import 'package:mma_flutter/event/screen/schedule_screen.dart';
+import 'package:mma_flutter/fight_event/screen/fight_event_screen.dart';
 import 'package:mma_flutter/fighter/screen/search_screen.dart';
+import 'package:mma_flutter/news/screen/news_screen.dart';
 import 'package:mma_flutter/user/screen/logout_screen.dart';
+import 'package:mma_flutter/home/screen/home_screen.dart';
 
-class RootTab extends StatefulWidget {
+class RootTab extends ConsumerStatefulWidget {
   static String get routeName => 'home';
 
   const RootTab({super.key});
 
   @override
-  State<RootTab> createState() => _RootTabState();
+  ConsumerState<RootTab> createState() => _RootTabState();
 }
 
-class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
-  late TabController controller;
+class _RootTabState extends ConsumerState<RootTab>
+    with SingleTickerProviderStateMixin {
+  late final TabController controller;
   int index = 0;
 
   @override
@@ -58,7 +61,10 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
           //   icon: Icon(Icons.gamepad_outlined),
           //   label: '게임',
           // ),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month_outlined),label: '경기 일정'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month_outlined),
+            label: '경기 일정',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: '뉴스'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: '검색'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: '프로필'),
@@ -69,8 +75,8 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         physics: NeverScrollableScrollPhysics(),
         controller: controller,
         children: [
-          Center(child: Text('홈 화면')),
-          ScheduleScreen(),
+          HomeScreen(),
+          FightEventScreen(),
           // Center(child: Text('게임 화면')),
           NewsScreen(),
           SearchScreen(),

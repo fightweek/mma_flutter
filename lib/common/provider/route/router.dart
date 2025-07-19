@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/common/screen/root_tab.dart';
 import 'package:mma_flutter/common/screen/splash_screen.dart';
+import 'package:mma_flutter/fight_event/screen/fight_event_detail_screen.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
 import 'package:mma_flutter/news/screen/news_screen.dart';
 import 'package:mma_flutter/admin/news/screen/news_upload_screen.dart';
@@ -19,11 +20,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => RootTab(),
         routes: [
           GoRoute(
-            path: 'detail/:id',
+            path: 'fighter_detail/:id',
             name: FighterDetailScreen.routeName,
             builder: (context, state) {
               return FighterDetailScreen(
                 id: int.parse(state.pathParameters['id']!),
+              );
+            },
+          ),
+          GoRoute(
+            path: 'event_detail/:date',
+            name: FightEventDetailScreen.routeName,
+            builder: (context, state) {
+              return FightEventDetailScreen(
+                date: DateTime.parse(state.pathParameters['date']!),
+                isStream: bool.parse(state.pathParameters['isStream']!),
               );
             },
           ),

@@ -6,6 +6,7 @@ import 'package:mma_flutter/common/model/model_with_id.dart';
 import 'package:mma_flutter/common/model/pagination_model.dart';
 import 'package:mma_flutter/common/provider/dio/dio_provider.dart';
 import 'package:mma_flutter/common/repository/pagination_base_repository.dart';
+import 'package:mma_flutter/main.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
 

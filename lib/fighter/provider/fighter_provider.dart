@@ -39,7 +39,7 @@ class FighterStateNotifier
 
   Future<void> detail(int id) async {
     try {
-      final fState = state[id] as StateData;
+      // final fState = state[id] as StateData;
       // if (fState.data is FighterDetailModel) {
       //   print('already fetched detail data');
       //   return;
