@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/secure_storage_provider.dart';
+import 'package:mma_flutter/main.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 
 final dioProvider = Provider<Dio>((ref) {

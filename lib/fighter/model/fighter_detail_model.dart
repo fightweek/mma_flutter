@@ -1,12 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mma_flutter/event/model/schedule_model.dart';
+import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 
 part 'fighter_detail_model.g.dart';
 
 @JsonSerializable()
 class FighterDetailModel extends FighterModel {
-  final String height;
+  final int height;
   final DateTime birthday;
   final int? reach;
   final String? nation;
@@ -21,7 +21,7 @@ class FighterDetailModel extends FighterModel {
     required super.record,
     required super.weight,
     required super.nickname,
-    required super.imgPresignedUrl,
+    required super.headshotUrl,
     required this.height,
     required this.birthday,
     required this.reach,
