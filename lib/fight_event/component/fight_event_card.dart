@@ -4,21 +4,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
+import 'package:mma_flutter/fight_event/screen/fight_event_detail_screen.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
+import 'package:mma_flutter/stream/model/stream_fight_event_model.dart';
 
-import '../model/schedule_model.dart';
+import '../model/fight_event_model.dart';
 
-class ScheduleCard extends ConsumerWidget {
-  final FighterFightEventModel ffe;
+class FightEventCard extends ConsumerWidget {
+  final IFighterFightEvent ffe;
   final bool isUpcoming;
   final bool isDetail;
+  final bool isStream;
 
-  const ScheduleCard({
+  const FightEventCard({
     super.key,
     required this.ffe,
     required this.isUpcoming,
     required this.isDetail,
+    required this.isStream,
   });
 
   @override
@@ -27,13 +31,31 @@ class ScheduleCard extends ConsumerWidget {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: MY_DARK_GREY_COLOR,
+          color: isStream ? Colors.black : MY_DARK_GREY_COLOR,
           borderRadius: BorderRadius.circular(10.0),
+          border:
+              isStream
+                  ? BoxBorder.all(
+                    color:
+                        (isStream &&
+                                (ffe as StreamFighterFightEventModel).status ==
+                                    StreamFighterFightEventStatus.now)
+                            ? Colors.blue
+                            : Colors.white,
+                    width: 2,
+                  )
+                  : null,
         ),
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery.of(context).size.width / 1.1,
         child: Column(
           children: [
-            if (isDetail) header(ffe.eventName, isDetail: true),
+            if (isDetail)
+              header(
+                context,
+                eventDate: (ffe as FighterFightEventModel).eventDate,
+                eventName: (ffe as FighterFightEventModel).eventName,
+                isDetail: true,
+              ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -99,7 +121,7 @@ class ScheduleCard extends ConsumerWidget {
       child: CachedNetworkImage(
         width: 80,
         height: 80,
-        imageUrl: fighter.imgPresignedUrl,
+        imageUrl: fighter.headshotUrl,
         placeholder: (context, url) => CircularProgressIndicator(),
         errorWidget: (context, url, error) {
           return Image.asset('asset/img/logo/fight_week.png');
@@ -108,15 +130,31 @@ class ScheduleCard extends ConsumerWidget {
     );
   }
 
-  static Widget header(String eventName, {bool? isDetail}) => Column(
+  static Widget header(
+    BuildContext context, {
+    required DateTime eventDate,
+    required String eventName,
+    required bool isDetail,
+  }) => Column(
     children: [
       Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Text(
-          eventName,
-          style: defaultTextStyle.copyWith(
-            fontSize: isDetail != null ? 20 : 28,
-            fontWeight: FontWeight.w900,
+        child: InkWell(
+          onTap: () {
+            context.pushNamed(
+              FightEventDetailScreen.routeName,
+              pathParameters: {
+                'date': eventDate.toString(),
+                'isStream': false.toString(),
+              },
+            );
+          },
+          child: Text(
+            eventName,
+            style: defaultTextStyle.copyWith(
+              fontSize: isDetail ? 20 : 28,
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ),
       ),

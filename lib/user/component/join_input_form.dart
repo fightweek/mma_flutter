@@ -103,6 +103,7 @@ class _JoinInputFormState extends ConsumerState<JoinInputForm> {
           ),
           InputLabel(title: '비밀번호'),
           CustomTextFormField(
+            obscureText: true,
             onChanged: (val) {
               password = val;
             },
@@ -112,6 +113,7 @@ class _JoinInputFormState extends ConsumerState<JoinInputForm> {
           const SizedBox(height: 10),
           InputLabel(title: '비밀번호 확인'),
           CustomTextFormField(
+            obscureText: true,
             onChanged: (val) {
               passwordConfirm = val;
             },

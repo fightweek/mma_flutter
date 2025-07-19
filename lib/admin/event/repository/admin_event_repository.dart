@@ -2,6 +2,7 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/dio/dio_provider.dart';
+import 'package:mma_flutter/main.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
 
