@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,6 +16,7 @@ import 'package:mma_flutter/stream/model/stream_message_response_model.dart';
 import 'package:mma_flutter/stream/provider/socket_stream_provider.dart';
 import 'package:mma_flutter/stream/provider/stream_component_providers.dart';
 import 'package:mma_flutter/stream/provider/stream_fight_event_provider.dart';
+import 'package:mma_flutter/stream/screen/bet_screen.dart';
 import 'package:mma_flutter/stream/screen/chat_room.dart';
 import 'package:mma_flutter/stream/screen/stream_fight_event_detail_screen.dart';
 import 'package:mma_flutter/stream/screen/stream_fighter_info_screen.dart';
@@ -54,7 +56,7 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
               print('fight response received');
               ref
                   .read(streamFightEventProvider.notifier)
-                  .update(message.streamFightEventModel!);
+                  .update(message.streamFightEvent!);
             } else if (message.responseMessageType ==
                 ResponseMessageType.connectionCount) {
               ref
@@ -98,19 +100,18 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
       appBar: AppBar(),
       body: Column(
         children: [
-          Expanded(flex: 22, child: _header()),
-          Container(height: 30.0, color: Colors.yellow),
+          SizedBox(height: 256, child: _header()),
+          Container(height: 60.0, color: Colors.yellow),
           Expanded(
-            flex: 70,
             child: Column(
               children: [
                 Container(
                   color: Colors.black87,
                   child: TabBar(
                     controller: _tabController,
-                    indicatorColor: Colors.white,
                     labelColor: Colors.white,
-                    unselectedLabelColor: MY_MID_DARK_GREY_COLOR,
+                    unselectedLabelColor: GREY_COLOR,
+                    indicatorColor: Colors.red,
                     tabs: [
                       Tab(
                         icon: Icon(Icons.info_outline, size: 20.0),
@@ -122,7 +123,7 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
                       ),
                       Tab(
                         icon: Icon(Icons.how_to_vote, size: 20.0),
-                        text: 'VOTE',
+                        text: 'BET',
                       ),
                       Tab(
                         icon: Icon(Icons.chat_bubble_outline_sharp, size: 20.0),
@@ -138,10 +139,12 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
                     children: [
                       _renderFighterInfoScreen(),
                       Container(
-                        color: MY_MID_DARK_GREY_COLOR,
-                        child: StreamFightEventDetailScreen(),
+                        color: DARK_GREY_COLOR,
+                        child: StreamFightEventDetailScreen(
+                          tabController: _tabController,
+                        ),
                       ),
-                      Text('VOTE'),
+                      BetScreen(key: UniqueKey(),),
                       ChatRoom(user: widget.user, socket: socket),
                     ],
                   ),
@@ -169,30 +172,33 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
         child: Text('다시시도'),
       );
     }
-    final ffe = (state as StateData<StreamFightEventModel>)
-        .data!
+    final fe = (state as StateData<StreamFightEventModel>)
+        .data!;
+    StreamFighterFightEventModel? ffe  = fe
         .fighterFightEvents
-        .firstWhere((e) => e.status == StreamFighterFightEventStatus.now);
+        .firstWhereOrNull((e) => (e.status == StreamFighterFightEventStatus.now));
+    ffe ??= fe.fighterFightEvents.last;
     return FighterInfoScreen(f1: (ffe).winner, f2: ffe.loser);
   }
 
   _header() {
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          color: MY_DARK_GREY_COLOR,
-          child: Image.asset(
+    return Container(
+      color: DARK_GREY_COLOR,
+      width: double.infinity,
+      child: Stack(
+        children: [
+          Image.asset(
             'asset/img/logo/cage-removebg.png',
-            fit: BoxFit.cover,
+            fit: BoxFit.contain,
+            width: double.infinity,
           ),
-        ),
-        _renderCurrentFighterImages(),
-      ],
+          _renderCurrentFighterBodyImages(),
+        ],
+      ),
     );
   }
 
-  Widget _renderCurrentFighterImages() {
+  Widget _renderCurrentFighterBodyImages() {
     final state = ref.watch(streamFightEventProvider);
     if (state is StateLoading) {
       return Center(child: CircularProgressIndicator());
@@ -207,19 +213,22 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
         child: Text('다시시도'),
       );
     }
-    final ffe = (state as StateData<StreamFightEventModel>)
-        .data!
+    final fe = (state as StateData<StreamFightEventModel>)
+        .data!;
+    StreamFighterFightEventModel? ffe  = fe
         .fighterFightEvents
-        .firstWhere((e) => e.status == StreamFighterFightEventStatus.now);
+        .firstWhereOrNull((e) => (e.status == StreamFighterFightEventStatus.now));
+    ffe ??= fe.fighterFightEvents.last;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final imageHeight = constraints.maxHeight / 1.7;
-        final imageWidth = constraints.maxWidth / 2 / 1.7;
+        final imageWidth = constraints.maxWidth / 2 / 1.5;
         return Column(
           children: [
             Center(
               child: Text(
-                '${weightClassMap[ffe.fightWeight]} 매치',
+                '${weightClassMap[ffe!.fightWeight]} 매치',
                 style: defaultTextStyle.copyWith(fontSize: imageHeight / 8),
               ),
             ),
@@ -236,10 +245,7 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(
-                          color: Color(0xFF198CFF),
-                          width: 2.0,
-                        ),
+                        border: Border.all(color: BLUE_COLOR, width: 2.0),
                         color: Colors.black,
                       ),
                       child: SizedBox(
@@ -266,10 +272,7 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(
-                          color: Color(0xFFE3233C),
-                          width: 2.0,
-                        ),
+                        border: Border.all(color: RED_COLOR, width: 2.0),
                         color: Colors.black,
                       ),
                       child: SizedBox(

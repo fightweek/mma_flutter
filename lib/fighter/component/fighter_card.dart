@@ -1,15 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
+import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
 
-class FighterCard extends StatelessWidget {
+class FighterCard extends ConsumerWidget {
   final FighterModel fighter;
 
   const FighterCard({super.key, required this.fighter});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
         CachedNetworkImage(
@@ -19,7 +21,12 @@ class FighterCard extends StatelessWidget {
           placeholder: (context, url) => CircularProgressIndicator(),
           errorWidget: (context, url, error) {
             print('no such image.${fighter.name}');
-            return Image.asset('asset/img/logo/fight_week.png');
+            return ElevatedButton(
+              onPressed: () {
+                ref.read(fighterProvider.notifier).getHeadshotUrl(name: fighter.name);
+              },
+              child: Text('다시 시도'),
+            );
           },
         ),
         Column(
@@ -27,7 +34,7 @@ class FighterCard extends StatelessWidget {
             Text(
               '${_splitNameAndNickname(
                   name: fighter.name, nickname: fighter.nickname)}\n${fighter
-                  .record.win}-${fighter.record.loss}-${fighter.record.draw}',
+                  .fightRecord.win}-${fighter.fightRecord.loss}-${fighter.fightRecord.draw}',
               style: defaultTextStyle,
             ),
           ],

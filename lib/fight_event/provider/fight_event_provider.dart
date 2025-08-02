@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
+import 'package:mma_flutter/fight_event/provider/fight_event_alert_provider.dart';
 import 'package:mma_flutter/fight_event/repository/fight_event_repository.dart';
+import 'package:mma_flutter/fighter/model/update_preference_model.dart';
 import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
 
 final fightEventProvider = StateNotifierProvider<
@@ -41,6 +43,10 @@ class ScheduleStateNotifier
         final resp = await scheduleRepository.getSchedule(date: key);
         state = {...state, key: StateData(data: resp)};
         if (resp != null) {
+          if (resp.upcoming) {
+            ref.read(eventAlertStatusProvider(resp.id).notifier).state =
+                resp.alert!;
+          }
           resp.fighterFightEvents.forEach((e) {
             ref.read(fighterProvider.notifier).updateFighter(e.winner);
             ref.read(fighterProvider.notifier).updateFighter(e.loser);
@@ -58,6 +64,12 @@ class ScheduleStateNotifier
       print('스택: $stack');
       state = {...state, _stringDate(date): StateError(message: '스케줄 못 불러옴')};
     }
+  }
+
+  void updatePreference({
+    required UpdatePreferenceModel model,
+  }) {
+    scheduleRepository.updatePreference(request: model);
   }
 
   String _stringDate(DateTime date) {

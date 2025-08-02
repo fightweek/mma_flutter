@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
-import 'package:mma_flutter/fight_event/component/fight_event_card.dart';
+import 'package:mma_flutter/fight_event/component/fight_event_card_header.dart';
+import 'package:mma_flutter/fight_event/component/fight_event_card_list.dart';
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
 import 'package:mma_flutter/fight_event/provider/fight_event_provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -45,7 +45,7 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: MY_DARK_GREY_COLOR,
+                    color: DARK_GREY_COLOR,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: TableCalendar(
@@ -56,12 +56,10 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                         Icons.chevron_left,
                         color: Colors.white,
                       ),
-                      // ← 버튼 색상 지정
                       rightChevronIcon: Icon(
                         Icons.chevron_right,
                         color: Colors.white,
                       ),
-                      // → 버튼 색상 지정
                       titleTextStyle: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -78,6 +76,9 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                           color: Colors.grey[500]!,
                           width: 1.0,
                         ),
+                      ),
+                      outsideDecoration: defaultBoxDecoration.copyWith(
+                        border: Border.all(color: Colors.transparent),
                       ),
                       defaultDecoration: defaultBoxDecoration,
                       weekendDecoration: defaultBoxDecoration,
@@ -135,20 +136,13 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
     if (currentStateData.data != null) {
       return Column(
         children: [
-          FightEventCard.header(
-            context,
-            eventDate: currentStateData.data!.date,
+          FightEventCardHeader(
+            eventId: currentStateData.data!.id,
             eventName: currentStateData.data!.name,
-            isDetail: false,
+            eventStartDateTimeInfo:
+                currentStateData.data!.earlyCardDateTimeInfo ?? currentStateData.data!.prelimCardDateTimeInfo,
           ),
-          ...currentStateData.data!.fighterFightEvents.map(
-            (e) => FightEventCard(
-              ffe: e,
-              isDetail: false,
-              isUpcoming: currentStateData.data!.upcoming,
-              isStream: false,
-            ),
-          ),
+          FightEventCardList(ife: currentStateData.data!,stream: false,)
         ],
       );
     } else {
@@ -163,7 +157,7 @@ class _EmptyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: MY_DARK_GREY_COLOR,
+      color: DARK_GREY_COLOR,
       child: Text('일정이 없습니다.', style: TextStyle(color: Colors.white)),
     );
   }

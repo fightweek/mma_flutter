@@ -12,4 +12,12 @@ class DataUtils{
   static String formatDateTime(DateTime datetime){
     return '${datetime.year}.${datetime.month}.${datetime.day}';
   }
+
+  static String extractLastName(String name){
+    if (name.contains(' ')) {
+      List<String> names = name.split(' ');
+      return names.sublist(1).join(' ');
+    }
+    return name;
+  }
 }
