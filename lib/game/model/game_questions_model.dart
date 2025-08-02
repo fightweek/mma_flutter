@@ -27,6 +27,7 @@ class GameQuestionModel {
     required this.bodyUrl,
     required this.headshotUrl,
     required this.fightRecord,
+    required this.namesForSelection,
   });
 
 }

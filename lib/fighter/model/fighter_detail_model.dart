@@ -39,7 +39,7 @@ class FighterDetailModel extends FighterModel {
       id: id,
       name: name,
       ranking: ranking,
-      record: fightRecord,
+      fightRecord: fightRecord,
       weight: weight,
       nickname: nickname,
       headshotUrl: headshotUrl,
