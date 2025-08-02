@@ -4,7 +4,7 @@ import 'package:mma_flutter/common/screen/root_tab.dart';
 import 'package:mma_flutter/common/screen/splash_screen.dart';
 import 'package:mma_flutter/fight_event/screen/fight_event_detail_screen.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
-import 'package:mma_flutter/news/screen/news_screen.dart';
+import 'package:mma_flutter/game/screen/game_main_screen.dart';
 import 'package:mma_flutter/admin/news/screen/news_upload_screen.dart';
 import 'package:mma_flutter/user/provider/auth_change_provider.dart';
 import 'package:mma_flutter/user/screen/init_nickname_screen.dart';
@@ -28,28 +28,27 @@ final routerProvider = Provider<GoRouter>((ref) {
               );
             },
           ),
+          // GoRoute(
+          //   path: 'event_detail/:date',
+          //   name: FightEventDetailScreen.routeName,
+          //   builder: (context, state) {
+          //     return FightEventDetailScreen(
+          //       date: DateTime.parse(state.pathParameters['date']!),
+          //     );
+          //   },
+          // ),
           GoRoute(
-            path: 'event_detail/:date',
-            name: FightEventDetailScreen.routeName,
-            builder: (context, state) {
-              return FightEventDetailScreen(
-                date: DateTime.parse(state.pathParameters['date']!),
-                isStream: bool.parse(state.pathParameters['isStream']!),
-              );
-            },
-          ),
-          GoRoute(
-            path: 'news_upload',
+            path: NewsUploadScreen.routeName,
             name: NewsUploadScreen.routeName,
             builder: (context, state) {
               return NewsUploadScreen();
             },
           ),
           GoRoute(
-            path: 'news',
-            name: NewsScreen.routeName,
+            path: GameMainScreen.routeName,
+            name: GameMainScreen.routeName,
             builder: (context, state) {
-              return NewsScreen();
+              return GameMainScreen();
             },
           ),
         ],

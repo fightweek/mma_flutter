@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mma_flutter/stream/chat/model/chat_request_model.dart';
+import 'package:mma_flutter/stream/bet_and_vote/model/vote_rate_response_model.dart';
 import 'package:mma_flutter/stream/chat/model/chat_response_model.dart';
 import 'package:mma_flutter/stream/model/stream_fight_event_model.dart';
 
@@ -9,13 +9,13 @@ part 'stream_message_response_model.g.dart';
 class StreamMessageResponseModel {
   final ResponseMessageType responseMessageType;
   final ChatResponseModel? chatMessageResponse;
-  final StreamFightEventModel? streamFightEventModel;
+  final StreamFightEventModel? streamFightEvent;
   final int? connectionCount;
 
   StreamMessageResponseModel({
     required this.responseMessageType,
     this.chatMessageResponse,
-    this.streamFightEventModel,
+    this.streamFightEvent,
     this.connectionCount,
   });
 

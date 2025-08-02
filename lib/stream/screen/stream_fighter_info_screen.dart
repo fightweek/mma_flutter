@@ -16,7 +16,7 @@ class FighterInfoScreen extends StatelessWidget {
       child: SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
         child: Container(
-          color: MY_DARK_GREY_COLOR,
+          color: DARK_GREY_COLOR,
           constraints: BoxConstraints(
             minHeight: MediaQuery.of(context).size.height,
           ),
@@ -32,24 +32,32 @@ class FighterInfoScreen extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Column(
                       children: [
-                        _renderName(name: f1.name, borderColor: Color(0xFF198CFF)),
-                        f1.nickname != null ?
-                        Text(f1.nickname!,style: defaultTextStyle,) : SizedBox(height: defaultTextStyle.fontSize ?? 14),
+                        _renderName(
+                          name: f1.name,
+                          borderColor: BLUE_COLOR,
+                        ),
+                        f1.nickname != null
+                            ? Text(f1.nickname!, style: defaultTextStyle)
+                            : SizedBox(height: defaultTextStyle.fontSize ?? 14),
                       ],
                     ),
                     Column(
                       children: [
-                        _renderName(name: f2.name, borderColor: Color(0xFFE3233C)),
-                        f2.nickname != null ?
-                        Text(f2.nickname!,style: defaultTextStyle,) : SizedBox(height: defaultTextStyle.fontSize ?? 14),
+                        _renderName(
+                          name: f2.name,
+                          borderColor: RED_COLOR,
+                        ),
+                        f2.nickname != null
+                            ? Text(f2.nickname!, style: defaultTextStyle)
+                            : SizedBox(height: defaultTextStyle.fontSize ?? 14),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -73,8 +81,8 @@ class FighterInfoScreen extends StatelessWidget {
               ),
               _renderBoxWithFightersInfo(
                 label: '무게',
-                f1Info: f1.weight,
-                f2Info: f2.weight,
+                f1Info: f1.weight.toString(),
+                f2Info: f2.weight.toString(),
                 context: context,
               ),
               _renderBoxWithFightersInfo(
@@ -84,9 +92,9 @@ class FighterInfoScreen extends StatelessWidget {
                 f2Info: '${f2.reach}cm',
               ),
               _renderBoxWithFightersInfo(
-                label: '역대 전적',
-                f1Info: _renderRecord(f1.record),
-                f2Info: _renderRecord(f2.record),
+                label: '전적',
+                f1Info: _renderRecord(f1.fightRecord),
+                f2Info: _renderRecord(f2.fightRecord),
                 context: context,
               ),
             ],
@@ -102,71 +110,42 @@ class FighterInfoScreen extends StatelessWidget {
     required String f2Info,
     required BuildContext context,
   }) {
-    final halfWidth = MediaQuery.of(context).size.width / 2;
-    return Stack(
-      children: [
-        // 배경: 전체 검정
-        Container(color: Colors.black, height: 48),
-        // 왼쪽 반쪽 테두리 박스 (파란색)
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              width: halfWidth,
-              decoration: BoxDecoration(
-                border: Border(
-                  left: BorderSide(color: Color(0xFF198CFF), width: 2),
-                  top: BorderSide(color: Color(0xFF198CFF), width: 2),
-                  bottom: BorderSide(color: Color(0xFF198CFF), width: 2),
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text(
+            f1Info,
+            style: defaultTextStyle.copyWith(fontSize: 16.0),
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(
+            width: 110.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  color: BLUE_COLOR,
+                  child: SizedBox(width: 4.0, height: 14.0),
                 ),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  bottomLeft: Radius.circular(8),
+                Text(label, style: defaultTextStyle.copyWith(fontSize: 16.0,color: Colors.grey)),
+                Container(
+                  color: RED_COLOR,
+                  child: SizedBox(width: 4.0, height: 14.0),
                 ),
-              ),
+              ],
             ),
           ),
-        ),
-        // 오른쪽 반쪽 테두리 박스 (빨간색)
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Container(
-              width: halfWidth,
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Color(0xFFE3233C), width: 2),
-                  top: BorderSide(color: Color(0xFFE3233C), width: 2),
-                  bottom: BorderSide(color: Color(0xFFE3233C), width: 2),
-                ),
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(8),
-                  bottomRight: Radius.circular(8),
-                ),
-              ),
-            ),
-          ),
-        ),
-        // 내용
-        Container(
-          height: 48,
-          padding: const EdgeInsets.symmetric(horizontal: 32.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(f1Info, style: TextStyle(color: Colors.white)),
-              Text(label, style: TextStyle(color: Colors.grey)),
-              Text(f2Info, style: TextStyle(color: Colors.white)),
-            ],
-          ),
-        ),
-      ],
+          Text(f2Info, style: defaultTextStyle.copyWith(fontSize: 16.0)),
+        ],
+      ),
     );
   }
 
   _renderName({required String name, required Color borderColor}) {
     return Container(
-      padding: EdgeInsets.only(top: 4.0,bottom: 4.0,left: 8.0,right: 8.0),
+      padding: EdgeInsets.only(top: 4.0, bottom: 4.0, left: 8.0, right: 8.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(color: borderColor, width: 3.0),

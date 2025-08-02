@@ -18,23 +18,34 @@ final fighterRepositoryProvider = Provider<FighterRepository>((ref) {
 });
 
 @RestApi()
-abstract class FighterRepository implements PaginationBaseRepository<FighterModel> {
+abstract class FighterRepository
+    implements PaginationBaseRepository<FighterModel> {
   factory FighterRepository(Dio dio, {String baseUrl}) = _FighterRepository;
 
-  @GET('/detail')
+  @GET('/{fighterId}')
   @Headers({'accessToken': 'true'})
   Future<FighterDetailModel> detail({
-    @Query('fighterId') required int fighterId,
+    @Path('fighterId') required int fighterId,
   });
 
-  @POST('/update_preference')
+  @POST('/preference')
   @Headers({'accessToken': 'true'})
   Future<void> updatePreference({
     @Body() required UpdatePreferenceModel request,
   });
 
+  @GET('/headshot')
+  @Headers({'accessToken' : 'true'})
+  Future<Map<String,String>> getHeadshotUrl({@Query("name") required String name});
+
+  @GET('/body')
+  @Headers({'accessToken' : 'true'})
+  Future<Map<String,String>> getBodyUrl({@Query("name") required String name});
+
   @override
-  @GET('/search')
+  @GET('/fighters')
   @Headers({'accessToken': 'true'})
-  Future<Pagination<FighterModel>> paginate({@Queries() Map<String,dynamic>? params});
+  Future<Pagination<FighterModel>> paginate({
+    @Queries() Map<String, dynamic>? params,
+  });
 }

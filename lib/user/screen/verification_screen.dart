@@ -102,7 +102,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                             color: Colors.grey,
                             fontSize: 14.0,
                           ),
-                          fillColor: MY_DARK_GREY_COLOR,
+                          fillColor: DARK_GREY_COLOR,
                           filled: true,
                           // 텍스트 필드 선택 시 border 적용
                         ),

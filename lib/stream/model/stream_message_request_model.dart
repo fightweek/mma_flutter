@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mma_flutter/stream/bet/bet_request_model.dart';
 import 'package:mma_flutter/stream/chat/model/chat_request_model.dart';
 
 part 'stream_message_request_model.g.dart';
