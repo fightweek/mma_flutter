@@ -11,6 +11,7 @@ import 'package:mma_flutter/fighter/model/fighter_detail_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/model/update_preference_model.dart';
 import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
+import 'package:mma_flutter/fighter/repository/fighter_repository.dart';
 
 class FighterDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'fighter_detail';
@@ -35,7 +36,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     print('initialize detail screen');
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(fighterProvider.notifier).detail(widget.id);
+      ref.read(fighterProvider.notifier).detail(id:widget.id);
     });
     controller = TabController(length: 2, vsync: this);
     controller.addListener(tabListener);
@@ -64,16 +65,18 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
 
     if (state is StateError) {
       return DefaultLayout(
-        child: ElevatedButton(
-          onPressed: () {
-            ref.read(fighterProvider.notifier).detail(widget.id);
-          },
-          child: Text('다시시도'),
+        child: Center(
+          child: ElevatedButton(
+            onPressed: () {
+              ref.read(fighterProvider.notifier).detail(id:widget.id);
+            },
+            child: Text('다시시도'),
+          ),
         ),
       );
     }
 
-    final fighter = state as StateData<FighterModel>;
+    final fighter = state as StateData;
     final data = fighter.data;
     if (data == null) {
       return DefaultLayout(child: Center(child: Text('데이터 없음')));
@@ -82,49 +85,56 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
   }
 
   _renderInfo(FighterModel data) {
-    return SizedBox.expand(
-      child: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            Column(
+    return RefreshIndicator(
+      onRefresh: () async{
+        ref.read(fighterProvider.notifier).detail(id: data.id, forceRefetch: true);
+      },
+      child: SafeArea(
+        child: SizedBox.expand(
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
               children: [
-                Row(
+                Column(
                   children: [
-                    _headerText(data.name),
-                    _alert != null
-                        ? _headerIcon(icon: _alert!, isAlert: true)
-                        : const SizedBox.shrink(),
+                    Row(
+                      children: [
+                        _headerText(data.name),
+                        _alert != null
+                            ? _headerIcon(icon: _alert!, isAlert: true)
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        _headerText('${data.weight} Kg'),
+                        _heart != null
+                            ? _headerIcon(icon: _heart!, isAlert: false)
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                    if (data.ranking != null)
+                      Text('랭킹 ${data.ranking} 위', style: defaultTextStyle),
+                    _imageCard(data.headshotUrl),
                   ],
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _headerText('${data.weight} 파운드'),
-                    _heart != null
-                        ? _headerIcon(icon: _heart!, isAlert: false)
-                        : const SizedBox.shrink(),
+                    _buildRecord('승', data.fightRecord.win),
+                    _buildRecord('패', data.fightRecord.loss),
+                    _buildRecord('무', data.fightRecord.draw),
                   ],
                 ),
-                if (data.ranking != null)
-                  Text('랭킹 ${data.ranking} 위', style: defaultTextStyle),
-                _imageCard(data.headshotUrl),
+                data is FighterDetailModel
+                    ? _renderDetailInfo(data)
+                    : Center(child: CircularProgressIndicator()),
+                data is FighterDetailModel
+                    ? _footer(data)
+                    : Center(child: CircularProgressIndicator()),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildRecord('승', data.record.win),
-                _buildRecord('패', data.record.loss),
-                _buildRecord('무', data.record.draw),
-              ],
-            ),
-            data is FighterDetailModel
-                ? _renderDetailInfo(data)
-                : Center(child: CircularProgressIndicator()),
-            data is FighterDetailModel
-                ? _footer(data)
-                : Center(child: CircularProgressIndicator()),
-          ],
+          ),
         ),
       ),
     );
@@ -169,7 +179,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Container(
-        color: MY_DARK_GREY_COLOR,
+        color: DARK_GREY_COLOR,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -181,12 +191,12 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                 ),
                 SizedBox(height: 8),
                 Text(
-                  '무게: ${fighter.weight} 파운드',
+                  '무게: ${fighter.weight} Kg',
                   style: defaultTextStyle.copyWith(fontSize: 20),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  '생일: ${DataUtils.formatDateTime(fighter.birthday)}',
+                  '생일: ${fighter.birthday != null ? DataUtils.formatDateTime(fighter.birthday!) : '-'}',
                   style: defaultTextStyle.copyWith(fontSize: 20),
                 ),
               ],
@@ -199,7 +209,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                 ),
                 SizedBox(height: 8),
                 Text(
-                  '나이: ${_calculateAge(fighter.birthday)}',
+                  '나이:${fighter.birthday != null ? _calculateAge(fighter.birthday!) : '-'}',
                   style: defaultTextStyle.copyWith(fontSize: 20),
                 ),
                 SizedBox(height: 8),
@@ -266,9 +276,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
               .map(
                 (ffe) => FightEventCard(
                   ffe: ffe,
-                  isDetail: true,
-                  isUpcoming: isUpcoming,
-                  isStream: false,
+                  fighterDetail: true,
                 ),
               )
               .toList(),
@@ -292,11 +300,13 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
         ref
             .read(fighterProvider.notifier)
             .updatePreference(
-              UpdatePreferenceModel(
+              model: UpdatePreferenceModel(
                 category: category,
                 targetId: widget.id,
-                isOn: isOn,
+                on: isOn,
               ),
+          like: category == PreferenceCategory.like ? isOn : null,
+          alert: category == PreferenceCategory.alert ? isOn : null
             );
         setState(() {
           if (isAlert) {

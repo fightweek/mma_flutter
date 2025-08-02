@@ -7,7 +7,7 @@ part 'fighter_detail_model.g.dart';
 @JsonSerializable()
 class FighterDetailModel extends FighterModel {
   final int height;
-  final DateTime birthday;
+  final DateTime? birthday;
   final int? reach;
   final String? nation;
   final bool like;
@@ -18,7 +18,7 @@ class FighterDetailModel extends FighterModel {
     required super.id,
     required super.name,
     required super.ranking,
-    required super.record,
+    required super.fightRecord,
     required super.weight,
     required super.nickname,
     required super.headshotUrl,
@@ -33,4 +33,23 @@ class FighterDetailModel extends FighterModel {
 
   factory FighterDetailModel.fromJson(Map<String, dynamic> json) =>
       _$FighterDetailModelFromJson(json);
+
+  FighterDetailModel copyWith({bool? like, bool? alert}) {
+    return FighterDetailModel(
+      id: id,
+      name: name,
+      ranking: ranking,
+      record: fightRecord,
+      weight: weight,
+      nickname: nickname,
+      headshotUrl: headshotUrl,
+      height: height,
+      birthday: birthday,
+      reach: reach,
+      like: like ?? this.like,
+      alert: alert ?? this.alert,
+      nation: nation,
+      fighterFightEvents: fighterFightEvents,
+    );
+  }
 }

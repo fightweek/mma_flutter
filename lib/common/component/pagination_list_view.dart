@@ -48,7 +48,6 @@ class _PaginationListViewState<T extends ModelWithId>
 
   @override
   Widget build(BuildContext context) {
-    print('hello');
     final state = ref.watch(widget.provider);
     if (state is PaginationLoading) {
       return Center(child: CircularProgressIndicator());

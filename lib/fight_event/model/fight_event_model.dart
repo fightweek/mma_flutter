@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mma_flutter/fight_event/model/i_fight_event_model.dart';
+import 'package:mma_flutter/fight_event/model/i_fighter_fight_event_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 
 import 'card_date_time_info_model.dart';
@@ -8,64 +10,63 @@ import 'card_date_time_info_model.dart';
 part 'fight_event_model.g.dart';
 
 @JsonSerializable()
-class FightEventModel {
+class FightEventModel extends IFightEventModel<FighterFightEventModel> {
   final int id;
-  final String name;
-
-  // @JsonKey(fromJson: DataUtils.stringToDateTime)
-  final DateTime date;
-
-  final CardDateTimeInfoModel? mainCardDateTimeInfo;
-  final CardDateTimeInfoModel? prelimCardDateTimeInfo;
-  final CardDateTimeInfoModel? earlyCardDateTimeInfo;
-
-  final int? mainCardCnt;
-  final int? prelimCardCnt;
-  final int? earlyCardCnt;
-
-  final String location;
-  final List<FighterFightEventModel> fighterFightEvents;
   final bool upcoming;
+  final bool? alert;
 
   FightEventModel({
     required this.id,
-    required this.name,
-    required this.date,
-    required this.mainCardDateTimeInfo,
-    required this.prelimCardDateTimeInfo,
-    required this.earlyCardDateTimeInfo,
-    required this.mainCardCnt,
-    required this.prelimCardCnt,
-    required this.earlyCardCnt,
-    required this.location,
-    required this.fighterFightEvents,
     required this.upcoming,
+    required this.alert,
+    required super.name,
+    required super.date,
+    required super.mainCardDateTimeInfo,
+    required super.prelimCardDateTimeInfo,
+    required super.earlyCardDateTimeInfo,
+    required super.mainCardCnt,
+    required super.prelimCardCnt,
+    required super.earlyCardCnt,
+    required super.location,
+    required super.fighterFightEvents,
   });
 
   factory FightEventModel.fromJson(Map<String, dynamic> json) =>
       _$FightEventModelFromJson(json);
+
+  FightEventModel copyWith({bool? alert, bool? like}) {
+    return FightEventModel(
+      id: id,
+      upcoming: upcoming,
+      name: name,
+      date: date,
+      mainCardDateTimeInfo: mainCardDateTimeInfo,
+      prelimCardDateTimeInfo: prelimCardDateTimeInfo,
+      earlyCardDateTimeInfo: earlyCardDateTimeInfo,
+      mainCardCnt: mainCardCnt,
+      prelimCardCnt: prelimCardCnt,
+      earlyCardCnt: earlyCardCnt,
+      location: location,
+      fighterFightEvents: fighterFightEvents,
+      alert: alert,
+    );
+  }
 }
 
 @JsonSerializable()
-class FighterFightEventModel implements IFighterFightEvent<FighterModel>{
+class FighterFightEventModel extends IFighterFightEvent<FighterModel> {
+  final int eventId;
   final String eventName;
-  final DateTime eventDate;
-  @override
-  final String fightWeight;
-  @override
-  final FighterModel loser;
-  @override
-  final FighterModel winner;
-  @override
-  final FightResultModel? result;
 
   FighterFightEventModel({
+    required this.eventId,
     required this.eventName,
-    required this.eventDate,
-    required this.fightWeight,
-    required this.winner,
-    required this.loser,
-    required this.result,
+    required super.fightWeight,
+    required super.winner,
+    required super.loser,
+    required super.result,
+    required super.id,
+    required super.title,
   });
 
   factory FighterFightEventModel.fromJson(Map<String, dynamic> json) {
@@ -83,16 +84,9 @@ class FighterFightEventModel implements IFighterFightEvent<FighterModel>{
   }
 }
 
-abstract class IFighterFightEvent<T extends FighterModel> {
-  String get fightWeight;
-  T get winner;
-  T get loser;
-  FightResultModel? get result;
-}
-
 @JsonSerializable()
 class FightResultModel {
-  final String winMethod;
+  final WinMethod winMethod;
   final String? description;
   final int round;
   @JsonKey(fromJson: parseEndTime)
@@ -107,6 +101,21 @@ class FightResultModel {
 
   factory FightResultModel.fromJson(Map<String, dynamic> json) =>
       _$FightResultModelFromJson(json);
+}
+
+enum WinMethod {
+  @JsonValue("SUB")
+  sub,
+  @JsonValue("KO_TKO")
+  koTko,
+  @JsonValue("U_DEC")
+  uDec,
+  @JsonValue("M_DEC")
+  mDec,
+  @JsonValue("S_DEC")
+  sDec,
+  @JsonValue(("DQ"))
+  dq,
 }
 
 Duration parseEndTime(String time) {

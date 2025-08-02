@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/dio/dio_provider.dart';
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
+import 'package:mma_flutter/fighter/model/update_preference_model.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
 
@@ -21,5 +22,11 @@ abstract class ScheduleRepository {
   @Headers({'accessToken': 'true'})
   Future<FightEventModel?> getSchedule({
     @Query('date') required String date,
+  });
+
+  @POST('/preference')
+  @Headers({'accessToken': 'true'})
+  Future<void> updatePreference({
+    @Body() required UpdatePreferenceModel request
   });
 }
