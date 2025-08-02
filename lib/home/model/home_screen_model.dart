@@ -11,6 +11,8 @@ class HomeScreenModel {
   final CardDateTimeInfoModel? mainCardDateTimeInfo;
   final String winnerName;
   final String loserName;
+  final String fightWeight;
+  final bool title;
   final bool now;
 
   HomeScreenModel({
@@ -20,6 +22,8 @@ class HomeScreenModel {
     required this.mainCardDateTimeInfo,
     required this.winnerName,
     required this.loserName,
+    required this.fightWeight,
+    required this.title,
     required this.now,
   });
 

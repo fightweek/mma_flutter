@@ -4,7 +4,7 @@ import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/fight_event/screen/fight_event_screen.dart';
 import 'package:mma_flutter/fighter/screen/search_screen.dart';
-import 'package:mma_flutter/news/screen/news_screen.dart';
+import 'package:mma_flutter/game/screen/game_main_screen.dart';
 import 'package:mma_flutter/user/screen/logout_screen.dart';
 import 'package:mma_flutter/home/screen/home_screen.dart';
 
@@ -45,7 +45,7 @@ class _RootTabState extends ConsumerState<RootTab>
   Widget build(BuildContext context) {
     return DefaultLayout(
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: MY_DARK_GREY_COLOR,
+        backgroundColor: DARK_GREY_COLOR,
         selectedItemColor: RED_COLOR,
         unselectedItemColor: PRIMARY_COLOR,
         selectedFontSize: 10,
@@ -65,7 +65,7 @@ class _RootTabState extends ConsumerState<RootTab>
             icon: Icon(Icons.calendar_month_outlined),
             label: '경기 일정',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: '뉴스'),
+          BottomNavigationBarItem(icon: Icon(Icons.gamepad_outlined), label: '게임'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: '검색'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: '프로필'),
         ],
@@ -78,7 +78,7 @@ class _RootTabState extends ConsumerState<RootTab>
           HomeScreen(),
           FightEventScreen(),
           // Center(child: Text('게임 화면')),
-          NewsScreen(),
+          GameMainScreen(),
           SearchScreen(),
           LogoutScreen(),
         ],

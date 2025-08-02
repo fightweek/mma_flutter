@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/secure_storage_provider.dart';
 import 'package:mma_flutter/user/enumtype/login_platform.dart';
@@ -55,6 +56,17 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   Future<void> updateNickname(String nickname) async {
     await userRepository.updateNickname(nickname: {'nickname': nickname});
     await getMe();
+  }
+
+  void updatePoint(int point) async {
+    final currentState = state as UserModel;
+    state = UserModel(
+      point: point,
+      role: currentState.role,
+      id: currentState.id,
+      nickname: currentState.nickname,
+      email: currentState.email,
+    );
   }
 
   // 앱 시작 시 사용자 상태 확인 및 서버로부터 (최신) 정보 가져오는 것이 주목적

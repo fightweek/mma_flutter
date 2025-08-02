@@ -8,20 +8,18 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'asset/img/logo/fight_week.png',
-              width: MediaQuery.of(context).size.width / 2,
-            ),
-            const SizedBox(height: 16,),
-            CircularProgressIndicator(color: Colors.white,),
-          ],
-        ),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'asset/img/logo/fight_week.png',
+            width: MediaQuery.of(context).size.width / 2,
+          ),
+          const SizedBox(height: 16,),
+          CircularProgressIndicator(color: Colors.white,),
+        ],
       ),
     );
   }
