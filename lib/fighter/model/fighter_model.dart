@@ -11,7 +11,7 @@ class FighterModel implements ModelWithId{
   final String name;
   final String? nickname;
   final int? ranking;
-  final FightRecordModel fightRecord;
+  final FightRecordModel record;
   final double? weight;
   final String headshotUrl;
 
@@ -20,7 +20,7 @@ class FighterModel implements ModelWithId{
     required this.name,
     required this.ranking,
     required this.nickname,
-    required this.fightRecord,
+    required this.record,
     required this.weight,
     required this.headshotUrl,
   });

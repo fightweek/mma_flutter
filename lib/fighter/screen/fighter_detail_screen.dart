@@ -121,9 +121,9 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildRecord('승', data.fightRecord.win),
-                    _buildRecord('패', data.fightRecord.loss),
-                    _buildRecord('무', data.fightRecord.draw),
+                    _buildRecord('승', data.record.win),
+                    _buildRecord('패', data.record.loss),
+                    _buildRecord('무', data.record.draw),
                   ],
                 ),
                 data is FighterDetailModel

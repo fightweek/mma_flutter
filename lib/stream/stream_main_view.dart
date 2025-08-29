@@ -4,12 +4,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/stream/chat/model/chat_request_model.dart';
+import 'package:mma_flutter/stream/chat/model/join_request_model.dart';
 import 'package:mma_flutter/stream/model/stream_fight_event_model.dart';
 import 'package:mma_flutter/stream/model/stream_message_request_model.dart';
 import 'package:mma_flutter/stream/model/stream_message_response_model.dart';
@@ -20,6 +22,7 @@ import 'package:mma_flutter/stream/screen/bet_screen.dart';
 import 'package:mma_flutter/stream/screen/chat_room.dart';
 import 'package:mma_flutter/stream/screen/stream_fight_event_detail_screen.dart';
 import 'package:mma_flutter/stream/screen/stream_fighter_info_screen.dart';
+import 'package:mma_flutter/stream/screen/today_bet_history_screen.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 
 class StreamMainView extends ConsumerStatefulWidget {
@@ -38,7 +41,7 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
   @override
   void initState() {
     print('--stream main view init--');
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
     super.initState();
 
     Future.microtask(() {
@@ -83,50 +86,61 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
 
   @override
   Widget build(BuildContext context) {
+    print('rebuild stream main view');
     final socket = ref.watch(socketProvider);
     socket.sink.add(
       json.encode(
         StreamMessageRequestModel(
           requestMessageType: RequestMessageType.join,
-          chatMessageRequest: ChatRequestModel(
-            message: widget.user.nickname!,
-            point: widget.user.point,
+          chatJoinRequest: JoinRequestModel(
+            nickname: widget.user.nickname!,
+            userId: widget.user.id,
           ),
         ),
       ),
     );
 
     return Scaffold(
-      appBar: AppBar(),
+      resizeToAvoidBottomInset: false,
+      appBar: PreferredSize(preferredSize: Size.fromHeight(40.h), child: AppBar(
+        backgroundColor: BLACK_COLOR,
+        foregroundColor: WHITE_COLOR,
+      )),
       body: Column(
         children: [
-          SizedBox(height: 256, child: _header()),
-          Container(height: 60.0, color: Colors.yellow),
+          _header(),
+          Container(height: 50.h, color: Colors.yellow),
           Expanded(
             child: Column(
               children: [
                 Container(
-                  color: Colors.black87,
+                  color: BLACK_COLOR,
+                  height: 66.h,
                   child: TabBar(
                     controller: _tabController,
                     labelColor: Colors.white,
                     unselectedLabelColor: GREY_COLOR,
                     indicatorColor: Colors.red,
+                    labelStyle: TextStyle(fontSize: 12.h),
+                    // 선택된 탭 텍스트 스타일
+                    unselectedLabelStyle: TextStyle(fontSize: 12.h),
+                    // 선택되지 않은 탭 텍스트 스타일
                     tabs: [
                       Tab(
-                        icon: Icon(Icons.info_outline, size: 20.0),
+                        icon: Icon(Icons.info_outline, size: 20.h),
                         text: 'INFO',
                       ),
                       Tab(
-                        icon: Icon(FontAwesomeIcons.noteSticky, size: 20.0),
+                        icon: Icon(FontAwesomeIcons.noteSticky, size: 20.h),
                         text: 'CARDS',
                       ),
                       Tab(
-                        icon: Icon(Icons.how_to_vote, size: 20.0),
+                        icon: Icon(Icons.how_to_vote, size: 20.h),
                         text: 'BET',
                       ),
+                      Tab(icon: Icon(Icons.list, size: 20.h), text: 'HISTORY'),
                       Tab(
-                        icon: Icon(Icons.chat_bubble_outline_sharp, size: 20.0),
+                        icon: Icon(Icons.chat_bubble_outline_sharp, size: 20.h),
                         text: 'CHAT',
                       ),
                     ],
@@ -138,13 +152,11 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
                     controller: _tabController,
                     children: [
                       _renderFighterInfoScreen(),
-                      Container(
-                        color: DARK_GREY_COLOR,
-                        child: StreamFightEventDetailScreen(
-                          tabController: _tabController,
-                        ),
+                      StreamFightEventDetailScreen(
+                        tabController: _tabController,
                       ),
-                      BetScreen(key: UniqueKey(),),
+                      BetScreen(key: UniqueKey()),
+                      TodayBetHistoryScreen(),
                       ChatRoom(user: widget.user, socket: socket),
                     ],
                   ),
@@ -172,33 +184,13 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
         child: Text('다시시도'),
       );
     }
-    final fe = (state as StateData<StreamFightEventModel>)
-        .data!;
-    StreamFighterFightEventModel? ffe  = fe
-        .fighterFightEvents
-        .firstWhereOrNull((e) => (e.status == StreamFighterFightEventStatus.now));
-    ffe ??= fe.fighterFightEvents.last;
+    final ffe = _getCurrentOrLastFightEvent(
+      state as StateData<StreamFightEventModel>,
+    );
     return FighterInfoScreen(f1: (ffe).winner, f2: ffe.loser);
   }
 
   _header() {
-    return Container(
-      color: DARK_GREY_COLOR,
-      width: double.infinity,
-      child: Stack(
-        children: [
-          Image.asset(
-            'asset/img/logo/cage-removebg.png',
-            fit: BoxFit.contain,
-            width: double.infinity,
-          ),
-          _renderCurrentFighterBodyImages(),
-        ],
-      ),
-    );
-  }
-
-  Widget _renderCurrentFighterBodyImages() {
     final state = ref.watch(streamFightEventProvider);
     if (state is StateLoading) {
       return Center(child: CircularProgressIndicator());
@@ -213,87 +205,152 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
         child: Text('다시시도'),
       );
     }
-    final fe = (state as StateData<StreamFightEventModel>)
-        .data!;
-    StreamFighterFightEventModel? ffe  = fe
-        .fighterFightEvents
-        .firstWhereOrNull((e) => (e.status == StreamFighterFightEventStatus.now));
-    ffe ??= fe.fighterFightEvents.last;
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final imageHeight = constraints.maxHeight / 1.7;
-        final imageWidth = constraints.maxWidth / 2 / 1.5;
-        return Column(
-          children: [
-            Center(
-              child: Text(
-                '${weightClassMap[ffe!.fightWeight]} 매치',
-                style: defaultTextStyle.copyWith(fontSize: imageHeight / 8),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    final ffe = _getCurrentOrLastFightEvent(
+      state as StateData<StreamFightEventModel>,
+    );
+    final leftPercent = ffe.winnerVoteRate.toInt();
+    final rightPercent = ffe.loserVoteRate.toInt();
+    final winnerRate = leftPercent > rightPercent ? leftPercent : rightPercent;
+    return Container(
+      height: 226.h,
+      color: BLACK_COLOR,
+      child: Column(
+        children: [
+          Expanded(
+            child: Stack(
               children: [
-                Column(
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: ffe.winner.bodyUrl,
-                      height: imageHeight,
-                      width: imageWidth,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(color: BLUE_COLOR, width: 2.0),
-                        color: Colors.black,
-                      ),
-                      child: SizedBox(
-                        width: imageWidth,
-                        child: Text(
-                          ffe.winner.name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ],
+                Positioned(
+                  bottom: 0.h,
+                  child: Image.asset(
+                    'asset/img/logo/stream_view_header_cage.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
-                Column(
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: ffe.loser.bodyUrl,
-                      height: imageHeight,
-                      width: imageWidth,
+                Positioned(
+                  left: 0.w,
+                  right: 0.w,
+                  child: Text(
+                    '${weightClassMap[ffe.fightWeight]} 매치',
+                    style: defaultTextStyle.copyWith(
+                      fontSize: 28.sp,
+                      fontFamily: 'Dalmation',
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(color: RED_COLOR, width: 2.0),
-                        color: Colors.black,
-                      ),
-                      child: SizedBox(
-                        width: imageWidth,
-                        child: Text(
-                          ffe.loser.name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ],
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Positioned(
+                  top: 20.h,
+                  left: 0.w,
+                  right: 0.w,
+                  child: _renderCurrentFighterBodyImages(ffe),
                 ),
               ],
             ),
-          ],
-        );
-      },
+          ),
+          SizedBox(
+            height: 24.h,
+            child: Row(
+              children: [
+                Expanded(
+                  flex:
+                      leftPercent != rightPercent
+                          ? winnerRate == leftPercent
+                              ? leftPercent + 80
+                              : leftPercent + 20
+                          : 5,
+                  child: Container(
+                    color: RED_COLOR,
+                    child: Text(
+                      '$leftPercent%',
+                      style: defaultTextStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex:
+                      leftPercent != rightPercent
+                          ? winnerRate == rightPercent
+                              ? rightPercent + 80
+                              : rightPercent + 20
+                          : 5,
+                  child: Container(
+                    color: BLUE_COLOR,
+                    child: Text(
+                      '$rightPercent%',
+                      style: defaultTextStyle,
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget _renderCurrentFighterBodyImages(StreamFighterFightEventModel ffe) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _renderHeaderFighterInfo(
+          name: ffe.winner.name,
+          bodyUrl: ffe.winner.bodyUrl,
+          color: RED_COLOR
+        ),
+        _renderHeaderFighterInfo(
+          name: ffe.loser.name,
+          bodyUrl: ffe.loser.bodyUrl,
+          color: BLUE_COLOR
+        ),
+      ],
+    );
+  }
+
+  _renderHeaderFighterInfo({required String bodyUrl, required String name, required Color color}) {
+    final imageHeight = 135.h;
+    final imageWidth = 105.w;
+    return Column(
+      children: [
+        CachedNetworkImage(
+          imageUrl: bodyUrl,
+          height: imageHeight,
+          width: imageWidth,
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 4.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.0),
+            border: Border.all(color: color, width: 2.0),
+            color: Colors.black,
+          ),
+          child: SizedBox(
+            width: imageWidth,
+            child: Text(
+              name,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                fontSize: 13.sp,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// last : 아직 이벤트 시작하지 않은 경우
+  StreamFighterFightEventModel _getCurrentOrLastFightEvent(
+    StateData<StreamFightEventModel> state,
+  ) {
+    final fe = state.data!;
+    return fe.fighterFightEvents.firstWhereOrNull(
+          (e) => e.status == StreamFighterFightEventStatus.now,
+        ) ??
+        fe.fighterFightEvents.last;
   }
 }

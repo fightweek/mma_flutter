@@ -1,10 +1,13 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mma_flutter/common/component/custom_alert_dialog.dart';
+import 'package:mma_flutter/common/component/point_with_icon.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
+import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/stream/bet_and_vote/component/bet_card.dart';
 import 'package:mma_flutter/stream/bet_and_vote/model/bet_request_model.dart';
 import 'package:mma_flutter/stream/bet_and_vote/model/single_bet_model.dart';
@@ -68,25 +71,8 @@ class _BetScreenState extends ConsumerState<BetScreen> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    WidgetSpan(
-                      child: Icon(
-                        FontAwesomeIcons.coins,
-                        size: 20.0,
-                        color: Colors.white,
-                      ),
-                    ),
-                    WidgetSpan(child: SizedBox(width: 4.0)),
-                    TextSpan(
-                      text: user.point.toString(),
-                      style: TextStyle(fontSize: 16.0, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
+              padding: EdgeInsets.only(top: 10.h, bottom: 10.h, right: 20.w),
+              child: PointWithIcon(user: user),
             ),
             Expanded(
               child: ListView.separated(
@@ -111,57 +97,72 @@ class _BetScreenState extends ConsumerState<BetScreen> {
             ),
             Align(
               alignment: Alignment.center,
-              child: ElevatedButton(
-                onPressed: () {
-                  bool allValid = formKeys.every(
-                    (key) => key.currentState?.validate() ?? false,
-                  );
-                  if (allValid) {
-                    int totalSeedPoints = controllers.fold(
-                      0,
-                      (prev, next) => prev + int.parse(next.text),
-                    );
-                    print(totalSeedPoints);
-                    allValid = totalSeedPoints <= user.point;
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return CustomAlertDialog(
-                          titleMsg: '실패',
-                          contentMsg: '배팅 실패. 선택하신 모든 배팅 항목들에 대해 값을 입력해주세요.',
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 18.h,),
+                child: SizedBox(
+                  width: 112.w,
+                  height: 22.h,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: BLUE_COLOR,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                    onPressed: () {
+                      bool allValid = formKeys.every(
+                        (key) => key.currentState?.validate() ?? false,
+                      );
+                      print(allValid);
+                      if (allValid) {
+                        int totalSeedPoints = controllers.fold(
+                          0,
+                          (prev, next) => prev + int.parse(next.text),
                         );
-                      },
-                    );
-                    return;
-                  }
-                  if (allValid) {
-                    final singleBets =
-                        cardKeys
-                            .mapIndexed(
-                              (index, e) =>
-                                  e.currentState?.toRequest(controllers[index]),
-                            )
-                            .whereType<SingleBetRequestModel>()
-                            .toList();
-                    ref
-                        .read(streamFightEventProvider.notifier)
-                        .bet(BetRequestModel(singleBets: singleBets));
-                    print('성공');
-                  } else {
-                    print('실패');
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return CustomAlertDialog(
-                          titleMsg: '실패',
-                          contentMsg: '배팅 실패. 전체 입력 포인트가 보유하신 포인트보다 높습니다.',
+                        print(totalSeedPoints);
+                        allValid = totalSeedPoints <= user.point;
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return CustomAlertDialog(
+                              titleMsg: '실패',
+                              contentMsg: '배팅 실패. 선택하신 모든 배팅 항목들에 대해 값을 입력해주세요.',
+                            );
+                          },
                         );
-                      },
-                    );
-                  }
-                },
-                child: Text('전체 배팅하기'),
+                        return;
+                      }
+                      if (allValid) {
+                        final singleBets =
+                            cardKeys
+                                .mapIndexed(
+                                  (index, e) =>
+                                      e.currentState?.toRequest(controllers[index]),
+                                )
+                                .whereType<SingleBetCardRequestModel>()
+                                .toList();
+                        ref
+                            .read(streamFightEventProvider.notifier)
+                            .bet(BetRequestModel(singleBetCards: singleBets));
+                        print('성공');
+                      } else {
+                        print('실패');
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return CustomAlertDialog(
+                              titleMsg: '실패',
+                              contentMsg: '배팅 실패. 전체 입력 포인트가 보유하신 포인트보다 높습니다.',
+                            );
+                          },
+                        );
+                      }
+                    },
+                    child: Text('전체 배팅하기',style: defaultTextStyle.copyWith(fontSize: 10.sp),),
+                  ),
+                ),
               ),
             ),
           ],

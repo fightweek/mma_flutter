@@ -4,8 +4,11 @@ import 'package:mma_flutter/common/screen/root_tab.dart';
 import 'package:mma_flutter/common/screen/splash_screen.dart';
 import 'package:mma_flutter/fight_event/screen/fight_event_detail_screen.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
+import 'package:mma_flutter/game/screen/game_description_screen.dart';
+import 'package:mma_flutter/game/screen/game_end_screen.dart';
 import 'package:mma_flutter/game/screen/game_main_screen.dart';
 import 'package:mma_flutter/admin/news/screen/news_upload_screen.dart';
+import 'package:mma_flutter/game/screen/game_screen.dart';
 import 'package:mma_flutter/user/provider/auth_change_provider.dart';
 import 'package:mma_flutter/user/screen/init_nickname_screen.dart';
 import 'package:mma_flutter/user/screen/login_screen.dart';
@@ -49,6 +52,36 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: GameMainScreen.routeName,
             builder: (context, state) {
               return GameMainScreen();
+            },
+          ),
+          GoRoute(
+            path: 'game/:seq',
+            name: GameScreen.routeName,
+            builder: (context, state) {
+              return GameScreen(
+                seq: int.parse(state.pathParameters['seq']!),
+                isNormal: state.queryParameters['isNormal'] == 'true',
+                isImage: state.queryParameters['isImage'] == 'true',
+              );
+            },
+          ),
+          GoRoute(
+            path: 'game_desc/:isImage',
+            name: GameDescriptionScreen.routeName,
+            builder: (context, state) {
+              return GameDescriptionScreen(
+                isImage: bool.parse(state.pathParameters['isImage']!),
+              );
+            },
+          ),
+          GoRoute(
+            path: GameEndScreen.routeName,
+            name: GameEndScreen.routeName,
+            builder: (context, state) {
+              return GameEndScreen(
+                isNormal: state.queryParameters['isNormal'] == 'true',
+                isImage: state.queryParameters['isImage'] == 'true',
+              );
             },
           ),
         ],
