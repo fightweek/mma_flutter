@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
@@ -21,7 +22,7 @@ class StreamFightEventCard extends ConsumerStatefulWidget {
     required this.ffe,
     required this.upcoming,
     required this.checkboxValue,
-    required this.checkboxOnChanged
+    required this.checkboxOnChanged,
   });
 
   @override
@@ -38,20 +39,21 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
 
   @override
   Widget build(BuildContext context) {
+    print('${widget.ffe.winner.name} : ${widget.ffe.status}');
     bool? checkBoxValue = widget.checkboxValue;
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.only(top: 4.h, right: 9.w, left: 9.w),
       child: AnimatedContainer(
         duration: Duration(milliseconds: 250),
         decoration: BoxDecoration(
-          color: DARK_GREY_COLOR,
-          borderRadius: BorderRadius.circular(10.0),
+          color: BLACK_COLOR,
+          borderRadius: BorderRadius.circular(8.r),
           border: BoxBorder.all(
             color:
                 widget.ffe.status == StreamFighterFightEventStatus.now
                     ? Colors.blue
-                    : Colors.white,
+                    : Colors.black,
             width: 2,
           ),
         ),
@@ -89,7 +91,12 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
     required FighterModel winner,
     required FighterModel loser,
   }) {
+    final leftPercent = widget.ffe.winnerVoteRate.toInt();
+    final rightPercent = widget.ffe.loserVoteRate.toInt();
+    final winnerRate = leftPercent > rightPercent ? leftPercent : rightPercent;
     return InkWell(
+      splashColor: Colors.white,
+      highlightColor: Colors.white,
       onTap: () {
         setState(() {
           isExpanded = !expanded;
@@ -100,7 +107,7 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
               ? Column(
                 children: [
                   Text(
-                    '이 경기의 승자를 예측해 보세요!\n▲',
+                    '다음 경기의 승자는 누구?\n▲',
                     textAlign: TextAlign.center,
                     style: defaultTextStyle.copyWith(color: GREY_COLOR),
                   ),
@@ -109,10 +116,15 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
                     child: Row(
                       children: [
                         Expanded(
-                          flex: widget.ffe.winnerVoteRate.toInt() + 50,
+                          flex:
+                              leftPercent != rightPercent
+                                  ? winnerRate == leftPercent
+                                      ? leftPercent + 80
+                                      : leftPercent + 20
+                                  : 5,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: BLUE_COLOR,
+                              backgroundColor: RED_COLOR,
                             ),
                             onPressed: () {
                               ref
@@ -126,17 +138,22 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
                                   );
                             },
                             child: Text(
-                              '${DataUtils.extractLastName(winner.name)} (${widget.ffe.winnerVoteRate}%)',
+                              '${DataUtils.extractLastName(winner.name)} ($leftPercent%)',
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: GREY_COLOR),
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
                         Expanded(
-                          flex: widget.ffe.loserVoteRate.toInt() + 50,
+                          flex:
+                              leftPercent != rightPercent
+                                  ? winnerRate == rightPercent
+                                      ? rightPercent + 80
+                                      : rightPercent + 20
+                                  : 5,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: RED_COLOR,
+                              backgroundColor: BLUE_COLOR,
                             ),
                             onPressed: () {
                               ref
@@ -150,9 +167,9 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
                                   );
                             },
                             child: Text(
-                              '${DataUtils.extractLastName(loser.name)} (${widget.ffe.loserVoteRate}%)',
+                              '${DataUtils.extractLastName(loser.name)} ($rightPercent%)',
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: GREY_COLOR),
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
@@ -162,9 +179,12 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
                 ],
               )
               : Text(
-                '▼\n이 경기의 승자를 예측해 보세요!',
+                '다음 경기의 승자는 누구?\n▼',
                 textAlign: TextAlign.center,
-                style: defaultTextStyle.copyWith(color: GREY_COLOR),
+                style: defaultTextStyle.copyWith(
+                  color: GREY_COLOR,
+                  fontSize: 12.sp,
+                ),
               ),
     );
   }

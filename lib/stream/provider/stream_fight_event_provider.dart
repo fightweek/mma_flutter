@@ -31,7 +31,7 @@ class StreamStateNotifier
 
   Future<void> getCurrentFightEventInfo() async {
     try {
-      final resp = await ref.read(streamRepositoryProvider).getFightEvent();
+      final resp = await streamFightEventRepository.getFightEvent();
       resp.fighterFightEvents.forEach((e) {
         ref.read(fighterProvider.notifier).updateFighter(e.winner);
         ref.read(fighterProvider.notifier).updateFighter(e.loser);
@@ -46,16 +46,20 @@ class StreamStateNotifier
 
   Future<void> vote(VoteRequestModel request) async {
     try {
-      final resp = await ref.read(streamRepositoryProvider).vote(request: request);
-      updateVoteRate(resp);
-    } catch (e) {
+      final resp = await streamFightEventRepository.vote(request: request);
+      if (resp != null) {
+        updateVoteRate(resp);
+      }
+    } catch (e, stack) {
+      print(e);
+      print(stack);
       state = StateError(message: 'error while requesting vote');
     }
   }
 
   Future<void> bet(BetRequestModel request) async {
     try {
-      final resp = await ref.read(streamRepositoryProvider).bet(request: request);
+      final resp = await streamFightEventRepository.bet(request: request);
       ref.read(userProvider.notifier).updatePoint(resp);
     } catch (e) {
       state = StateError(message: 'error while requesting bet');

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/admin/common_update_screen.dart';
 import 'package:mma_flutter/admin/news/screen/news_upload_screen.dart';
@@ -25,7 +26,7 @@ class DefaultLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.read(userProvider);
     return Scaffold(
-      endDrawer:
+      drawer:
           user is UserModel
               ? Drawer(
                 child: ListView(
@@ -66,11 +67,14 @@ class DefaultLayout extends ConsumerWidget {
     );
   }
 
-  AppBar renderAppBar() {
-    return AppBar(
-      backgroundColor: PRIMARY_COLOR,
-      title: Image.asset('asset/img/logo/fight_week.png', width: 50),
-      centerTitle: true,
+  PreferredSize renderAppBar() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(56.h),
+      child: AppBar(
+        iconTheme: IconThemeData(color: WHITE_COLOR),
+        backgroundColor: BLACK_COLOR,
+        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
+      ),
     );
   }
 }
