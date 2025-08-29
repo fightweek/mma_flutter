@@ -1,13 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/admin/event/repository/admin_event_repository.dart';
 import 'package:mma_flutter/admin/fighter/repository/admin_fighter_repository.dart';
+import 'package:mma_flutter/admin/provider/common_update_provider.dart';
 import 'package:mma_flutter/admin/stream/repository/admin_stream_repository.dart';
 import 'package:mma_flutter/common/component/custom_alert_dialog.dart';
-import 'package:mma_flutter/common/const/style.dart';
-import 'package:mma_flutter/common/layout/default_layout.dart';
+import 'package:mma_flutter/common/const/colors.dart';
+import 'package:mma_flutter/common/model/base_state_model.dart';
 
 class RankingUpdateScreen extends ConsumerWidget {
   const RankingUpdateScreen({super.key});
@@ -20,73 +19,63 @@ class RankingUpdateScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              OutlinedButton(
-                onPressed: () async {
-                  try {
-                    await ref.read(adminFighterUpdateProvider.future);
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text('랭킹 업데이트 성공')));
-                  } catch (e) {
-                    log(e.toString());
-                    showDialog(
-                      context: context,
-                      builder:
-                          (_) => CustomAlertDialog(
-                            titleMsg: '에러',
-                            contentMsg: '랭킹 업데이트 오류',
-                          ),
-                    );
-                  }
-                },
-                child: Text('랭킹 업데이트'),
+              _renderAdminButton(
+                context,
+                ref: ref,
+                buttonName: '랭킹 업데이트',
+                provider: adminFighterUpdateProvider,
               ),
-              OutlinedButton(
-                onPressed: () async {
-                  try {
-                    await ref.read(adminActivateStreamRoomProvider.future);
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text('실시간 채팅방 활성화 성공')));
-                  } catch (e) {
-                    log(e.toString());
-                    showDialog(
-                      context: context,
-                      builder:
-                          (_) => CustomAlertDialog(
-                        titleMsg: '에러',
-                        contentMsg: '실시간 채팅방 활성화 오류',
-                      ),
-                    );
-                  }
-                },
-                child: Text('실시간 채팅방 활성화'),
+              _renderAdminButton(
+                context,
+                ref: ref,
+                buttonName: '실시간 채팅방 활성화',
+                provider: adminStreamUpdateProvider,
               ),
-              OutlinedButton(
-                onPressed: () async {
-                  try {
-                    await ref.read(adminEventSaveUpcomingProvider.future);
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text('차후 이벤트 업데이트 성공')));
-                  } catch (e) {
-                    log(e.toString());
-                    showDialog(
-                      context: context,
-                      builder:
-                          (_) => CustomAlertDialog(
-                        titleMsg: '에러',
-                        contentMsg: '차후 이벤트 업데이트 오류',
-                      ),
-                    );
-                  }
-                },
-                child: Text('차후 이벤트 업데이트'),
+              _renderAdminButton(
+                context,
+                ref: ref,
+                buttonName: '차후 이벤트 업데이트',
+                provider: adminEventUpdateProvider,
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _renderAdminButton(
+    BuildContext context, {
+    required WidgetRef ref,
+    required String buttonName,
+    required StateNotifierProvider<CommonUpdateStateNotifier, StateBase<void>?>
+    provider,
+  }) {
+    final val = ref.watch(provider);
+    if (val == null) {
+      return OutlinedButton(
+        onPressed: () {
+          ref.read(provider.notifier).update();
+        },
+        child: Text(buttonName),
+      );
+    }
+    if (val is StateLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+    if (val is StateError) {
+      return ElevatedButton(
+        onPressed: () {
+          ref.read(provider.notifier).update();
+        },
+        child: Text('$buttonName 다시시도 (오류 이유 : ${val.message})'),
+      );
+    }
+    return OutlinedButton(
+      onPressed: () {
+        ref.read(provider.notifier).update();
+      },
+      child: Text(buttonName),
     );
   }
 }

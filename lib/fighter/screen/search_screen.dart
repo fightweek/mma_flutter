@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mma_flutter/admin/component/fighter_name_check_box_for_game.dart';
+import 'package:mma_flutter/admin/fighter/repository/admin_fighter_repository.dart';
+import 'package:mma_flutter/admin/provider/common_update_provider.dart';
+import 'package:mma_flutter/common/component/custom_alert_dialog.dart';
 import 'package:mma_flutter/common/component/custom_text_form_field.dart';
 import 'package:mma_flutter/common/component/pagination_list_view.dart';
 import 'package:mma_flutter/common/model/pagination_model.dart';
@@ -10,6 +14,8 @@ import 'package:mma_flutter/fighter/provider/fighter_pagination_provider.dart';
 import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
 import 'package:mma_flutter/fighter/repository/fighter_repository.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
+import 'package:mma_flutter/user/model/user_model.dart';
+import 'package:mma_flutter/user/provider/user_provider.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -21,6 +27,7 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _textController = TextEditingController();
   String _prevText = '';
+  List<String> selectedNames = [];
 
   @override
   void dispose() {
@@ -32,7 +39,34 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(fighterPaginationProvider);
 
-    return Column(children: [_searchBar(), _renderFighterCards(state)]);
+    return Column(
+      children: [
+        _searchBar(),
+        _renderFighterCards(state),
+        if ((ref.read(userProvider) as UserModel).role == 'ROLE_ADMIN' &&
+            selectedNames.isNotEmpty)
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                await ref
+                    .read(adminFighterRepositoryProvider)
+                    .saveGameFighters(chosenFighters: selectedNames);
+              } catch (e) {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return CustomAlertDialog(
+                      titleMsg: '에러',
+                      contentMsg: 'reason : $e',
+                    );
+                  },
+                );
+              }
+            },
+            child: Text('저장'),
+          ),
+      ],
+    );
   }
 
   Widget _searchBar() {
@@ -43,9 +77,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         onChanged: onChanged,
         hintText: '검색어를 입력하세요.',
         borderRadiusSize: 12.0,
-        suffixIcon: IconButton(onPressed: () {
-          context.pushNamed("");
-        }, icon: Icon(Icons.search)),
+        suffixIcon: IconButton(
+          onPressed: () {
+            context.pushNamed("");
+          },
+          icon: Icon(Icons.search),
+        ),
       ),
     );
   }
@@ -71,15 +108,35 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       child: PaginationListView<FighterModel, FighterRepository>(
         provider: fighterPaginationProvider,
         itemBuilder: (context, index, model) {
-          return InkWell(
-            onTap: () {
-              ref.read(fighterProvider.notifier).updateFighter(model);
-              context.pushNamed(
-                FighterDetailScreen.routeName,
-                pathParameters: {'id': model.id.toString()},
-              );
-            },
-            child: FighterCard(fighter: model),
+          return Row(
+            children: [
+              InkWell(
+                onTap: () {
+                  ref.read(fighterProvider.notifier).updateFighter(model);
+                  context.pushNamed(
+                    FighterDetailScreen.routeName,
+                    pathParameters: {'id': model.id.toString()},
+                  );
+                },
+                child: FighterCard(fighter: model),
+              ),
+              if ((ref.read(userProvider) as UserModel).role == 'ROLE_ADMIN')
+                FighterNameCheckBoxForGame(
+                  name: model.name,
+                  isSelected: selectedNames.contains(model.name),
+                  onChanged: (isChecked) {
+                    if (isChecked) {
+                      setState(() {
+                        selectedNames.add(model.name);
+                      });
+                    } else {
+                      setState(() {
+                        selectedNames.remove(model.name);
+                      });
+                    }
+                  },
+                ),
+            ],
           );
         },
         params: {'name': _prevText},

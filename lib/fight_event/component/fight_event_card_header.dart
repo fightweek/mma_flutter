@@ -42,12 +42,18 @@ class FightEventCardHeader extends ConsumerWidget {
               child: InkWell(
                 splashColor: Colors.blueAccent,
                 onTap: () {
-                  final scheduledDate = tz.TZDateTime.from(
-                    // eventStartDateTime.subtract(Duration(days: 1)),
-                    DateTime.now().add(Duration(seconds: 10)),
+                  final date = eventStartDateTimeInfo!.date;
+                  final time = eventStartDateTimeInfo!.time;
+                  print(date);
+                  print(time);
+                  final scheduledDate = tz.TZDateTime(
                     tz.local,
-                  );
+                    date.year,
+                    date.month,
+                    date.day,
+                  ).add(time).subtract(const Duration(minutes: 10));
                   if (!isOn) {
+                    print(scheduledDate.toLocal());
                     LocalNotifications.showScheduleNotification(
                       eventId: eventId,
                       title: '경기 하루 전입니다!',

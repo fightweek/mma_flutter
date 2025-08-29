@@ -6,10 +6,12 @@ part 'chat_response_model.g.dart';
 class ChatResponseModel {
   final String message;
   final String nickname;
+  final int userId;
   final int point;
 
   ChatResponseModel({
     required this.message,
+    required this.userId,
     required this.nickname,
     required this.point,
   });

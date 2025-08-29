@@ -4,32 +4,47 @@ part 'bet_request_model.g.dart';
 
 @JsonSerializable()
 class BetRequestModel {
-  final List<SingleBetRequestModel> singleBets;
+  final List<SingleBetCardRequestModel> singleBetCards;
 
-  BetRequestModel({required this.singleBets});
+  BetRequestModel({required this.singleBetCards});
 
   Map<String,dynamic> toJson() => _$BetRequestModelToJson(this);
 }
 
 @JsonSerializable()
-class SingleBetRequestModel{
+class SingleBetCardRequestModel{
   final int fighterFightEventId;
-  final int winnerId;
-  final int loserId;
   final int seedPoint;
+  final BetPredictionModel betPrediction;
+
+  SingleBetCardRequestModel({
+    required this.fighterFightEventId,
+    required this.seedPoint,
+    required this.betPrediction,
+  });
+
+  Map<String,dynamic> toJson() => _$SingleBetCardRequestModelToJson(this);
+}
+
+@JsonSerializable()
+class BetPredictionModel{
+  final String winnerName;
+  final String loserName;
   final WinMethodForBet? winMethod;
   final int? winRound;
 
-  SingleBetRequestModel({
-    required this.fighterFightEventId,
-    required this.winnerId,
-    required this.loserId,
+  BetPredictionModel({
+    required this.winnerName,
+    required this.loserName,
     required this.winMethod,
-    required this.seedPoint,
     required this.winRound,
   });
 
-  Map<String,dynamic> toJson() => _$SingleBetRequestModelToJson(this);
+  Map<String,dynamic> toJson() => _$BetPredictionModelToJson(this);
+
+  factory BetPredictionModel.fromJson(Map<String, dynamic> json)
+  => _$BetPredictionModelFromJson(json);
+
 }
 
 enum WinMethodForBet {

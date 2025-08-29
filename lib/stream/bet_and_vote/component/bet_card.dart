@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
@@ -62,13 +63,12 @@ class BetCardState extends ConsumerState<BetCard> {
                       onTap: () {
                         print('ontap');
                         ref.read(betTargetProvider.notifier).update((state) {
-                          final updated = List<SingleBetModel>.from(
-                            state,
-                          ); // copy
-                          updated.removeWhere(
+                          final singleBetModelToRemove =
+                              List<SingleBetModel>.from(state); // copy
+                          singleBetModelToRemove.removeWhere(
                             (e) => e.winnerName == widget.bet.winnerName,
                           );
-                          return updated;
+                          return singleBetModelToRemove;
                         });
                       },
                       child: Icon(
@@ -139,15 +139,23 @@ class BetCardState extends ConsumerState<BetCard> {
           setState(() {});
         },
         style: ElevatedButton.styleFrom(
-          fixedSize: Size(177, 28),
+          fixedSize: Size(177.w, 28.h),
           backgroundColor: isSelected ? BLACK_COLOR : mainColor,
           foregroundColor: isSelected ? mainColor : BLACK_COLOR,
           side: BorderSide(width: 2, color: mainColor),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusGeometry.circular(8.0),
+            borderRadius: BorderRadiusGeometry.circular(8.r),
           ),
         ),
-        child: Text(name),
+        child: Text(
+          name,
+          style: defaultTextStyle.copyWith(
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w700,
+            color: isSelected ? mainColor : WHITE_COLOR
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }
@@ -157,7 +165,7 @@ class BetCardState extends ConsumerState<BetCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: SizedBox(
-        height: 32,
+        height: 28.h,
         child: Row(
           children: [
             ...WinMethodForBet.values.mapIndexed(
@@ -204,7 +212,7 @@ class BetCardState extends ConsumerState<BetCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: SizedBox(
-        height: 32.0,
+        height: 28.0,
         child: Row(
           children: [
             ...List.generate(
@@ -269,7 +277,7 @@ class BetCardState extends ConsumerState<BetCard> {
       children: [
         Text(askStr, style: defaultTextStyle, textAlign: TextAlign.center),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
           child: Form(
             key: widget.formKey,
             child: TextFormField(
@@ -298,18 +306,22 @@ class BetCardState extends ConsumerState<BetCard> {
     );
   }
 
-  SingleBetRequestModel toRequest(TextEditingController controller) {
+  SingleBetCardRequestModel toRequest(TextEditingController controller) {
     final int seedPoint = int.parse(controller.text);
-    return SingleBetRequestModel(
+    return SingleBetCardRequestModel(
       fighterFightEventId: widget.bet.fighterFightEventId,
-      winnerId: _leftNameSelected ? widget.bet.winnerId : widget.bet.loserId,
-      loserId: _leftNameSelected ? widget.bet.loserId : widget.bet.winnerId,
-      winMethod:
-          _selectedWinMethodIndex != null
-              ? WinMethodForBet.values[_selectedWinMethodIndex!]
-              : null,
-      winRound:
-          _selectedWinRoundIndex != null ? _selectedWinRoundIndex! + 1 : null,
+      betPrediction: BetPredictionModel(
+        winnerName:
+            _leftNameSelected ? widget.bet.winnerName : widget.bet.loserName,
+        loserName:
+            _leftNameSelected ? widget.bet.loserName : widget.bet.winnerName,
+        winMethod:
+            _selectedWinMethodIndex != null
+                ? WinMethodForBet.values[_selectedWinMethodIndex!]
+                : null,
+        winRound:
+            _selectedWinRoundIndex != null ? _selectedWinRoundIndex! + 1 : null,
+      ),
       seedPoint: seedPoint,
     );
   }

@@ -12,7 +12,7 @@ const REFRESH_TOKEN_KEY = 'REFRESH_TOKEN';
 
 final emulatorIp = '10.0.2.2:8080';
 final simulatorIp = '127.0.0.1:8080';
-final localNetworkIp = '192.168.219.45:8080';
+final localNetworkIp = '10.161.8.108:8080';
 late final ip;
 // final ip = data.Platform.isIOS ? simulatorIp : emulatorIp;
 // final ip = '192.168.0.13:8080';
@@ -67,6 +67,9 @@ final newsSources = [
   'ELSE',
 ];
 final newsTypes = ['IMAGES', 'IMAGES_TRANSLATION', 'NO_IMAGES'];
+
+final easyGameDescription = '랭커 & 잘 알려진 선수';
+final hardGameDescription = '모든 UFC 선수';
 
 Future<bool> isEmulator() async {
   final deviceInfo = DeviceInfoPlugin();

@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/fight_event/model/i_fighter_fight_event_model.dart';
@@ -32,13 +34,12 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
   @override
   void initState() {
     super.initState();
+    winnerHeadshotUrl = widget.ffe.winner.headshotUrl;
+    loserHeadshotUrl = widget.ffe.loser.headshotUrl;
   }
 
   @override
   Widget build(BuildContext context) {
-    winnerHeadshotUrl = widget.ffe.winner.headshotUrl;
-    loserHeadshotUrl = widget.ffe.loser.headshotUrl;
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -56,12 +57,13 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
                         children: [
                           Text(
                             _splitName(widget.ffe.winner.name),
-                            style: defaultTextStyle.copyWith(fontSize: 14.0),
+                            style: defaultTextStyle.copyWith(fontSize: 14.h),
                             overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
                           ),
                           Text(
-                            '${widget.ffe.winner.fightRecord.win}-${widget.ffe.winner.fightRecord.loss}-${widget.ffe.winner.fightRecord.draw}',
-                            style: defaultTextStyle.copyWith(fontSize: 14.0),
+                            '${widget.ffe.winner.record.win}-${widget.ffe.winner.record.loss}-${widget.ffe.winner.record.draw}',
+                            style: defaultTextStyle.copyWith(fontSize: 14.h,color: GREY_COLOR),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
@@ -112,10 +114,11 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
                       _splitName(widget.ffe.loser.name),
                       style: defaultTextStyle.copyWith(fontSize: 14.0),
                       overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.right,
                     ),
                     Text(
-                      '${widget.ffe.loser.fightRecord.win}-${widget.ffe.loser.fightRecord.loss}-${widget.ffe.loser.fightRecord.draw}',
-                      style: defaultTextStyle.copyWith(fontSize: 14.0),
+                      '${widget.ffe.loser.record.win}-${widget.ffe.loser.record.loss}-${widget.ffe.loser.record.draw}',
+                      style: defaultTextStyle.copyWith(fontSize: 14.0, color: GREY_COLOR),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -153,25 +156,27 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
       },
       child: CachedNetworkImage(
         key: ValueKey(fighter.id),
-        width: 70,
-        height: 70,
+        width: 78.w,
+        height: 78.h,
         imageUrl: left ? winnerHeadshotUrl : loserHeadshotUrl,
         placeholder: (context, url) => CircularProgressIndicator(),
         errorWidget: (context, url, error) {
-          ref
-              .read(fighterProvider.notifier)
-              .getHeadshotUrl(name: fighter.name)
-              .then((urlMap) {
-                final url = urlMap['url']!;
-                setState(() {
-                  if (left) {
-                    winnerHeadshotUrl = url;
-                  } else {
-                    loserHeadshotUrl = url;
-                  }
-                });
+          return ElevatedButton(
+            onPressed: () async{
+              final urlMap = await ref
+                  .read(fighterProvider.notifier)
+                  .getHeadshotUrl(name: fighter.name);
+              print(urlMap['url']);
+              setState(() {
+                if (left) {
+                  winnerHeadshotUrl = urlMap['url']!;
+                } else {
+                  loserHeadshotUrl = urlMap['url']!;
+                }
               });
-          return CircularProgressIndicator();
+            },
+            child: Text('다시시도'),
+          );
         },
       ),
     );
