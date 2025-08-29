@@ -14,6 +14,7 @@ import 'package:stack_trace/stack_trace.dart' as stack_trace;
 import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final navigatorKey = GlobalKey<NavigatorState>();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -30,7 +31,6 @@ void main() async {
     return stack;
   };
   await initializeDateFormatting();
-  WidgetsFlutterBinding.ensureInitialized();
 
   tz.initializeTimeZones();
   await LocalNotifications.init();
@@ -56,7 +56,36 @@ void main() async {
   );
   runApp(
     ProviderScope(
-      child: ScreenUtilInit(designSize: Size(402, 874), child: _App()),
+      child: Builder(
+        builder: (context) {
+          final mediaQuery = MediaQueryData.fromView(View.of(context));
+
+          final screenWidth = mediaQuery.size.width;
+          final screenHeight = mediaQuery.size.height;
+
+          // 실제 기기 SafeArea 제외 높이
+          final safeHeight = screenHeight
+              - mediaQuery.padding.top
+              - mediaQuery.padding.bottom;
+
+          // 피그마 기준
+          const figmaWidth = 402.0;
+          const figmaHeight = 874.0;
+
+          // 피그마 비율 유지 → 실제 기기 safeHeight를 피그마 874에 매핑
+          final designHeight = safeHeight / (screenWidth / figmaWidth);
+
+          debugPrint("Device size: $screenWidth x $screenHeight");
+          debugPrint("SafeArea height: $safeHeight");
+          debugPrint("Calculated designHeight: $designHeight");
+
+          return ScreenUtilInit(
+            designSize: Size(figmaWidth, designHeight),
+            minTextAdapt: true,
+            builder: (_, __) => _App(),
+          );
+        },
+      ),
     ),
   );
 }

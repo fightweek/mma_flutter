@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mma_flutter/common/const/colors.dart';
+import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/screen/splash_screen.dart';
 import 'package:mma_flutter/common/utils/data_utils.dart';
@@ -27,6 +28,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    print(bottomInset);
     super.build(context);
     final data = ref.watch(homeFutureProvider);
     return data.when(
@@ -50,20 +53,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           );
         }
         return Container(
-          color: DARK_GREY_COLOR,
+          color: BLACK_COLOR,
           child: Stack(
+            alignment: Alignment.center,
             children: [
               Positioned(
-                left: -6,
-                top: 58.h,
+                top: 20.h,
+                child: Text(
+                  '이번 주의 메인 이벤트',
+                  style: defaultTextStyle.copyWith(fontSize: 24.sp),
+                ),
+              ),
+              Positioned(
+                left: -6.w,
+                top: 94.h,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset('asset/img/component/red.png', height: 274.h),
+                    Image.asset('asset/img/component/red.png', height: 100.h),
                     Text(
                       DataUtils.extractLastName(data.winnerName),
                       style: defaultTextStyle.copyWith(
-                        fontSize: 70.0,
+                        fontSize: 74.sp,
                         fontFamily: 'BadGrunge',
                         fontWeight: FontWeight.w500,
                       ),
@@ -72,28 +83,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
               ),
               Positioned(
-                top: 204.9.h,
+                top: 158.h,
                 left: 0,
                 right: 0,
                 child: Center(
                   child: Image.asset(
                     'asset/img/component/vs.png',
-                    height: 123.h,
+                    height: 108.72.h,
                   ),
                 ),
               ),
               Positioned(
-                top: 235.h,
-                left: -6,
-                right: 0,
+                top: 253.h,
+                left: -6.w,
+                right: 0.w,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset('asset/img/component/blue.png', height: 274.h),
+                    Image.asset('asset/img/component/blue.png', height: 100.h),
                     Text(
                       DataUtils.extractLastName(data.loserName),
                       style: defaultTextStyle.copyWith(
-                        fontSize: 70.0,
+                        fontSize: 74.sp,
                         fontFamily: 'BadGrunge',
                         fontWeight: FontWeight.w500,
                       ),
@@ -102,7 +113,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
               ),
               Positioned(
-                top: 226.h,
+                top: 177.h,
                 left: 0,
                 right: 0,
                 child: SingleChildScrollView(
@@ -113,12 +124,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         child: Align(
                           alignment: Alignment.centerRight,
                           widthFactor: 0.8,
-                          child: CachedNetworkImage(
-                            imageUrl: data.winnerBodyUrl,
-                            height: 389.h,
-                            width: 280.w,
-                            fit: BoxFit.contain,
-                          ),
+                          child: _renderImageWithOpacity(data.winnerBodyUrl),
                         ),
                       ),
                       ClipRect(
@@ -128,12 +134,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           child: Transform(
                             alignment: Alignment.center,
                             transform: Matrix4.identity()..scale(-1.0, 1.0),
-                            child: CachedNetworkImage(
-                              imageUrl: data.loserBodyUrl,
-                              height: 389.h,
-                              width: 280.w,
-                              fit: BoxFit.contain,
-                            ),
+                            child: _renderImageWithOpacity(data.loserBodyUrl),
                           ),
                         ),
                       ),
@@ -141,13 +142,81 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   ),
                 ),
               ),
-              if (data.now)
-                Positioned(
-                  bottom: 10,
-                  left: 0,
-                  right: 0,
-                  child: _renderChatRoomButton(),
+              Positioned(
+                top: 536.h,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: DARK_GREY_COLOR,
+                  ),
+                  height: 143.h,
+                  width: 362.w,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 12.h, bottom: 13.5.h),
+                        child: Text(
+                          '${weightClassMap[data.fightWeight] ?? '-'} ${data.title ? '타이틀전' : '매치'}',
+                          style: defaultTextStyle.copyWith(fontSize: 12.sp),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              DataUtils.formatDateTimeWithNWI(
+                                data.mainCardDateTimeInfo!.date,
+                              ),
+                              style: defaultTextStyle.copyWith(fontSize: 12.sp),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Container(
+                            height: 53.h,
+                            color: GREY_COLOR,
+                            width: 1.w,
+                          ),
+                          Expanded(
+                            child: Text(
+                              'KST ${DataUtils.formatDurationToHHMM(data.mainCardDateTimeInfo!.time)}',
+                              style: defaultTextStyle.copyWith(fontSize: 12.sp),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: Size(336.w,31.h),
+                          backgroundColor: BLUE_COLOR,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return StreamMainView(
+                                  user: (ref.read(userProvider) as UserModel),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        child: Text(
+                          '라이브 채팅 참여하기',
+                          style: defaultTextStyle.copyWith(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              ),
             ],
           ),
         );
@@ -155,39 +224,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _renderChatRoomButton() {
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.blueAccent,
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          width: 150,
-          child: Column(
-            children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return StreamMainView(
-                          user: (ref.read(userProvider) as UserModel),
-                        );
-                      },
-                    ),
-                  );
-                },
-                icon: Icon(Icons.chat_outlined),
-              ),
-              Text(
-                '실시간 채팅방',
-                style: defaultTextStyle.copyWith(color: Colors.black),
-              ),
-            ],
-          ),
+  Widget _renderImageWithOpacity(String imgUrl) {
+    return Container(
+      foregroundDecoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.center,
+          end: Alignment.bottomCenter,
+          colors: [Colors.transparent, BLACK_COLOR.withValues(alpha: 0.5)],
         ),
-      ],
+      ),
+      child: CachedNetworkImage(
+        imageUrl: imgUrl,
+        height: 343.95.h,
+        width: 280.w,
+        fit: BoxFit.contain,
+      ),
     );
   }
 }

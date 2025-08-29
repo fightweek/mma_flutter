@@ -4,7 +4,8 @@ part 'base_state_model.g.dart';
 
 abstract class StateBase<T> {}
 
-class StateLoading<T> extends StateBase<T> {}
+class StateLoading<T> extends StateBase<T> {
+}
 
 class StateError<T> extends StateBase<T> {
   final String message;
@@ -13,7 +14,7 @@ class StateError<T> extends StateBase<T> {
 }
 
 @JsonSerializable(genericArgumentFactories: true)
-class StateData<T> extends StateBase<T> {
+class StateData<T> extends StateBase<T>{
   final T? data;
 
   StateData({required this.data});

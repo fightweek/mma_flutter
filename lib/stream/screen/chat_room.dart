@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/stream/chat/component/chat_box.dart';
@@ -51,6 +52,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom>
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final connectionCount = ref.watch(connectionCountProvider);
 
     super.build(context);
@@ -64,91 +66,98 @@ class _ChatRoomState extends ConsumerState<ChatRoom>
       }
     });
     return SafeArea(
-      child: Column(
-        children: [
-          Expanded(
-            child: Container(
-              color: DARK_GREY_COLOR,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          WidgetSpan(
-                            child: Icon(
-                              Icons.remove_red_eye_outlined,
-                              size: 20.0,
-                              color: Colors.white,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                color: DARK_GREY_COLOR,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(5.h),
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            WidgetSpan(
+                              child: Icon(
+                                Icons.remove_red_eye_outlined,
+                                size: 17.r,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          WidgetSpan(child: SizedBox(width: 4.0)),
-                          TextSpan(
-                            text: connectionCount.toString(),
-                            style: TextStyle(fontSize: 16.0, color: Colors.white),
-                          ),
-                        ],
+                            WidgetSpan(child: SizedBox(width: 4.0)),
+                            TextSpan(
+                              text: connectionCount.toString(),
+                              style: TextStyle(fontSize: 15.sp, color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.separated(
+                        controller: scrollController,
+                        // reverse: true,
+                        itemBuilder: (_, index) {
+                          return ChatBox(
+                            socket: widget.socket,
+                            user: widget.user,
+                            chatModel: chatList[index],
+                          );
+                        },
+                        separatorBuilder: (_, index) {
+                          return const SizedBox(height: 12);
+                        },
+                        itemCount: chatList.length,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(bottom: 8.h,left: 4.w,right: 4.w),
+              color: DARK_GREY_COLOR,
+              child: SizedBox(
+                height: 45.h,
+                child: TextField(
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    fillColor: Colors.black,
+                    filled: true,
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: IconButton(
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(Colors.black),
+                        ),
+                        onPressed: () {
+                          print('onpressed');
+                          _sendMessage(widget.socket);
+                        },
+                        icon: Icon(FontAwesomeIcons.paperPlane, color: Colors.white),
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: ListView.separated(
-                      controller: scrollController,
-                      // reverse: true,
-                      itemBuilder: (_, index) {
-                        return ChatBox(
-                          user: widget.user,
-                          chatModel: chatList[index],
-                        );
-                      },
-                      separatorBuilder: (_, index) {
-                        return const SizedBox(height: 12);
-                      },
-                      itemCount: chatList.length,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(8.0),
-            color: DARK_GREY_COLOR,
-            child: TextField(
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(),
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
-                fillColor: Colors.black,
-                filled: true,
-                suffixIcon: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: IconButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.black),
-                    ),
-                    onPressed: () {
-                      print('onpressed');
-                      _sendMessage(widget.socket);
-                    },
-                    icon: Icon(FontAwesomeIcons.paperPlane, color: Colors.white),
-                  ),
+                  controller: textController,
+                  // 엔터키로 전송
+                  onSubmitted: (value) => _sendMessage(widget.socket),
                 ),
               ),
-              controller: textController,
-              // 엔터키로 전송
-              onSubmitted: (value) => _sendMessage(widget.socket),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -8,3 +8,4 @@ final MY_MIDDLE_GREY_COLOR = Colors.grey[500];
 final GREY_COLOR = Color(0xff4F4F56);
 final DARK_GREY_COLOR = Color(0xff1F2022);
 final BLACK_COLOR = Color(0xff0F0F10);
+final WHITE_COLOR = Color(0xffd9f9f9);

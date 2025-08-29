@@ -120,7 +120,7 @@ class StreamFighterModel extends FighterModel {
     required super.name,
     required super.nickname,
     required super.weight,
-    required super.fightRecord,
+    required super.record,
     required super.ranking,
     required super.headshotUrl,
     required this.height,

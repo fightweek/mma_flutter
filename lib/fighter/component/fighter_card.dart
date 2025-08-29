@@ -34,7 +34,7 @@ class FighterCard extends ConsumerWidget {
             Text(
               '${_splitNameAndNickname(
                   name: fighter.name, nickname: fighter.nickname)}\n${fighter
-                  .fightRecord.win}-${fighter.fightRecord.loss}-${fighter.fightRecord.draw}',
+                  .record.win}-${fighter.record.loss}-${fighter.record.draw}',
               style: defaultTextStyle,
             ),
           ],

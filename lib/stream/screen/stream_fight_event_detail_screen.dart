@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
@@ -65,6 +66,17 @@ class _EventDetailScreenState
       return Center(child: CircularProgressIndicator());
     }
 
+    if (state is StateError) {
+      return ElevatedButton(
+        onPressed: () {
+          ref
+              .read(streamFightEventProvider.notifier)
+              .getCurrentFightEventInfo();
+        },
+        child: Text('다시시도'),
+      );
+    }
+
     final event = state as StateData<StreamFightEventModel>;
 
     // final currentIndex = event.data!.fighterFightEvents.indexWhere(
@@ -82,7 +94,8 @@ class _EventDetailScreenState
     // });
 
     return SafeArea(
-      child: SizedBox.expand(
+      child: Container(
+        color: DARK_GREY_COLOR,
         child: Stack(
           children: [
             SingleChildScrollView(
@@ -105,9 +118,10 @@ class _EventDetailScreenState
             ),
             if (betAvailable)
               Positioned(
-                bottom: 10,
-                left: 120,
-                right: 120,
+                bottom: 18.h,
+                height: 22.h,
+                left: 155.w,
+                right: 155.w,
                 child: ElevatedButton(
                   onPressed: () {
                     ref.read(betTargetProvider.notifier).update((state) {
@@ -118,12 +132,7 @@ class _EventDetailScreenState
                                 title: element.title,
                                 fighterFightEventId: element.id,
                                 winnerName: element.winner.name,
-                                winnerId: element.winner.id,
                                 loserName: element.loser.name,
-                                loserId: element.loser.id,
-                                winMethod: null,
-                                seedPoint: 0,
-                                winRound: null,
                               );
                             }
                             return null;
@@ -134,11 +143,15 @@ class _EventDetailScreenState
                     widget.tabController.animateTo(2);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: GREY_COLOR,
+                    backgroundColor: BLUE_COLOR,
                     foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                   ),
-                  child: Row(
-                    children: [Text('배팅하기 '), Icon(Icons.how_to_vote)],
+                  child: Text(
+                    '배팅하기',
+                    style: defaultTextStyle.copyWith(fontSize: 10.sp),
                   ),
                 ),
               ),

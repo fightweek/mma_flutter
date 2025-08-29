@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/common/const/colors.dart';
+import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/fight_event/screen/fight_event_screen.dart';
 import 'package:mma_flutter/fighter/screen/search_screen.dart';
@@ -20,18 +22,29 @@ class RootTab extends ConsumerStatefulWidget {
 class _RootTabState extends ConsumerState<RootTab>
     with SingleTickerProviderStateMixin {
   late final TabController controller;
-  int index = 0;
+  int index = 2;
 
   @override
   void initState() {
+    print('init root tab');
     super.initState();
-    controller = TabController(length: 5, vsync: this);
+    controller = TabController(length: 5, vsync: this, initialIndex: index);
     controller.addListener(tabListener);
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    index =
+        int.tryParse(GoRouterState.of(context).queryParameters['tab'] ?? '2') ??
+        2;
+  }
+
+  @override
   void dispose() {
+    print('dispose root_tab');
     controller.removeListener(tabListener);
+    controller.dispose();
     super.dispose();
   }
 
@@ -45,9 +58,9 @@ class _RootTabState extends ConsumerState<RootTab>
   Widget build(BuildContext context) {
     return DefaultLayout(
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: DARK_GREY_COLOR,
-        selectedItemColor: RED_COLOR,
-        unselectedItemColor: PRIMARY_COLOR,
+        backgroundColor: BLACK_COLOR,
+        selectedItemColor: WHITE_COLOR,
+        unselectedItemColor: WHITE_COLOR,
         selectedFontSize: 10,
         unselectedFontSize: 10,
         type: BottomNavigationBarType.fixed,
@@ -56,18 +69,26 @@ class _RootTabState extends ConsumerState<RootTab>
         },
         currentIndex: index,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: '홈'),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.gamepad_outlined),
-          //   label: '게임',
-          // ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month_outlined),
-            label: '경기 일정',
+            icon: Image.asset('asset/img/icon/bet.png'),
+            label: 'Bet',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.gamepad_outlined), label: '게임'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: '검색'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: '프로필'),
+          BottomNavigationBarItem(
+            icon: Image.asset('asset/img/icon/quiz.png'),
+            label: 'Quiz',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('asset/img/icon/home.png'),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('asset/img/icon/schedule.png'),
+            label: 'Schedule',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('asset/img/icon/profile.png'),
+            label: 'Profile',
+          ),
         ],
       ),
       child: TabBarView(
@@ -75,11 +96,14 @@ class _RootTabState extends ConsumerState<RootTab>
         physics: NeverScrollableScrollPhysics(),
         controller: controller,
         children: [
+          Container(
+            child: Center(child: Text('배팅 뷰', style: defaultTextStyle)),
+          ),
+          // SearchScreen(),
+          GameMainScreen(),
+          // Center(child: Text('게임 화면')),
           HomeScreen(),
           FightEventScreen(),
-          // Center(child: Text('게임 화면')),
-          GameMainScreen(),
-          SearchScreen(),
           LogoutScreen(),
         ],
       ),
