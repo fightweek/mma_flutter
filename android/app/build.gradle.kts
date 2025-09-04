@@ -27,7 +27,7 @@ android {
         applicationId = "com.example.mma_flutter"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 21
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+    implementation("com.google.android.gms:play-services-ads:24.5.0")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
 
