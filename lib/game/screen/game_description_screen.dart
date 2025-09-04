@@ -141,8 +141,8 @@ class _GameDescriptionScreenState extends ConsumerState<GameDescriptionScreen> {
                                     : () async {
                                       await ref
                                           .read(gameRepositoryProvider)
-                                          .subtractAttemptCount();
-                                      // ref.invalidate(gameAttemptCountProvider);
+                                          .updateAttemptCount(isSubtract: true);
+                                      ref.invalidate(gameAttemptCountProvider);
                                       context.goNamed(
                                         GameScreen.routeName,
                                         pathParameters: {'seq': '1'},

@@ -6,6 +6,7 @@ import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/common/provider/dio/dio_provider.dart';
 import 'package:mma_flutter/game/model/game_args.dart';
+import 'package:mma_flutter/game/model/game_attempt_response_model.dart';
 import 'package:mma_flutter/game/model/game_response_model.dart';
 import 'package:mma_flutter/game/model/image_game_questions_model.dart';
 import 'package:mma_flutter/game/model/name_game_questions_model.dart';
@@ -13,7 +14,7 @@ import 'package:mma_flutter/game/repository/game_repository.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 
-final gameAttemptCountProvider = FutureProvider.autoDispose<int>((ref) async {
+final gameAttemptCountProvider = FutureProvider.autoDispose<GameAttemptResponseModel>((ref) async {
   ref.onDispose(() => print('dispose gameAttemptCountProvider'));
   return await ref.watch(gameRepositoryProvider).getGameAttemptCount();
 });
