@@ -197,6 +197,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                           : () {
                             game.selectedList[widget.seq - 1] =
                                 selection[selectedAnswerIdx!];
+                            _pauseTimer();
                             context.goNamed(
                               widget.seq != 5
                                   ? GameScreen.routeName

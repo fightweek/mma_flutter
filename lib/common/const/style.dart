@@ -7,5 +7,5 @@ import 'package:mma_flutter/common/const/colors.dart';
 final defaultTextStyle = TextStyle(
   color: WHITE_COLOR,
   fontWeight: FontWeight.w500,
-  fontSize: 15.h
+  fontSize: 15.sp
 );

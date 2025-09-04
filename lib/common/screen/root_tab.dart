@@ -58,7 +58,7 @@ class _RootTabState extends ConsumerState<RootTab>
   Widget build(BuildContext context) {
     return DefaultLayout(
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: BLACK_COLOR,
+        backgroundColor: DARK_GREY_COLOR,
         selectedItemColor: WHITE_COLOR,
         unselectedItemColor: WHITE_COLOR,
         selectedFontSize: 10,

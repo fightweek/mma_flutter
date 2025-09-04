@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
@@ -20,14 +22,14 @@ class FightEventScreen extends ConsumerStatefulWidget {
 class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
+  DateTime? _datePickerDay;
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(fightEventProvider);
 
     final defaultBoxDecoration = BoxDecoration(
-      borderRadius: BorderRadius.circular(6.0),
-      border: Border.all(color: Colors.grey[500]!, width: 1.0),
+      borderRadius: BorderRadius.circular(8.0),
     );
 
     return RefreshIndicator(
@@ -46,10 +48,10 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: DARK_GREY_COLOR,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: TableCalendar(
-                    headerStyle: const HeaderStyle(
+                    headerStyle: HeaderStyle(
                       formatButtonVisible: false,
                       titleCentered: true,
                       leftChevronIcon: Icon(
@@ -71,12 +73,7 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                     firstDay: DateTime(1950),
                     lastDay: DateTime(DateTime.now().year + 1),
                     calendarStyle: CalendarStyle(
-                      todayDecoration: defaultBoxDecoration.copyWith(
-                        border: Border.all(
-                          color: Colors.grey[500]!,
-                          width: 1.0,
-                        ),
-                      ),
+                      todayDecoration: defaultBoxDecoration,
                       outsideDecoration: defaultBoxDecoration.copyWith(
                         border: Border.all(color: Colors.transparent),
                       ),
@@ -85,11 +82,112 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                       defaultTextStyle: defaultTextStyle,
                       weekendTextStyle: defaultTextStyle,
                       selectedDecoration: defaultBoxDecoration.copyWith(
-                        border: Border.all(color: Colors.lightBlue, width: 1.0),
+                        color: BLUE_COLOR,
+                      ),
+                    ),
+                    daysOfWeekStyle: DaysOfWeekStyle(
+                      weekdayStyle: defaultTextStyle.copyWith(
+                        color: Colors.grey,
+                      ),
+                      weekendStyle: defaultTextStyle.copyWith(
+                        color: Colors.grey,
                       ),
                     ),
                     onDaySelected: onDaySelected,
                     selectedDayPredicate: selectedDayPredicate,
+                    onHeaderTapped: (focusedDay) {
+                      showCupertinoModalPopup(
+                        context: context,
+                        builder:
+                            (_) => SafeArea(
+                              child: Container(
+                                height: 300,
+                                color: DARK_GREY_COLOR,
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 250,
+                                      child: CupertinoTheme(
+                                        data: CupertinoThemeData(
+                                          textTheme: CupertinoTextThemeData(
+                                            textStyle: defaultTextStyle,
+                                          ),
+                                        ),
+                                        child: CupertinoDatePicker(
+                                          backgroundColor: DARK_GREY_COLOR,
+                                          dateOrder: DatePickerDateOrder.ymd,
+                                          mode:
+                                              CupertinoDatePickerMode.monthYear,
+                                          initialDateTime: _focusedDay,
+                                          minimumDate: DateTime(1950),
+                                          maximumDate: DateTime(
+                                            DateTime.now().year + 1,
+                                          ),
+                                          onDateTimeChanged: (val) {
+                                            _datePickerDay = val;
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 31.h,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              fixedSize: Size(135.w, 31.h),
+                                              backgroundColor: Color(
+                                                0xff8c8c8c,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              '닫기',
+                                              style: defaultTextStyle,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.symmetric(horizontal: 4.w),
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                if (_datePickerDay != null) {
+                                                  onDaySelected(
+                                                    _datePickerDay!,
+                                                    _datePickerDay!,
+                                                  );
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: BLUE_COLOR,
+                                                fixedSize: Size(135.w, 31.h),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8.0),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                '확인',
+                                                style: defaultTextStyle,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -140,9 +238,10 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
             eventId: currentStateData.data!.id,
             eventName: currentStateData.data!.name,
             eventStartDateTimeInfo:
-                currentStateData.data!.earlyCardDateTimeInfo ?? currentStateData.data!.prelimCardDateTimeInfo,
+                currentStateData.data!.earlyCardDateTimeInfo ??
+                currentStateData.data!.prelimCardDateTimeInfo,
           ),
-          FightEventCardList(ife: currentStateData.data!,stream: false,)
+          FightEventCardList(ife: currentStateData.data!, stream: false),
         ],
       );
     } else {

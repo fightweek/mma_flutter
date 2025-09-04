@@ -53,84 +53,103 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           );
         }
         return Container(
-          color: BLACK_COLOR,
+          decoration:  BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment(0.50, -0.00),
+              end: Alignment(0.50, 0.90),
+              colors: [const Color(0xFF0F0F10), const Color(0xFF141416), const Color(0xFF1F2022), const Color(0xFF151517), const Color(0xFF0F0F10)],
+            ),
+          ),
           child: Stack(
             alignment: Alignment.center,
             children: [
               Positioned(
-                top: 20.h,
-                child: Text(
-                  '이번 주의 메인 이벤트',
-                  style: defaultTextStyle.copyWith(fontSize: 24.sp),
-                ),
-              ),
-              Positioned(
-                left: -6.w,
-                top: 94.h,
+                top: -1.h,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset('asset/img/component/red.png', height: 100.h),
-                    Text(
-                      DataUtils.extractLastName(data.winnerName),
-                      style: defaultTextStyle.copyWith(
-                        fontSize: 74.sp,
-                        fontFamily: 'BadGrunge',
-                        fontWeight: FontWeight.w500,
+                    Image.asset(
+                      'asset/img/component/black_home.png',
+                      height: 169.h,
+                    ),
+                    Positioned(
+                      top: 64.h,
+                      child: Text(
+                        DataUtils.extractLastName(data.winnerName),
+                        style: defaultTextStyle.copyWith(
+                          fontSize: 65.sp,
+                          fontFamily: 'Dalmation',
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 36.h,
+                      child: Text(
+                        '${weightClassMap[data.fightWeight] ?? '-'} ${data.title ? '타이틀전' : '매치'}',
+                        style: defaultTextStyle.copyWith(
+                          fontSize: 16.sp,
+                          letterSpacing: 6.0,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
               Positioned(
-                top: 158.h,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Image.asset(
-                    'asset/img/component/vs.png',
-                    height: 108.72.h,
+                top: 162.h,
+                child: Text(
+                  'VS',
+                  style: TextStyle(
+                    color: WHITE_COLOR,
+                    fontSize: 35.sp,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'dalmation',
                   ),
                 ),
               ),
               Positioned(
-                top: 253.h,
+                top: 161.h,
                 left: -6.w,
                 right: 0.w,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset('asset/img/component/blue.png', height: 100.h),
+                    Image.asset(
+                      'asset/img/component/black_home.png',
+                      height: 169.h,
+                    ),
                     Text(
                       DataUtils.extractLastName(data.loserName),
                       style: defaultTextStyle.copyWith(
                         fontSize: 74.sp,
-                        fontFamily: 'BadGrunge',
-                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Dalmation',
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ],
                 ),
               ),
               Positioned(
-                top: 177.h,
+                top: 168.h,
                 left: 0,
                 right: 0,
                 child: SingleChildScrollView(
+                  physics: NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
                       ClipRect(
                         child: Align(
                           alignment: Alignment.centerRight,
-                          widthFactor: 0.8,
+                          widthFactor: 1.w,
                           child: _renderImageWithOpacity(data.winnerBodyUrl),
                         ),
                       ),
                       ClipRect(
                         child: Align(
                           alignment: Alignment.centerLeft,
-                          widthFactor: 0.8,
                           child: Transform(
                             alignment: Alignment.center,
                             transform: Matrix4.identity()..scale(-1.0, 1.0),
@@ -143,57 +162,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
               ),
               Positioned(
-                top: 536.h,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                    color: DARK_GREY_COLOR,
-                  ),
-                  height: 143.h,
-                  width: 362.w,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 12.h, bottom: 13.5.h),
-                        child: Text(
-                          '${weightClassMap[data.fightWeight] ?? '-'} ${data.title ? '타이틀전' : '매치'}',
-                          style: defaultTextStyle.copyWith(fontSize: 12.sp),
+                top: 500.h,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _renderName(
+                          name: DataUtils.extractLastName(data.winnerName),
+                          borderColor: RED_COLOR,
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              DataUtils.formatDateTimeWithNWI(
-                                data.mainCardDateTimeInfo!.date,
-                              ),
-                              style: defaultTextStyle.copyWith(fontSize: 12.sp),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Container(
-                            height: 53.h,
-                            color: GREY_COLOR,
-                            width: 1.w,
-                          ),
-                          Expanded(
-                            child: Text(
-                              'KST ${DataUtils.formatDurationToHHMM(data.mainCardDateTimeInfo!.time)}',
-                              style: defaultTextStyle.copyWith(fontSize: 12.sp),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: Size(336.w,31.h),
-                          backgroundColor: BLUE_COLOR,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
+                        _renderName(
+                          name: DataUtils.extractLastName(data.loserName),
+                          borderColor: BLUE_COLOR,
                         ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 26.h, bottom: 11.h),
+                      child: Text(
+                        '${DataUtils.formatDateTimeWithNWI(data.mainCardDateTimeInfo!.date)} '
+                        '| KST ${DataUtils.formatDurationToHHMM(data.mainCardDateTimeInfo!.time)}',
+                        style: defaultTextStyle.copyWith(
+                          fontSize: 12.sp,
+                          letterSpacing: 3.0,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Container(
+                      width: 230.w,
+                      height: 37.h,
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.red, Colors.blue], // 빨 -> 파
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -205,22 +214,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             ),
                           );
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: BLACK_COLOR, // 내부 배경
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                        ),
                         child: Text(
-                          '라이브 채팅 참여하기',
-                          style: defaultTextStyle.copyWith(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
+                          "라이브 경기 바로가기",
+                          style: TextStyle(
+                            color: WHITE_COLOR,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         );
       },
+    );
+  }
+
+  _renderName({required String name, required Color borderColor}) {
+    return Container(
+      constraints: BoxConstraints(minHeight: 24.h, minWidth: 150.w),
+      padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 10.w),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: borderColor, width: 2.w),
+        color: Colors.black,
+      ),
+      child: Text(
+        name,
+        style: defaultTextStyle.copyWith(
+          overflow: TextOverflow.ellipsis,
+          fontWeight: FontWeight.w600,
+        ),
+        textAlign: TextAlign.center,
+      ),
     );
   }
 
@@ -235,9 +271,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       ),
       child: CachedNetworkImage(
         imageUrl: imgUrl,
-        height: 343.95.h,
-        width: 280.w,
+        height: 344.h,
+        width: 226.w,
         fit: BoxFit.contain,
+        errorWidget: (context, url, error) {
+          return Image.asset('asset/img/component/default-headshot.png');
+        },
       ),
     );
   }
