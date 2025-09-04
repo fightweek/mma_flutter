@@ -8,10 +8,9 @@ import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/fight_event/model/i_fighter_fight_event_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
-import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
 
-class FightEventCardRow extends StatefulWidget {
+class FightEventCardRow extends StatelessWidget {
   final IFighterFightEvent ffe;
   final BuildContext context;
   final WidgetRef ref;
@@ -24,21 +23,6 @@ class FightEventCardRow extends StatefulWidget {
   });
 
   @override
-  State<FightEventCardRow> createState() => _FightEventCardRowState();
-}
-
-class _FightEventCardRowState extends State<FightEventCardRow> {
-  late String winnerHeadshotUrl;
-  late String loserHeadshotUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    winnerHeadshotUrl = widget.ffe.winner.headshotUrl;
-    loserHeadshotUrl = widget.ffe.loser.headshotUrl;
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -47,7 +31,7 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _imageCard(context, widget.ffe.winner, widget.ref, true),
+              _imageCard(context, ffe.winner, ref, true),
               Expanded(
                 child: Column(
                   children: [
@@ -56,14 +40,23 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
                       child: Column(
                         children: [
                           Text(
-                            _splitName(widget.ffe.winner.name),
+                            _firstName(ffe.winner.name),
                             style: defaultTextStyle.copyWith(fontSize: 14.h),
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.right,
                           ),
                           Text(
-                            '${widget.ffe.winner.record.win}-${widget.ffe.winner.record.loss}-${widget.ffe.winner.record.draw}',
-                            style: defaultTextStyle.copyWith(fontSize: 14.h,color: GREY_COLOR),
+                            _lastName(ffe.winner.name),
+                            style: defaultTextStyle.copyWith(fontSize: 14.h),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
+                          ),
+                          Text(
+                            '${ffe.winner.record.win}-${ffe.winner.record.loss}-${ffe.winner.record.draw}',
+                            style: defaultTextStyle.copyWith(
+                              fontSize: 14.h,
+                              color: GREY_COLOR,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
@@ -71,12 +64,12 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
                     ),
                     Row(
                       children: [
-                        if (widget.ffe.result != null)
+                        if (ffe.result != null)
                           Icon(Icons.check, size: 16, color: Colors.green),
                         SizedBox(width: 2),
-                        if (widget.ffe.result != null)
+                        if (ffe.result != null)
                           Text(
-                            winMethodMap[widget.ffe.result!.winMethod]!,
+                            winMethodMap[ffe.result!.winMethod]!,
                             style: defaultTextStyle.copyWith(fontSize: 10.0),
                           ),
                       ],
@@ -92,10 +85,13 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
           child: Center(
             child: Column(
               children: [
-                if (widget.ffe.title)
+                if (ffe.title)
                   Text(
                     '타이틀전',
-                    style: defaultTextStyle.copyWith(color: Colors.yellow,fontSize: 5.0),
+                    style: defaultTextStyle.copyWith(
+                      color: Colors.yellow,
+                      fontSize: 5.0,
+                    ),
                   ),
                 Text('VS', style: defaultTextStyle.copyWith(fontSize: 12)),
               ],
@@ -111,20 +107,29 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
                 child: Column(
                   children: [
                     Text(
-                      _splitName(widget.ffe.loser.name),
+                      _firstName(ffe.loser.name),
                       style: defaultTextStyle.copyWith(fontSize: 14.0),
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.right,
                     ),
                     Text(
-                      '${widget.ffe.loser.record.win}-${widget.ffe.loser.record.loss}-${widget.ffe.loser.record.draw}',
-                      style: defaultTextStyle.copyWith(fontSize: 14.0, color: GREY_COLOR),
+                      _lastName(ffe.loser.name),
+                      style: defaultTextStyle.copyWith(fontSize: 14.0),
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.right,
+                    ),
+                    Text(
+                      '${ffe.loser.record.win}-${ffe.loser.record.loss}-${ffe.loser.record.draw}',
+                      style: defaultTextStyle.copyWith(
+                        fontSize: 14.0,
+                        color: GREY_COLOR,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-              _imageCard(context, widget.ffe.loser, widget.ref, false),
+              _imageCard(context, ffe.loser, ref, false),
             ],
           ),
         ),
@@ -132,12 +137,12 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
     );
   }
 
-  String _splitName(String name) {
-    if (name.contains(' ')) {
-      List<String> names = name.split(' ');
-      return '${names[0]}\n${names.sublist(1).join(' ')}';
-    }
-    return name;
+  String _firstName(String name){
+    return name.contains(' ') ? name.split(' ')[0] : name;
+  }
+
+  String _lastName(String name){
+    return !name.contains(' ') ? '' : name.split(' ')[1];
   }
 
   _imageCard(
@@ -158,25 +163,10 @@ class _FightEventCardRowState extends State<FightEventCardRow> {
         key: ValueKey(fighter.id),
         width: 78.w,
         height: 78.h,
-        imageUrl: left ? winnerHeadshotUrl : loserHeadshotUrl,
+        imageUrl: fighter.headshotUrl,
         placeholder: (context, url) => CircularProgressIndicator(),
         errorWidget: (context, url, error) {
-          return ElevatedButton(
-            onPressed: () async{
-              final urlMap = await ref
-                  .read(fighterProvider.notifier)
-                  .getHeadshotUrl(name: fighter.name);
-              print(urlMap['url']);
-              setState(() {
-                if (left) {
-                  winnerHeadshotUrl = urlMap['url']!;
-                } else {
-                  loserHeadshotUrl = urlMap['url']!;
-                }
-              });
-            },
-            child: Text('다시시도'),
-          );
+          return Image.asset('asset/img/component/default-headshot.png');
         },
       ),
     );

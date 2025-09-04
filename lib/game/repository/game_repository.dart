@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' hide Headers;
+import 'package:mma_flutter/game/model/game_attempt_response_model.dart';
 import 'package:mma_flutter/game/model/game_response_model.dart';
 import 'package:mma_flutter/game/model/name_game_questions_model.dart';
 import 'package:retrofit/error_logger.dart';
@@ -19,11 +20,13 @@ abstract class GameRepository {
 
   @GET('/attempt_count')
   @Headers({'accessToken': 'true'})
-  Future<int> getGameAttemptCount();
+  Future<GameAttemptResponseModel> getGameAttemptCount();
 
-  @POST('/subtract_attempt_count')
+  @POST('/update_attempt_count')
   @Headers({'accessToken': 'true'})
-  Future<void> subtractAttemptCount();
+  Future<void> updateAttemptCount({
+    @Query("isSubtract") required bool isSubtract
+});
 
   @PATCH('/update_point')
   @Headers({'accessToken': 'true'})

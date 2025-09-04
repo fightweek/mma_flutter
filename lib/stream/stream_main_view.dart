@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:mma_flutter/common/component/admob_service.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
@@ -37,12 +39,19 @@ class StreamMainView extends ConsumerStatefulWidget {
 class _StreamMainViewState extends ConsumerState<StreamMainView>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+  BannerAd? banner;
 
   @override
   void initState() {
     print('--stream main view init--');
     _tabController = TabController(length: 5, vsync: this);
     super.initState();
+    banner = BannerAd(
+      size: AdSize.banner,
+      adUnitId: AdMobService.bannerAdUnitId,
+      listener: AdMobService.bannerAdListener,
+      request: AdRequest(),
+    )..load();
 
     Future.microtask(() {
       ref.listenManual<AsyncValue<StreamMessageResponseModel>>(
@@ -102,14 +111,21 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: PreferredSize(preferredSize: Size.fromHeight(40.h), child: AppBar(
-        backgroundColor: BLACK_COLOR,
-        foregroundColor: WHITE_COLOR,
-      )),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(40.h),
+        child: AppBar(
+          backgroundColor: BLACK_COLOR,
+          foregroundColor: WHITE_COLOR,
+        ),
+      ),
       body: Column(
         children: [
           _header(),
-          Container(height: 50.h, color: Colors.yellow),
+          Container(
+            height: 50.h,
+            color: Colors.yellow,
+            child: banner == null ? Container() : AdWidget(ad: banner!),
+          ),
           Expanded(
             child: Column(
               children: [
@@ -230,7 +246,7 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
                   left: 0.w,
                   right: 0.w,
                   child: Text(
-                    '${weightClassMap[ffe.fightWeight]} 매치',
+                    '${ffe.fightWeight} MATCH',
                     style: defaultTextStyle.copyWith(
                       fontSize: 28.sp,
                       fontFamily: 'Dalmation',
@@ -298,18 +314,22 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
         _renderHeaderFighterInfo(
           name: ffe.winner.name,
           bodyUrl: ffe.winner.bodyUrl,
-          color: RED_COLOR
+          color: RED_COLOR,
         ),
         _renderHeaderFighterInfo(
           name: ffe.loser.name,
           bodyUrl: ffe.loser.bodyUrl,
-          color: BLUE_COLOR
+          color: BLUE_COLOR,
         ),
       ],
     );
   }
 
-  _renderHeaderFighterInfo({required String bodyUrl, required String name, required Color color}) {
+  _renderHeaderFighterInfo({
+    required String bodyUrl,
+    required String name,
+    required Color color,
+  }) {
     final imageHeight = 135.h;
     final imageWidth = 105.w;
     return Column(
