@@ -13,6 +13,7 @@ class AuthNotifier extends ChangeNotifier {
   final Ref ref;
 
   AuthNotifier({required this.ref}) {
+    print('init AuthNotifier');
     ref.listen<UserModelBase?>(userProvider, (previous, next) {
       if (previous != next) {
         notifyListeners();

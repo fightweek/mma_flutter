@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "783625914231",
+    "project_id": "mma-project-7dfc2",
+    "storage_bucket": "mma-project-7dfc2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:783625914231:android:4655769f875b8bd45e4372",
+        "android_client_info": {
+          "package_name": "com.example.mma_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN4Mi_ySE-aesAVlAU4-3ejC7uaWtaz4w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

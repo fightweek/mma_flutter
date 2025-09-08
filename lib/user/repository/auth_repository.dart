@@ -20,6 +20,11 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 abstract class AuthRepository {
   factory AuthRepository(Dio dio, {String baseUrl}) = _AuthRepository;
 
+  /**
+   * (authRepository) login, socialLogin response : accessToken, refreshToken
+   * (userRepository) getMe response : UserModel (nickname, id, email....)
+   */
+
   @POST('/login')
   Future<LoginResponse> login({@Body() required LoginRequest request});
 
