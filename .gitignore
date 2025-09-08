@@ -51,3 +51,5 @@ pubspec.yaml
 # Code generation file
 **/*.g.dart
 /lib/firebase_options.dart
+android/app/google-service.json
+android/app/google-services.json
