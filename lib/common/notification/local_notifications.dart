@@ -62,8 +62,8 @@ class LocalNotifications {
       scheduledDate,
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'channel 1',
-          'hello_fight_week',
+          'channel_2',
+          '경기 알림',
           importance: Importance.max,
           priority: Priority.high,
         ),

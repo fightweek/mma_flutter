@@ -12,7 +12,7 @@ const REFRESH_TOKEN_KEY = 'REFRESH_TOKEN';
 
 final emulatorIp = '10.0.2.2:8080';
 final simulatorIp = '127.0.0.1:8080';
-final localNetworkIp = '10.161.8.108:8080';
+final localNetworkIp = '10.137.53.108:8080';
 late final ip;
 // final ip = data.Platform.isIOS ? simulatorIp : emulatorIp;
 // final ip = '192.168.0.13:8080';

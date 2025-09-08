@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -91,14 +92,19 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     }
   }
 
-  Future<UserModelBase> join({
+  Future<UserModelBase> login({
     required String email,
     required String password,
   }) async {
     try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
       state = UserModelLoading();
       final resp = await authRepository.login(
-        request: LoginRequest(email: email, password: password),
+        request: LoginRequest(
+          email: email,
+          password: password,
+          fcmToken: fcmToken,
+        ),
       );
       await storage.write(key: ACCESS_TOKEN_KEY, value: resp.accessToken);
       await storage.write(key: REFRESH_TOKEN_KEY, value: resp.refreshToken);
@@ -144,26 +150,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       }
     } on Exception catch (e) {
       state = UserModelError(message: '로그인 실패');
-    }
-  }
-
-  Future<UserModelBase> login({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      state = UserModelLoading();
-      final resp = await authRepository.login(
-        request: LoginRequest(email: email, password: password),
-      );
-      await storage.write(key: ACCESS_TOKEN_KEY, value: resp.accessToken);
-      await storage.write(key: REFRESH_TOKEN_KEY, value: resp.refreshToken);
-      final userResp = await userRepository.getMe();
-      state = userResp;
-      return userResp;
-    } catch (e) {
-      state = UserModelError(message: '로그인 실패');
-      return Future.value(state);
     }
   }
 

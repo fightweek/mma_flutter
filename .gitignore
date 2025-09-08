@@ -50,3 +50,4 @@ pubspec.yaml
 
 # Code generation file
 **/*.g.dart
+/lib/firebase_options.dart

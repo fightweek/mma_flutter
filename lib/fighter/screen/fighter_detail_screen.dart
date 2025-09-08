@@ -1,6 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mma_flutter/admin/fighter/repository/admin_fighter_repository.dart';
+import 'package:mma_flutter/common/component/custom_alert_dialog.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
@@ -12,6 +16,8 @@ import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/model/update_preference_model.dart';
 import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
 import 'package:mma_flutter/fighter/repository/fighter_repository.dart';
+import 'package:mma_flutter/user/model/user_model.dart';
+import 'package:mma_flutter/user/provider/user_provider.dart';
 
 class FighterDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'fighter_detail';
@@ -36,7 +42,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     print('initialize detail screen');
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(fighterProvider.notifier).detail(id:widget.id);
+      ref.read(fighterProvider.notifier).detail(id: widget.id);
     });
     controller = TabController(length: 2, vsync: this);
     controller.addListener(tabListener);
@@ -68,7 +74,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
         child: Center(
           child: ElevatedButton(
             onPressed: () {
-              ref.read(fighterProvider.notifier).detail(id:widget.id);
+              ref.read(fighterProvider.notifier).detail(id: widget.id);
             },
             child: Text('다시시도'),
           ),
@@ -86,8 +92,10 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
 
   _renderInfo(FighterModel data) {
     return RefreshIndicator(
-      onRefresh: () async{
-        ref.read(fighterProvider.notifier).detail(id: data.id, forceRefetch: true);
+      onRefresh: () async {
+        ref
+            .read(fighterProvider.notifier)
+            .detail(id: data.id, forceRefetch: true);
       },
       child: SafeArea(
         child: SizedBox.expand(
@@ -115,7 +123,10 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                     ),
                     if (data.ranking != null)
                       Text('랭킹 ${data.ranking} 위', style: defaultTextStyle),
-                    _imageCard(data.headshotUrl),
+                    _imageCard(
+                      data.headshotUrl,
+                      data.name.replaceAll(' ', '-'),
+                    ),
                   ],
                 ),
                 Row(
@@ -140,14 +151,44 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     );
   }
 
-  _imageCard(String imgUrl) {
-    return Image.network(
-      height: 200,
-      width: 200,
-      imgUrl,
-      errorBuilder: (context, error, stackTrace) {
-        return Container(color: MY_MIDDLE_GREY_COLOR, height: 70, width: 70);
-      },
+  _imageCard(String imgUrl, String name) {
+    final role = (ref.read(userProvider) as UserModel).role;
+    return GestureDetector(
+      onTap:
+          role == 'ROLE_ADMIN'
+              ? () async {
+                try {
+                  await ref
+                      .read(adminFighterRepositoryProvider)
+                      .updateImage(fighterNameMap: {'fighterName': name});
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('이미지 업데이트 성공')),
+                  );
+                } catch (e) {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return CustomAlertDialog(
+                        titleMsg: '에러',
+                        contentMsg: 'reason : $e',
+                      );
+                    },
+                  );
+                }
+              }
+              : null,
+      child: CachedNetworkImage(
+        imageUrl: imgUrl,
+        height: 200.h,
+        width: 200.w,
+        errorWidget: (context, url, error) {
+          return Image.asset(
+            'asset/img/component/default-headshot.png',
+            height: 200.h,
+            width: 200.w,
+          );
+        },
+      ),
     );
   }
 
@@ -273,12 +314,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
               .where(
                 (ffe) => isUpcoming ? ffe.result == null : ffe.result != null,
               )
-              .map(
-                (ffe) => FightEventCard(
-                  ffe: ffe,
-                  fighterDetail: true,
-                ),
-              )
+              .map((ffe) => FightEventCard(ffe: ffe, fighterDetail: true))
               .toList(),
     );
   }
@@ -305,8 +341,8 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                 targetId: widget.id,
                 on: isOn,
               ),
-          like: category == PreferenceCategory.like ? isOn : null,
-          alert: category == PreferenceCategory.alert ? isOn : null
+              like: category == PreferenceCategory.like ? isOn : null,
+              alert: category == PreferenceCategory.alert ? isOn : null,
             );
         setState(() {
           if (isAlert) {

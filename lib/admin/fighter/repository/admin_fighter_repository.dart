@@ -26,6 +26,10 @@ abstract class AdminFighterRepository implements UpdatableRepository {
   @Headers({'accessToken': 'true'})
   Future<void> update();
 
+  @PUT("/image")
+  @Headers({'accessToken':'true'})
+  Future<void> updateImage({@Body() required Map<String,String> fighterNameMap});
+
   @POST('/save_game_fighters')
   @Headers({'accessToken': 'true','Content-Type': 'application/json'})
   Future<void> saveGameFighters({@Body() required List<String> chosenFighters});
