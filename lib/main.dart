@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -10,6 +12,7 @@ import 'package:mma_flutter/admin/news/screen/news_upload_screen.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/notification/local_notifications.dart';
 import 'package:mma_flutter/common/provider/route/router.dart';
+import 'package:mma_flutter/firebase_options.dart';
 import 'package:naver_login_sdk/naver_login_sdk.dart';
 import 'package:stack_trace/stack_trace.dart' as stack_trace;
 import 'package:timezone/data/latest.dart' as tz;
@@ -18,6 +21,37 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    RemoteNotification? notification = message.notification;
+    AndroidNotification? android = message.notification?.android;
+
+    if (notification != null && android != null) {
+      FlutterLocalNotificationsPlugin().show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            'channel_1',
+            '좋아하는 선수 경기 알림',
+            importance: Importance.defaultImportance,
+            priority: Priority.high,
+          ),
+        ),
+      );
+    }
+  });
   final navigatorKey = GlobalKey<NavigatorState>();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -67,9 +101,8 @@ void main() async {
           final screenHeight = mediaQuery.size.height;
 
           // 실제 기기 SafeArea 제외 높이
-          final safeHeight = screenHeight
-              - mediaQuery.padding.top
-              - mediaQuery.padding.bottom;
+          final safeHeight =
+              screenHeight - mediaQuery.padding.top - mediaQuery.padding.bottom;
 
           // 피그마 기준
           const figmaWidth = 402.0;
@@ -98,11 +131,9 @@ class _App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
-      locale: const Locale('ko', 'KR'), // 기본 언어 한국어
-      supportedLocales: const [
-        Locale('en', 'US'),
-        Locale('ko', 'KR'),
-      ],
+      locale: const Locale('ko', 'KR'),
+      // 기본 언어 한국어
+      supportedLocales: const [Locale('en', 'US'), Locale('ko', 'KR')],
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

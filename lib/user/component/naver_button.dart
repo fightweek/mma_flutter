@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/user/enumtype/login_platform.dart';
@@ -29,6 +30,7 @@ class NaverButton extends ConsumerWidget {
                     onSuccess: () async {
                       Log.d('Naver login succeed');
                       final accessToken = await NaverLoginSDK.getAccessToken();
+                      final fcmToken = await FirebaseMessaging.instance.getToken();
                       NaverLoginSDK.profile(
                         callback: ProfileCallback(
                           onSuccess: (resultCode, message, response) {
@@ -43,6 +45,7 @@ class NaverButton extends ConsumerWidget {
                                 accessToken: accessToken,
                                 email: profile.email!,
                                 socialId: profile.id!,
+                                fcmToken: fcmToken
                               ),
                             );
                           },
