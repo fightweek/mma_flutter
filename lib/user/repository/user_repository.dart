@@ -2,6 +2,7 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/dio/dio_provider.dart';
+import 'package:mma_flutter/user/model/join_request.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/error_logger.dart';
@@ -24,12 +25,15 @@ abstract class UserRepository {
 
   @GET('/check_dup_nickname')
   Future<bool> checkDuplicatedNickname({
-    @Body() required Map<String, String> nickname
+    @Body() required Map<String, String> nickname,
   });
 
   @POST('/update_nickname')
-  @Headers({'accessToken':'true'})
+  @Headers({'accessToken': 'true'})
   Future<UserModel> updateNickname({
-    @Body() required Map<String, String> nickname
+    @Body() required Map<String, String> nickname,
   });
+
+  @POST('/join')
+  Future<void> join({@Body() required JoinRequest request});
 }

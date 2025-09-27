@@ -13,7 +13,6 @@ class HomeScreenModel {
   final String loserName;
   final String fightWeight;
   final bool title;
-  final bool now;
 
   HomeScreenModel({
     required this.eventName,
@@ -24,7 +23,6 @@ class HomeScreenModel {
     required this.loserName,
     required this.fightWeight,
     required this.title,
-    required this.now,
   });
 
   factory HomeScreenModel.fromJson(Map<String, dynamic> json)

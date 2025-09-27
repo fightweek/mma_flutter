@@ -12,6 +12,8 @@ class UserModelError extends UserModelBase {
 
 class UserModelLoading extends UserModelBase {}
 
+class UserModelLoadingToHome extends UserModelBase {}
+
 class UserModelNicknameSetting extends UserModelBase {}
 
 @JsonSerializable()

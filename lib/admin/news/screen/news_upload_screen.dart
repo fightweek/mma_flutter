@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mma_flutter/admin/news/repository/admin_news_repository.dart';
-import 'package:mma_flutter/common/component/custom_text_form_field.dart';
+import 'package:mma_flutter/common/component/auth_text_form_field.dart';
 import 'package:mma_flutter/common/component/input_label.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
@@ -64,25 +64,21 @@ class _NewsUploadScreenState extends ConsumerState<NewsUploadScreen> {
                 title: '제목',
                 textStyle: defaultTextStyle.copyWith(color: Colors.black),
               ),
-              CustomTextFormField(
+              AuthTextFormField(
                 onChanged: (val) {
                   title = val;
                 },
-                height: 10.0,
                 textStyle: defaultTextStyle.copyWith(color: Colors.black),
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
               ),
               InputLabel(
                 title: '내용',
                 textStyle: defaultTextStyle.copyWith(color: Colors.black),
               ),
-              CustomTextFormField(
+              AuthTextFormField(
                 onChanged: (val) {
                   content = val;
                 },
-                height: 52.0,
                 textStyle: defaultTextStyle.copyWith(color: Colors.black),
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
               ),
               InputLabel(
                 title: '출처',
@@ -90,11 +86,9 @@ class _NewsUploadScreenState extends ConsumerState<NewsUploadScreen> {
               ),
               _renderDropDownButton(source, newsSources),
               if (source == newsSources.last)
-                CustomTextFormField(
+                AuthTextFormField(
                   onChanged: (val) {},
                   textStyle: defaultTextStyle.copyWith(color: Colors.black),
-                  height: 12.0,
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
                 ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 16.0),

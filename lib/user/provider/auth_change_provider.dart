@@ -7,7 +7,7 @@ import 'package:mma_flutter/user/provider/user_provider.dart';
 
 final authChangeProvider = ChangeNotifierProvider<AuthNotifier>((ref) {
   return AuthNotifier(ref: ref);
-},);
+});
 
 class AuthNotifier extends ChangeNotifier {
   final Ref ref;
@@ -21,7 +21,7 @@ class AuthNotifier extends ChangeNotifier {
     });
   }
 
-  String? redirectLogic(GoRouterState state){
+  String? redirectLogic(GoRouterState state) {
     print('redirect');
     final UserModelBase? user = ref.read(userProvider);
     final loggingIn = state.location == '/login';
@@ -36,25 +36,32 @@ class AuthNotifier extends ChangeNotifier {
     if (user is UserModelLoading) {
       return state.location == '/splash' ? null : '/splash';
     }
-    if(user == null){
+    if (user is UserModelLoadingToHome) {
+      return state.location == '/home_splash' ? null : '/home_splash';
+    }
+    if (user == null) {
       print(state.location);
       return loggingIn ? null : '/login';
     }
 
-    if(user is UserModelNicknameSetting){
+    if (user is UserModelNicknameSetting) {
       print('user model nickname setting');
       return state.location == '/init_nickname' ? null : '/init_nickname';
     }
 
-    if(user is UserModel){
+    if (user is UserModel) {
       // '/splash' 는 처음 앱 시작할 때 라우팅되는 경로
       print('user is usermodel');
-      return (loggingIn || (state.location == '/splash') || (state.location == '/init_nickname')) ? '/' : null;
+      return (loggingIn ||
+              state.location == '/splash' ||
+              state.location == '/home_splash' ||
+              state.location == '/init_nickname')
+          ? '/'
+          : null;
     }
-    if(user is UserModelError){
+    if (user is UserModelError) {
       return !loggingIn ? '/login' : null;
     }
     return null;
   }
-
 }

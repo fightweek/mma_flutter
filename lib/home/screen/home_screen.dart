@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
+import 'package:mma_flutter/common/screen/home_splash_screen.dart';
 import 'package:mma_flutter/common/screen/splash_screen.dart';
 import 'package:mma_flutter/common/utils/data_utils.dart';
 import 'package:mma_flutter/home/provider/home_future_provider.dart';
@@ -45,7 +46,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
         );
       },
-      loading: () => Center(child: SplashScreen()),
+      loading: () => Center(child: HomeSplashScreen()),
       data: (data) {
         if (data == null) {
           return Center(
@@ -53,11 +54,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           );
         }
         return Container(
-          decoration:  BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment(0.50, -0.00),
               end: Alignment(0.50, 0.90),
-              colors: [const Color(0xFF0F0F10), const Color(0xFF141416), const Color(0xFF1F2022), const Color(0xFF151517), const Color(0xFF0F0F10)],
+              colors: [
+                const Color(0xFF0F0F10),
+                const Color(0xFF141416),
+                const Color(0xFF1F2022),
+                const Color(0xFF151517),
+                const Color(0xFF0F0F10),
+              ],
             ),
           ),
           child: Stack(
@@ -143,7 +150,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       ClipRect(
                         child: Align(
                           alignment: Alignment.centerRight,
-                          widthFactor: 1.w,
+                          widthFactor: 0.95.w,
                           child: _renderImageWithOpacity(data.winnerBodyUrl),
                         ),
                       ),
@@ -182,15 +189,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 26.h, bottom: 11.h),
-                      child: Text(
-                        '${DataUtils.formatDateTimeWithNWI(data.mainCardDateTimeInfo!.date)} '
-                        '| KST ${DataUtils.formatDurationToHHMM(data.mainCardDateTimeInfo!.time)}',
-                        style: defaultTextStyle.copyWith(
-                          fontSize: 12.sp,
-                          letterSpacing: 3.0,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      child:
+                          data.mainCardDateTimeInfo != null
+                              ? Text(
+                                '${DataUtils.formatDateTimeWithNWI(data.mainCardDateTimeInfo!.date)} '
+                                '| KST ${DataUtils.formatDurationToHHMM(data.mainCardDateTimeInfo!.time)}',
+                                style: defaultTextStyle.copyWith(
+                                  fontSize: 12.sp,
+                                  letterSpacing: 3.0,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                              : SizedBox(height: 12.h),
                     ),
                     Container(
                       width: 230.w,

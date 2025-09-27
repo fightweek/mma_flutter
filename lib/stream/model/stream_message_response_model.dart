@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mma_flutter/stream/bet_and_vote/model/vote_rate_response_model.dart';
+import 'package:mma_flutter/stream/vote/model/vote_rate_response_model.dart';
 import 'package:mma_flutter/stream/chat/model/chat_response_model.dart';
 import 'package:mma_flutter/stream/model/stream_fight_event_model.dart';
 

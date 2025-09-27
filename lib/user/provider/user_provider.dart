@@ -6,6 +6,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/secure_storage_provider.dart';
 import 'package:mma_flutter/user/enumtype/login_platform.dart';
+import 'package:mma_flutter/user/model/join_request.dart';
 import 'package:mma_flutter/user/model/login_request.dart';
 import 'package:mma_flutter/user/model/naver_login_request.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
@@ -92,13 +93,10 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     }
   }
 
-  Future<UserModelBase> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> login({required String email, required String password}) async {
     try {
       final fcmToken = await FirebaseMessaging.instance.getToken();
-      state = UserModelLoading();
+      state = UserModelLoadingToHome();
       final resp = await authRepository.login(
         request: LoginRequest(
           email: email,
@@ -110,10 +108,15 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       await storage.write(key: REFRESH_TOKEN_KEY, value: resp.refreshToken);
       final userResp = await userRepository.getMe();
       state = userResp;
-      return userResp;
-    } catch (e) {
-      state = UserModelError(message: '로그인 실패');
-      return Future.value(state);
+    } on DioException catch (e) {
+      print('로그인 실패!, error = $e');
+      if ((e.response?.statusCode!) == 401) {
+        state = UserModelError(message: '아이디 또는 비밀번호가 맞지 않습니다.\n다시 확인해주세요.');
+      } else {
+        state = UserModelError(message: '로그인 실패');
+      }
+    } on Exception {
+      state = UserModelError(message: '알 수 없는 오류 발생');
     }
   }
 
@@ -122,7 +125,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     SocialLoginRequest? request,
   }) async {
     try {
-      state = UserModelLoading();
+      state = UserModelLoadingToHome();
       if (platform == LoginPlatform.google) {
         request = await GoogleLoginService.login();
       } else if (platform == LoginPlatform.kakao) {
@@ -142,14 +145,33 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     } on DioException catch (e) {
       print('소셜 로그인 실패!, error = $e');
       if ((e.response?.statusCode!) == 403) {
+        /// 소셜 로그인을 통해 회원가입 시도하지만, 해당 계정이 일반 회원가입을 통해
         state = UserModelError(
           message: '중복된 이메일 계정이 이미 존재합니다.\n다른 플랫폼으로 다시 로그인해주세요.',
         );
       } else {
         state = UserModelError(message: '로그인 실패');
       }
-    } on Exception catch (e) {
-      state = UserModelError(message: '로그인 실패');
+    } on Exception {
+      state = UserModelError(message: '알 수 없는 오류 발생');
+    }
+  }
+
+  Future<void> join({required JoinRequest request}) async {
+    try {
+      state = UserModelLoadingToHome();
+      await userRepository.join(request: request);
+      await login(email: request.email, password: request.password);
+    } on DioException catch (e) {
+      print('회원가입 실패!, error = $e');
+      if ((e.response?.statusCode!) == 400) {
+        /// 소셜 로그인을 통해 회원가입 시도하지만, 해당 계정이 일반 회원가입을 통해
+        state = UserModelError(message: '중복된 닉네임/이메일 계정이 이미 존재합니다.');
+      } else {
+        state = UserModelError(message: '회원가입 실패');
+      }
+    } on Exception {
+      state = UserModelError(message: '알 수 없는 오류 발생');
     }
   }
 

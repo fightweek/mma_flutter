@@ -62,18 +62,8 @@ class FightEventCardRow extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Row(
-                      children: [
-                        if (ffe.result != null)
-                          Icon(Icons.check, size: 16, color: Colors.green),
-                        SizedBox(width: 2),
-                        if (ffe.result != null)
-                          Text(
-                            winMethodMap[ffe.result!.winMethod]!,
-                            style: defaultTextStyle.copyWith(fontSize: 10.0),
-                          ),
-                      ],
-                    ),
+                    if (ffe.result != null && ffe.result!.winMethod != null)
+                      _renderWinMethodFromWinner(),
                   ],
                 ),
               ),
@@ -137,11 +127,11 @@ class FightEventCardRow extends StatelessWidget {
     );
   }
 
-  String _firstName(String name){
+  String _firstName(String name) {
     return name.contains(' ') ? name.split(' ')[0] : name;
   }
 
-  String _lastName(String name){
+  String _lastName(String name) {
     return !name.contains(' ') ? '' : name.split(' ')[1];
   }
 
@@ -169,6 +159,19 @@ class FightEventCardRow extends StatelessWidget {
           return Image.asset('asset/img/component/default-headshot.png');
         },
       ),
+    );
+  }
+
+  Widget _renderWinMethodFromWinner() {
+    return Row(
+      children: [
+        Icon(Icons.check, size: 16, color: Colors.green),
+        SizedBox(width: 2),
+        Text(
+          winMethodMap[ffe.result!.winMethod]!,
+          style: defaultTextStyle.copyWith(fontSize: 10.0),
+        ),
+      ],
     );
   }
 }
