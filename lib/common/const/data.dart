@@ -5,14 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
-import 'package:mma_flutter/stream/bet_and_vote/model/bet_request_model.dart';
+import 'package:mma_flutter/stream/bet/model/bet_request_model.dart';
 
 const ACCESS_TOKEN_KEY = 'ACCESS_TOKEN';
 const REFRESH_TOKEN_KEY = 'REFRESH_TOKEN';
 
 final emulatorIp = '10.0.2.2:8080';
 final simulatorIp = '127.0.0.1:8080';
-final localNetworkIp = '10.137.53.108:8080';
+final localNetworkIp = '10.173.152.108:8080';
 late final ip;
 // final ip = data.Platform.isIOS ? simulatorIp : emulatorIp;
 // final ip = '192.168.0.13:8080';
@@ -35,7 +35,6 @@ final Map<String, String> weightClassMap = {
 };
 
 final Map<WinMethod, String> winMethodMap = {
-  WinMethod.dq : '실격(상대방)',
   WinMethod.sub : '서브미션',
   WinMethod.koTko : 'KO/TKO',
   WinMethod.sDec : '판정(스플릿)',
@@ -87,3 +86,10 @@ Future<bool> isEmulator() async {
 
   return false;
 }
+
+final betDescription = ''
+    '승자 예측 성공: 2배\n\n'
+    'KO/서브미션 예측 성공: 4배\n\n'
+    'KO/서브미션 + 라운드 예측 성공: 8배\n\n'
+    '판정승 예측 성공: 3배\n\n'
+    '무승부 예측 성공: 30배\n\n';

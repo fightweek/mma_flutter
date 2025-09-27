@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/admin/common_update_screen.dart';
 import 'package:mma_flutter/admin/news/screen/news_upload_screen.dart';
 import 'package:mma_flutter/common/const/colors.dart';
+import 'package:mma_flutter/search/screen/search_screen.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 
@@ -13,12 +14,14 @@ class DefaultLayout extends ConsumerWidget {
   final Widget? floatingActionButton;
   final Widget child;
   final Color? backGroundColor;
+  final bool? resizeToAvoidBottomInset;
 
   const DefaultLayout({
     required this.child,
     this.floatingActionButton,
     this.bottomNavigationBar,
     this.backGroundColor,
+    this.resizeToAvoidBottomInset,
     super.key,
   });
 
@@ -26,6 +29,7 @@ class DefaultLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.read(userProvider);
     return Scaffold(
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset ?? true,
       drawer:
           user is UserModel
               ? Drawer(
@@ -61,19 +65,31 @@ class DefaultLayout extends ConsumerWidget {
               : null,
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,
-      appBar: renderAppBar(),
+      appBar: renderAppBar(user, context),
       backgroundColor: backGroundColor ?? BACKGROUND_COLOR,
       body: child,
     );
   }
 
-  PreferredSize renderAppBar() {
+  PreferredSize renderAppBar(UserModelBase? user, BuildContext context) {
     return PreferredSize(
       preferredSize: Size.fromHeight(56.h),
       child: AppBar(
         iconTheme: IconThemeData(color: WHITE_COLOR),
         backgroundColor: BLACK_COLOR,
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
+        actions:
+            user is UserModel
+                ? [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => SearchScreen()),
+                      );
+                    },
+                    icon: Icon(Icons.search),
+                  ),
+                ]
+                : null,
       ),
     );
   }

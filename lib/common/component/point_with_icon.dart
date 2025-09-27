@@ -6,9 +6,9 @@ import 'package:mma_flutter/user/model/user_model.dart';
 
 class PointWithIcon extends StatelessWidget {
 
-  final UserModel user;
+  final int point;
 
-  const PointWithIcon({required this.user, super.key});
+  const PointWithIcon({required this.point, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +18,10 @@ class PointWithIcon extends StatelessWidget {
           WidgetSpan(
             child: Image.asset('asset/img/icon/point.png',color: Color(0xffFFFAF8),)
           ),
-          WidgetSpan(child: SizedBox(width: 4.0)),
+          WidgetSpan(child: SizedBox(width: 5.0)),
           TextSpan(
-            text: user.point.toString(),
-            style: TextStyle(fontSize: 15.sp, color: WHITE_COLOR),
+            text: point.toString(),
+            style: TextStyle(fontSize: 14.sp, color: WHITE_COLOR),
           ),
         ],
       ),

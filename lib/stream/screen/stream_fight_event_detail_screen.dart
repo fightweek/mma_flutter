@@ -7,11 +7,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
-import 'package:mma_flutter/common/utils/data_utils.dart';
 import 'package:mma_flutter/fight_event/component/fight_event_card_list.dart';
-import 'package:mma_flutter/fight_event/component/stream_fight_event_card.dart';
-import 'package:mma_flutter/stream/bet_and_vote/model/bet_request_model.dart';
-import 'package:mma_flutter/stream/bet_and_vote/model/single_bet_model.dart';
+import 'package:mma_flutter/stream/bet/model/single_bet_model.dart';
+import 'package:mma_flutter/stream/bet/provider/bet_card_provider.dart';
 import 'package:mma_flutter/stream/model/stream_fight_event_model.dart';
 import 'package:mma_flutter/stream/provider/stream_component_providers.dart';
 import 'package:mma_flutter/stream/provider/stream_fight_event_provider.dart';
@@ -59,7 +57,6 @@ class _EventDetailScreenState
   Widget build(BuildContext context) {
     bool betAvailable = checkBoxValues.any((value) => value);
 
-    print('stream fight event detail screen rebuild!');
     final state = ref.watch(streamFightEventProvider);
 
     if (state is StateLoading) {
@@ -78,20 +75,6 @@ class _EventDetailScreenState
     }
 
     final event = state as StateData<StreamFightEventModel>;
-
-    // final currentIndex = event.data!.fighterFightEvents.indexWhere(
-    //   (e) => e.status == StreamFighterFightEventStatus.now,
-    // );
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (_scrollController.hasClients && currentIndex != -1) {
-    //     print('--animate--');
-    //     _scrollController.animateTo(
-    //       currentIndex * 100.0, // 카드 높이 추정 (조정 필요)
-    //       duration: Duration(milliseconds: 800),
-    //       curve: Curves.easeInOut,
-    //     );
-    //   }
-    // });
 
     return SafeArea(
       child: Container(
@@ -119,39 +102,45 @@ class _EventDetailScreenState
             if (betAvailable)
               Positioned(
                 bottom: 18.h,
-                height: 22.h,
-                left: 155.w,
-                right: 155.w,
-                child: ElevatedButton(
-                  onPressed: () {
-                    ref.read(betTargetProvider.notifier).update((state) {
-                      return event.data!.fighterFightEvents
-                          .mapIndexed((index, element) {
-                            if (checkBoxValues[index] == true) {
-                              return SingleBetModel(
-                                title: element.title,
-                                fighterFightEventId: element.id,
-                                winnerName: element.winner.name,
-                                loserName: element.loser.name,
-                              );
-                            }
-                            return null;
-                          })
-                          .whereType<SingleBetModel>()
-                          .toList();
-                    });
-                    widget.tabController.animateTo(2);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: BLUE_COLOR,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                height: 31.h,
+                left: 137.5.w,
+                right: 137.5.w,
+                child: SizedBox(
+                  height: 31.h,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      ref.invalidate(betCardProvider);
+                      ref.read(betTargetProvider.notifier).update((state) {
+                        return event.data!.fighterFightEvents
+                            .mapIndexed((index, element) {
+                              if (checkBoxValues[index] == true) {
+                                return SingleBetModel(
+                                  title: element.title,
+                                  fightWeight: element.fightWeight,
+                                  fighterFightEventId: element.id,
+                                  winnerName: element.winner.name,
+                                  loserName: element.loser.name,
+                                );
+                              }
+                              return null;
+                            })
+                            .whereType<SingleBetModel>()
+                            .toList();
+                      });
+                      widget.tabController.animateTo(2);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: BLUE_COLOR,
+                      foregroundColor: WHITE_COLOR,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    '배팅하기',
-                    style: defaultTextStyle.copyWith(fontSize: 10.sp),
+                    child: Text(
+                      '배팅하러 가기',
+                      style: defaultTextStyle.copyWith(fontSize: 14.sp),
+                    ),
                   ),
                 ),
               ),

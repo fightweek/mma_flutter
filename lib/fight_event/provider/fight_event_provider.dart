@@ -25,7 +25,10 @@ class ScheduleStateNotifier
   final Ref ref;
 
   ScheduleStateNotifier({required this.ref, required this.scheduleRepository})
-    : super({DateFormat('yyyy-MM-dd').format(DateTime.now()): StateLoading()}) {
+    : super({
+        DateFormat('yyyy-MM-dd').format(DateTime.now()):
+            StateLoading<FightEventModel>(),
+      }) {
     print('ScheduleStateNotifier 생성됨');
     getSchedule(date: DateTime.now());
   }
@@ -66,9 +69,7 @@ class ScheduleStateNotifier
     }
   }
 
-  void updatePreference({
-    required UpdatePreferenceModel model,
-  }) {
+  void updatePreference({required UpdatePreferenceModel model}) {
     scheduleRepository.updatePreference(request: model);
   }
 

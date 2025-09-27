@@ -13,6 +13,8 @@ import 'package:mma_flutter/user/provider/auth_change_provider.dart';
 import 'package:mma_flutter/user/screen/init_nickname_screen.dart';
 import 'package:mma_flutter/user/screen/login_screen.dart';
 
+import '../../screen/home_splash_screen.dart';
+
 final routerProvider = Provider<GoRouter>((ref) {
   final provider = ref.read(authChangeProvider);
   return GoRouter(
@@ -95,6 +97,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/splash',
         name: SplashScreen.routeName,
         builder: (context, state) => SplashScreen(),
+      ),
+      GoRoute(
+        path: '/home_splash',
+        name: HomeSplashScreen.routeName,
+        builder: (context, state) => HomeSplashScreen(),
       ),
       GoRoute(
         path: '/init_nickname',

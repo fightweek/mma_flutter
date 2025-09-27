@@ -7,24 +7,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:mma_flutter/common/component/admob_service.dart';
+import 'package:mma_flutter/common/service/admob_service.dart';
 import 'package:mma_flutter/common/const/colors.dart';
-import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
-import 'package:mma_flutter/stream/chat/model/chat_request_model.dart';
+import 'package:mma_flutter/stream/bet/screen/bet_screen.dart';
 import 'package:mma_flutter/stream/chat/model/join_request_model.dart';
 import 'package:mma_flutter/stream/model/stream_fight_event_model.dart';
 import 'package:mma_flutter/stream/model/stream_message_request_model.dart';
 import 'package:mma_flutter/stream/model/stream_message_response_model.dart';
+import 'package:mma_flutter/stream/bet/provider/bet_history_provider.dart';
 import 'package:mma_flutter/stream/provider/socket_stream_provider.dart';
 import 'package:mma_flutter/stream/provider/stream_component_providers.dart';
 import 'package:mma_flutter/stream/provider/stream_fight_event_provider.dart';
-import 'package:mma_flutter/stream/screen/bet_screen.dart';
-import 'package:mma_flutter/stream/screen/chat_room.dart';
+import 'package:mma_flutter/stream/bet/screen/bet_history_screen.dart';
+import 'package:mma_flutter/stream/chat/screen/chat_room.dart';
 import 'package:mma_flutter/stream/screen/stream_fight_event_detail_screen.dart';
 import 'package:mma_flutter/stream/screen/stream_fighter_info_screen.dart';
-import 'package:mma_flutter/stream/screen/today_bet_history_screen.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 
 class StreamMainView extends ConsumerStatefulWidget {
@@ -97,6 +96,8 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
   Widget build(BuildContext context) {
     print('rebuild stream main view');
     final socket = ref.watch(socketProvider);
+    final state = ref.watch(streamFightEventProvider);
+
     socket.sink.add(
       json.encode(
         StreamMessageRequestModel(
@@ -120,11 +121,11 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
       ),
       body: Column(
         children: [
-          _header(),
+          _header(state: state),
           Container(
             height: 50.h,
             color: Colors.yellow,
-            child: banner == null ? Container() : AdWidget(ad: banner!),
+            // child: banner == null ? Container() : AdWidget(ad: banner!),
           ),
           Expanded(
             child: Column(
@@ -167,12 +168,15 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
                     physics: NeverScrollableScrollPhysics(),
                     controller: _tabController,
                     children: [
-                      _renderFighterInfoScreen(),
+                      _renderFighterInfoScreen(state: state),
                       StreamFightEventDetailScreen(
                         tabController: _tabController,
                       ),
-                      BetScreen(key: UniqueKey()),
-                      TodayBetHistoryScreen(),
+                      BetScreen(
+                        tabController: _tabController,
+                        key: UniqueKey(),
+                      ),
+                      _renderBetHistoryScreen(state: state),
                       ChatRoom(user: widget.user, socket: socket),
                     ],
                   ),
@@ -185,43 +189,40 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
     );
   }
 
-  Widget _renderFighterInfoScreen() {
-    final state = ref.watch(streamFightEventProvider);
-    if (state is StateLoading) {
-      return Center(child: CircularProgressIndicator());
+  Widget _renderFighterInfoScreen({
+    required StateBase<StreamFightEventModel> state,
+  }) {
+    if (state is! StateData) {
+      return _renderNonDataState(state);
     }
-    if (state is StateError) {
-      return ElevatedButton(
-        onPressed: () {
-          ref
-              .read(streamFightEventProvider.notifier)
-              .getCurrentFightEventInfo();
-        },
-        child: Text('다시시도'),
-      );
-    }
-    final ffe = _getCurrentOrLastFightEvent(
+    final ffe = _getCurrentOFirstFightEvent(
       state as StateData<StreamFightEventModel>,
     );
     return FighterInfoScreen(f1: (ffe).winner, f2: ffe.loser);
   }
 
-  _header() {
-    final state = ref.watch(streamFightEventProvider);
-    if (state is StateLoading) {
-      return Center(child: CircularProgressIndicator());
+  Widget _renderBetHistoryScreen({
+    required StateBase<StreamFightEventModel> state,
+  }) {
+    if (state is! StateData) {
+      return _renderNonDataState(state);
     }
-    if (state is StateError) {
-      return ElevatedButton(
-        onPressed: () {
-          ref
-              .read(streamFightEventProvider.notifier)
-              .getCurrentFightEventInfo();
-        },
-        child: Text('다시시도'),
-      );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(selectedBetHistoryEventIdProvider.notifier)
+          .update((s) => (state as StateData<StreamFightEventModel>).data!.id);
+    });
+    return BetHistoryScreen(
+      tabController: _tabController,
+      userPoint: widget.user.point,
+    );
+  }
+
+  Widget _header({required StateBase<StreamFightEventModel> state}) {
+    if (state is! StateData) {
+      return _renderNonDataState(state);
     }
-    final ffe = _getCurrentOrLastFightEvent(
+    final ffe = _getCurrentOFirstFightEvent(
       state as StateData<StreamFightEventModel>,
     );
     final leftPercent = ffe.winnerVoteRate.toInt();
@@ -364,13 +365,30 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
   }
 
   /// last : 아직 이벤트 시작하지 않은 경우
-  StreamFighterFightEventModel _getCurrentOrLastFightEvent(
+  StreamFighterFightEventModel _getCurrentOFirstFightEvent(
     StateData<StreamFightEventModel> state,
   ) {
     final fe = state.data!;
     return fe.fighterFightEvents.firstWhereOrNull(
           (e) => e.status == StreamFighterFightEventStatus.now,
         ) ??
-        fe.fighterFightEvents.last;
+        fe.fighterFightEvents.first;
+  }
+
+  Widget _renderNonDataState(StateBase<StreamFightEventModel> state) {
+    if (state is StateLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+    if (state is StateError) {
+      return ElevatedButton(
+        onPressed: () {
+          ref
+              .read(streamFightEventProvider.notifier)
+              .getCurrentFightEventInfo();
+        },
+        child: Text('다시시도'),
+      );
+    }
+    return SizedBox();
   }
 }

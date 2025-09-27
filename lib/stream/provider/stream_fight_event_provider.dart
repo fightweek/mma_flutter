@@ -1,24 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
-import 'package:mma_flutter/stream/bet_and_vote/model/bet_request_model.dart';
-import 'package:mma_flutter/stream/bet_and_vote/model/vote_rate_response_model.dart';
-import 'package:mma_flutter/stream/bet_and_vote/model/vote_request_model.dart';
+import 'package:mma_flutter/stream/bet/model/bet_request_model.dart';
 import 'package:mma_flutter/stream/model/stream_fight_event_model.dart';
-import 'package:mma_flutter/stream/repository/stream_repository.dart';
+import 'package:mma_flutter/stream/repository/stream_fight_event_repository.dart';
+import 'package:mma_flutter/stream/vote/model/vote_rate_response_model.dart';
+import 'package:mma_flutter/stream/vote/model/vote_request_model.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 
 final streamFightEventProvider = StateNotifierProvider<
   StreamStateNotifier,
   StateBase<StreamFightEventModel>
 >((ref) {
-  final repository = ref.read(streamRepositoryProvider);
+  final repository = ref.read(streamFightEventRepositoryProvider);
   return StreamStateNotifier(ref: ref, streamFightEventRepository: repository);
 });
 
 class StreamStateNotifier
     extends StateNotifier<StateBase<StreamFightEventModel>> {
-  final StreamRepository streamFightEventRepository;
+  final StreamFightEventRepository streamFightEventRepository;
   final Ref ref;
 
   StreamStateNotifier({
@@ -40,29 +40,7 @@ class StreamStateNotifier
     } catch (e, stackTrace) {
       print(e);
       print(stackTrace);
-      state = StateError(message: 'stream get current fight event info error');
-    }
-  }
-
-  Future<void> vote(VoteRequestModel request) async {
-    try {
-      final resp = await streamFightEventRepository.vote(request: request);
-      if (resp != null) {
-        updateVoteRate(resp);
-      }
-    } catch (e, stack) {
-      print(e);
-      print(stack);
-      state = StateError(message: 'error while requesting vote');
-    }
-  }
-
-  Future<void> bet(BetRequestModel request) async {
-    try {
-      final resp = await streamFightEventRepository.bet(request: request);
-      ref.read(userProvider.notifier).updatePoint(resp);
-    } catch (e) {
-      state = StateError(message: 'error while requesting bet');
+      state = StateError(message: 'error while getting current fight event info');
     }
   }
 

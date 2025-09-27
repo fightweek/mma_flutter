@@ -3,6 +3,7 @@ import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
 import 'package:mma_flutter/fight_event/model/i_fighter_fight_event_model.dart';
 
 abstract class IFightEventModel<T extends IFighterFightEvent> {
+  final int id;
   final String name;
 
   // @JsonKey(fromJson: DataUtils.stringToDateTime)
@@ -20,6 +21,7 @@ abstract class IFightEventModel<T extends IFighterFightEvent> {
   final List<T> fighterFightEvents;
 
   IFightEventModel({
+    required this.id,
     required this.name,
     required this.date,
     required this.mainCardDateTimeInfo,

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/user/model/verify_code_request.dart';
 import 'package:mma_flutter/user/repository/smtp_repository.dart';
 
-enum SmtpStatus { none, loading, sent, error, verified, failed }
+enum SmtpStatus { none, error, loading, verified, failed }
 
 final smtpProvider = StateNotifierProvider<SmtpStateNotifier, SmtpStatus>((
   ref,
@@ -23,7 +23,7 @@ class SmtpStateNotifier extends StateNotifier<SmtpStatus> {
       final res = await smtpRepository.sendJoinCode(
         emailTo: {'emailTo': emailTo},
       );
-      state = SmtpStatus.sent;
+      state = SmtpStatus.none;
       if (res) {
         return true;
       }
@@ -32,10 +32,6 @@ class SmtpStateNotifier extends StateNotifier<SmtpStatus> {
       state = SmtpStatus.error;
       return false;
     }
-  }
-
-  setStateNone(){
-    state = SmtpStatus.none;
   }
 
   Future<SmtpStatus> verifyCode(VerifyCodeRequest request) async {

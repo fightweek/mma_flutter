@@ -11,14 +11,13 @@ part 'fight_event_model.g.dart';
 
 @JsonSerializable()
 class FightEventModel extends IFightEventModel<FighterFightEventModel> {
-  final int id;
   final bool upcoming;
   final bool? alert;
 
   FightEventModel({
-    required this.id,
     required this.upcoming,
     required this.alert,
+    required super.id,
     required super.name,
     required super.date,
     required super.mainCardDateTimeInfo,
@@ -86,7 +85,7 @@ class FighterFightEventModel extends IFighterFightEvent<FighterModel> {
 
 @JsonSerializable()
 class FightResultModel {
-  final WinMethod winMethod;
+  final WinMethod? winMethod;
   final String? description;
   final int round;
   @JsonKey(fromJson: parseEndTime)
@@ -114,8 +113,6 @@ enum WinMethod {
   mDec,
   @JsonValue("S_DEC")
   sDec,
-  @JsonValue(("DQ"))
-  dq,
 }
 
 Duration parseEndTime(String time) {

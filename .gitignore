@@ -46,7 +46,6 @@ app.*.map.json
 
 asset/config/.env
 asset/img/logo/
-pubspec.yaml
 
 # Code generation file
 **/*.g.dart

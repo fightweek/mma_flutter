@@ -6,10 +6,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/stream/chat/model/chat_response_model.dart';
-import 'package:mma_flutter/stream/component/report_dialog.dart';
+import 'package:mma_flutter/report/component/report_dialog.dart';
 import 'package:mma_flutter/stream/model/stream_message_request_model.dart';
 import 'package:mma_flutter/stream/provider/stream_component_providers.dart';
-import 'package:mma_flutter/stream/report/model/report_request_model.dart';
+import 'package:mma_flutter/report/model/report_request_model.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 

@@ -13,6 +13,7 @@ part 'stream_fight_event_model.g.dart';
 class StreamFightEventModel extends IFightEventModel<StreamFighterFightEventModel>{
 
   StreamFightEventModel({
+    required super.id,
     required super.date,
     required super.name,
     required super.mainCardDateTimeInfo,
@@ -29,6 +30,7 @@ class StreamFightEventModel extends IFightEventModel<StreamFighterFightEventMode
     required List<StreamFighterFightEventModel> ffes,
   }) {
     return StreamFightEventModel(
+      id: id,
       date: date,
       name: name,
       mainCardDateTimeInfo: mainCardDateTimeInfo,

@@ -7,9 +7,10 @@ import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/utils/data_utils.dart';
 import 'package:mma_flutter/fight_event/component/fight_event_card_row.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
-import 'package:mma_flutter/stream/bet_and_vote/model/vote_request_model.dart';
 import 'package:mma_flutter/stream/model/stream_fight_event_model.dart';
 import 'package:mma_flutter/stream/provider/stream_fight_event_provider.dart';
+import 'package:mma_flutter/stream/vote/model/vote_request_model.dart';
+import 'package:mma_flutter/stream/vote/repository/vote_repository.dart';
 
 class StreamFightEventCard extends ConsumerStatefulWidget {
   final StreamFighterFightEventModel ffe;
@@ -93,7 +94,6 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
   }) {
     final leftPercent = widget.ffe.winnerVoteRate.toInt();
     final rightPercent = widget.ffe.loserVoteRate.toInt();
-    final winnerRate = leftPercent > rightPercent ? leftPercent : rightPercent;
     return InkWell(
       splashColor: Colors.white,
       highlightColor: Colors.white,
@@ -116,26 +116,21 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
                     child: Row(
                       children: [
                         Expanded(
-                          flex:
-                              leftPercent != rightPercent
-                                  ? winnerRate == leftPercent
-                                      ? leftPercent + 80
-                                      : leftPercent + 20
-                                  : 5,
+                          flex: leftPercent + 30,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: RED_COLOR,
                             ),
                             onPressed: () {
-                              ref
-                                  .read(streamFightEventProvider.notifier)
-                                  .vote(
-                                    VoteRequestModel(
-                                      fighterFightEventId: widget.ffe.id,
-                                      winnerId: widget.ffe.winner.id,
-                                      loserId: widget.ffe.loser.id,
-                                    ),
-                                  );
+                              ref.read(
+                                voteCreateFutureProvider(
+                                  VoteRequestModel(
+                                    fighterFightEventId: widget.ffe.id,
+                                    winnerId: widget.ffe.winner.id,
+                                    loserId: widget.ffe.loser.id,
+                                  ),
+                                ),
+                              );
                             },
                             child: Text(
                               '${DataUtils.extractLastName(winner.name)} ($leftPercent%)',
@@ -145,26 +140,21 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
                           ),
                         ),
                         Expanded(
-                          flex:
-                              leftPercent != rightPercent
-                                  ? winnerRate == rightPercent
-                                      ? rightPercent + 80
-                                      : rightPercent + 20
-                                  : 5,
+                          flex: rightPercent + 30,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: BLUE_COLOR,
                             ),
                             onPressed: () {
-                              ref
-                                  .read(streamFightEventProvider.notifier)
-                                  .vote(
-                                    VoteRequestModel(
-                                      fighterFightEventId: widget.ffe.id,
-                                      winnerId: widget.ffe.loser.id,
-                                      loserId: widget.ffe.winner.id,
-                                    ),
-                                  );
+                              ref.read(
+                                voteCreateFutureProvider(
+                                  VoteRequestModel(
+                                    fighterFightEventId: widget.ffe.id,
+                                    winnerId: widget.ffe.loser.id,
+                                    loserId: widget.ffe.winner.id,
+                                  ),
+                                ),
+                              );
                             },
                             child: Text(
                               '${DataUtils.extractLastName(loser.name)} ($rightPercent%)',
