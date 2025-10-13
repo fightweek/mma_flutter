@@ -7,6 +7,7 @@ part 'fighter_detail_model.g.dart';
 @JsonSerializable()
 class FighterDetailModel extends FighterModel {
   final int height;
+  final double? weight;
   final DateTime? birthday;
   final int? reach;
   final String? nation;
@@ -19,10 +20,10 @@ class FighterDetailModel extends FighterModel {
     required super.name,
     required super.ranking,
     required super.record,
-    required super.weight,
     required super.nickname,
     required super.headshotUrl,
     required this.height,
+    required this.weight,
     required this.birthday,
     required this.reach,
     required this.like,

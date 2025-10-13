@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/utils/data_utils.dart';
-import 'package:mma_flutter/fight_event/component/fight_event_card.dart';
+import 'package:mma_flutter/fight_event/component/fighter_fight_event_card.dart';
 import 'package:mma_flutter/fight_event/component/stream_fight_event_card.dart';
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
 import 'package:mma_flutter/fight_event/model/i_fight_event_model.dart';
@@ -83,9 +83,9 @@ class FightEventCardList extends StatelessWidget {
             checkBoxOnChanged!.call(value!, index);
           },
         )
-        : FightEventCard(
+        : FighterFightEventCard(
           ffe: ffe as FighterFightEventModel,
-          fighterDetail: false,
+          isFightEventCard: false,
         );
   }
 }

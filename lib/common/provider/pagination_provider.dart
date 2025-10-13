@@ -78,14 +78,15 @@ abstract class PaginationProvider<
         print('fetchMore=$fetchMore, isLoading=$isLoading, isRefetching=$isRefetching, isFetchingMore=$isFetchingMore');
         return;
       }
+      // 이미 데이터가 있는 상태에서 데이터를 더 가져오는 것이므로, Pagination 으로 타입 캐스팅
       if (fetchMore) {
-        // 이미 데이터가 있는 상태에서 가져오는 것이므로, 기존 데이터를 저장한 채로 상태 변경
         final pState = state as Pagination<T>;
         state = PaginationFetchingMore(
           meta: pState.meta,
           content: pState.content,
         );
       } else {
+        /// (데이터 있는 상태) refresh 지만, 기존 데이터를 일부 보여주고 싶을 때
         if (state is Pagination && !forceRefetch) {
           final pState = state as Pagination<T>;
           print('paginationfetching');

@@ -10,12 +10,11 @@ import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/common/utils/data_utils.dart';
-import 'package:mma_flutter/fight_event/component/fight_event_card.dart';
+import 'package:mma_flutter/fight_event/component/fighter_fight_event_card.dart';
 import 'package:mma_flutter/fighter/model/fighter_detail_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/model/update_preference_model.dart';
 import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
-import 'package:mma_flutter/fighter/repository/fighter_repository.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
 
@@ -115,7 +114,6 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                     ),
                     Row(
                       children: [
-                        _headerText('${data.weight} Kg'),
                         _heart != null
                             ? _headerIcon(icon: _heart!, isAlert: false)
                             : const SizedBox.shrink(),
@@ -161,9 +159,9 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                   await ref
                       .read(adminFighterRepositoryProvider)
                       .updateImage(fighterNameMap: {'fighterName': name});
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('이미지 업데이트 성공')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('이미지 업데이트 성공')));
                 } catch (e) {
                   showDialog(
                     context: context,
@@ -314,7 +312,10 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
               .where(
                 (ffe) => isUpcoming ? ffe.result == null : ffe.result != null,
               )
-              .map((ffe) => FightEventCard(ffe: ffe, fighterDetail: true))
+              .map(
+                (ffe) =>
+                    FighterFightEventCard(ffe: ffe, isFightEventCard: true),
+              )
               .toList(),
     );
   }

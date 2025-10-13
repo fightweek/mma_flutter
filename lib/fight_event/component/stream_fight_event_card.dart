@@ -5,7 +5,7 @@ import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/utils/data_utils.dart';
-import 'package:mma_flutter/fight_event/component/fight_event_card_row.dart';
+import 'package:mma_flutter/fight_event/component/fighter_fight_event_card_row.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/stream/model/stream_fight_event_model.dart';
 import 'package:mma_flutter/stream/provider/stream_fight_event_provider.dart';
@@ -74,7 +74,7 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
                 ),
               ],
             ),
-            FightEventCardRow(ffe: widget.ffe, context: context, ref: ref),
+            FighterFightEventCardRow(ffe: widget.ffe, context: context, ref: ref),
             if (widget.upcoming)
               showVoteBar(
                 expanded: isExpanded,

@@ -12,7 +12,7 @@ final fightEventProvider = StateNotifierProvider<
   ScheduleStateNotifier,
   Map<String, StateBase<FightEventModel>>
 >((ref) {
-  final scheduleRepository = ref.read(scheduleRepositoryProvider);
+  final scheduleRepository = ref.read(fightEventRepositoryProvider);
   return ScheduleStateNotifier(
     ref: ref,
     scheduleRepository: scheduleRepository,
@@ -21,7 +21,7 @@ final fightEventProvider = StateNotifierProvider<
 
 class ScheduleStateNotifier
     extends StateNotifier<Map<String, StateBase<FightEventModel>>> {
-  final ScheduleRepository scheduleRepository;
+  final FightEventRepository scheduleRepository;
   final Ref ref;
 
   ScheduleStateNotifier({required this.ref, required this.scheduleRepository})

@@ -125,7 +125,7 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
           Container(
             height: 50.h,
             color: Colors.yellow,
-            // child: banner == null ? Container() : AdWidget(ad: banner!),
+            child: banner == null ? Container() : AdWidget(ad: banner!),
           ),
           Expanded(
             child: Column(
