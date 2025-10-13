@@ -117,16 +117,17 @@ class StreamFighterModel extends FighterModel {
   final DateTime birthday;
   final int height;
   final String bodyUrl;
+  final double? weight;
 
   StreamFighterModel({
+    required super.id,
     required super.name,
     required super.nickname,
-    required super.weight,
     required super.record,
     required super.ranking,
     required super.headshotUrl,
+    required this.weight,
     required this.height,
-    required super.id,
     required this.birthday,
     required this.reach,
     required this.bodyUrl,

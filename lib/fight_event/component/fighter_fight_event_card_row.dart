@@ -10,12 +10,12 @@ import 'package:mma_flutter/fight_event/model/i_fighter_fight_event_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
 
-class FightEventCardRow extends StatelessWidget {
+class FighterFightEventCardRow extends StatelessWidget {
   final IFighterFightEvent ffe;
   final BuildContext context;
   final WidgetRef ref;
 
-  const FightEventCardRow({
+  const FighterFightEventCardRow({
     super.key,
     required this.ffe,
     required this.context,
@@ -62,7 +62,7 @@ class FightEventCardRow extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (ffe.result != null && ffe.result!.winMethod != null)
+                    if (ffe.result != null)
                       _renderWinMethodFromWinner(),
                   ],
                 ),
@@ -149,15 +149,18 @@ class FightEventCardRow extends StatelessWidget {
           pathParameters: {'id': fighter.id.toString()},
         );
       },
-      child: CachedNetworkImage(
-        key: ValueKey(fighter.id),
-        width: 78.w,
-        height: 78.h,
-        imageUrl: fighter.headshotUrl,
-        placeholder: (context, url) => CircularProgressIndicator(),
-        errorWidget: (context, url, error) {
-          return Image.asset('asset/img/component/default-headshot.png');
-        },
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: CachedNetworkImage(
+          key: ValueKey(fighter.id),
+          width: 86.w,
+          height: 55.h,
+          imageUrl: fighter.headshotUrl,
+          placeholder: (context, url) => CircularProgressIndicator(),
+          errorWidget: (context, url, error) {
+            return Image.asset('asset/img/component/default-headshot.png');
+          },
+        ),
       ),
     );
   }
@@ -167,9 +170,13 @@ class FightEventCardRow extends StatelessWidget {
       children: [
         Icon(Icons.check, size: 16, color: Colors.green),
         SizedBox(width: 2),
-        Text(
-          winMethodMap[ffe.result!.winMethod]!,
-          style: defaultTextStyle.copyWith(fontSize: 10.0),
+        SizedBox(
+          width: 60.w,
+          child: Text(
+            winMethodMap[ffe.result!.winMethod] ?? '',
+            style: defaultTextStyle.copyWith(fontSize: 10.0),
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );

@@ -12,7 +12,6 @@ class FighterModel implements ModelWithId{
   final String? nickname;
   final int? ranking;
   final FightRecordModel record;
-  final double? weight;
   final String headshotUrl;
 
   FighterModel({
@@ -21,14 +20,10 @@ class FighterModel implements ModelWithId{
     required this.ranking,
     required this.nickname,
     required this.record,
-    required this.weight,
     required this.headshotUrl,
   });
 
   factory FighterModel.fromJson(Map<String, dynamic> json){
-    if(json['weight'] == null){
-      print(json);
-    }
     return _$FighterModelFromJson(json);
   }
 

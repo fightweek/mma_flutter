@@ -4,14 +4,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/admin/component/fighter_name_check_box_for_game.dart';
 import 'package:mma_flutter/admin/fighter/repository/admin_fighter_repository.dart';
-import 'package:mma_flutter/admin/provider/common_update_provider.dart';
 import 'package:mma_flutter/common/component/custom_alert_dialog.dart';
-import 'package:mma_flutter/common/component/auth_text_form_field.dart';
 import 'package:mma_flutter/common/component/pagination_list_view.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
-import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/common/model/pagination_model.dart';
+import 'package:mma_flutter/fight_event/component/fighter_fight_event_card.dart';
+import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
+import 'package:mma_flutter/fight_event/provider/fight_event_pagination_provider.dart';
+import 'package:mma_flutter/fight_event/repository/fight_event_repository.dart';
 import 'package:mma_flutter/fighter/component/fighter_card.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/provider/fighter_pagination_provider.dart';
@@ -30,8 +31,9 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _textController = TextEditingController();
-  String _prevText = '';
+  String _inputText = '';
   List<String> selectedNames = [];
+  bool isFighterCategorySelected = true;
 
   @override
   void dispose() {
@@ -41,38 +43,57 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(fighterPaginationProvider);
-
     return Scaffold(
       backgroundColor: BACKGROUND_COLOR,
       body: SafeArea(
-        child: Column(
-          children: [
-            _searchBar(),
-            _renderFighterCards(state),
-            if ((ref.read(userProvider) as UserModel).role == 'ROLE_ADMIN' &&
-                selectedNames.isNotEmpty)
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    await ref
-                        .read(adminFighterRepositoryProvider)
-                        .saveGameFighters(chosenFighters: selectedNames);
-                  } catch (e) {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return CustomAlertDialog(
-                          titleMsg: '에러',
-                          contentMsg: 'reason : $e',
-                        );
-                      },
-                    );
-                  }
-                },
-                child: Text('저장'),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Column(
+            children: [
+              _searchBar(),
+              Padding(
+                padding: EdgeInsets.only(bottom: 20.h),
+                child: SizedBox(
+                  height: 24.h,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      _renderCategoryButton(label: '선수', isFighterCategory: true),
+                      SizedBox(width: 7.w),
+                      _renderCategoryButton(
+                        label: '이벤트',
+                        isFighterCategory: false,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-          ],
+              if (isFighterCategorySelected) _renderFighterCards(),
+              if (!isFighterCategorySelected) _renderFightEventCards(),
+              if ((ref.read(userProvider) as UserModel).role == 'ROLE_ADMIN' &&
+                  selectedNames.isNotEmpty)
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      await ref
+                          .read(adminFighterRepositoryProvider)
+                          .saveGameFighters(chosenFighters: selectedNames);
+                    } catch (e) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return CustomAlertDialog(
+                            titleMsg: '에러',
+                            contentMsg: 'reason : $e',
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Text('저장'),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -80,16 +101,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Widget _searchBar() {
     return Padding(
-      padding: EdgeInsets.only(top: 16.h),
+      padding: EdgeInsets.symmetric(vertical: 16.h),
       child: SizedBox(
         height: 38.h,
-        width: 362.w,
         child: TextFormField(
           controller: _textController,
           onChanged: onChanged,
           style: TextStyle(color: Colors.white, fontSize: 15.sp),
           decoration: InputDecoration(
-            contentPadding: EdgeInsets.only(top: 5.h,bottom: 5.h,left: 16.w),
+            contentPadding: EdgeInsets.only(top: 5.h, bottom: 5.h, left: 16.w),
             hintText: '검색어를 입력하세요.',
             hintStyle: TextStyle(
               color: GREY_COLOR,
@@ -110,22 +130,59 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   void onChanged(String value) {
-    print('changed');
-    if (_prevText.length > value.length) {
-      ref
-          .read(fighterPaginationProvider.notifier)
-          .paginate(params: {'name': value}, forceRefetch: true);
+    print(_inputText);
+    print(value);
+    if (_inputText.length > value.length) {
+      if(isFighterCategorySelected){
+        ref
+            .read(fighterPaginationProvider.notifier)
+            .paginate(params: {'name': value}, forceRefetch: true);
+      }else{
+        ref
+            .read(fightEventPaginationProvider.notifier)
+            .paginate(params: {'name': value}, forceRefetch: true);
+      }
     } else {
-      ref
-          .read(fighterPaginationProvider.notifier)
-          .paginate(params: {'name': value});
+      if(isFighterCategorySelected){
+        ref
+            .read(fighterPaginationProvider.notifier)
+            .paginate(params: {'name': value},);
+      }else{
+        ref
+            .read(fightEventPaginationProvider.notifier)
+            .paginate(params: {'name': value},);
+      }
     }
     setState(() {
-      _prevText = value;
+      _inputText = value;
     });
   }
 
-  _renderFighterCards(PaginationBase state) {
+  Widget _renderCategoryButton({
+    required String label,
+    required bool isFighterCategory,
+  }) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.zero,
+        backgroundColor:
+            isFighterCategory == isFighterCategorySelected
+                ? BLUE_COLOR
+                : DARK_GREY_COLOR,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+      ),
+      onPressed: () {
+        setState(() {
+          isFighterCategorySelected = !isFighterCategorySelected;
+        });
+      },
+      child: Text(label, style: defaultTextStyle.copyWith(fontSize: 12.sp)),
+    );
+  }
+
+  _renderFighterCards() {
     return Expanded(
       child: PaginationListView<FighterModel, FighterRepository>(
         provider: fighterPaginationProvider,
@@ -161,7 +218,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ],
           );
         },
-        params: {'name': _prevText},
+        params: {'name': _inputText},
+      ),
+    );
+  }
+
+  _renderFightEventCards() {
+    return Expanded(
+      child: PaginationListView<FighterFightEventModel, FightEventRepository>(
+        provider: fightEventPaginationProvider,
+        itemBuilder: (context, index, model) {
+          return Row(
+            children: [
+              InkWell(
+                onTap: () {},
+                child: FighterFightEventCard(ffe: model, isFightEventCard: true),
+              ),
+            ],
+          );
+        },
+        params: {'name': _inputText},
       ),
     );
   }

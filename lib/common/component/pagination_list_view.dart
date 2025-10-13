@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mma_flutter/common/model/model_with_id.dart';
 import 'package:mma_flutter/common/model/pagination_model.dart';
 import 'package:mma_flutter/common/provider/pagination_provider.dart';
@@ -34,6 +35,7 @@ class _PaginationListViewState<T extends ModelWithId>
   void listener() {
     if (_controller.offset > _controller.position.maxScrollExtent - 300) {
       final state = ref.read(widget.provider) as Pagination;
+      print(state.meta.number);
       final updatedParams = {'page':state.meta.number+1,...?widget.params};
       ref.read(widget.provider.notifier).paginate(fetchMore: true,params: updatedParams);
     }
@@ -92,7 +94,7 @@ class _PaginationListViewState<T extends ModelWithId>
           return widget.itemBuilder(context, index, pItem);
         },
         separatorBuilder: (_, index) {
-          return SizedBox(height: 16.0);
+          return SizedBox(height: 16.h);
         },
       ),
     );

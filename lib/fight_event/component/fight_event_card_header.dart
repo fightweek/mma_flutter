@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/notification/local_notifications.dart';
@@ -35,6 +36,7 @@ class FightEventCardHeader extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (eventStartDateTimeInfo != null)
             SizedBox(
@@ -82,16 +84,14 @@ class FightEventCardHeader extends ConsumerWidget {
                 ),
               ),
             ),
-          Flexible(
-            child: Text(
-              textAlign: TextAlign.center,
-              eventName,
-              style: defaultTextStyle.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-              ),
-              softWrap: true,
+          Text(
+            textAlign: TextAlign.center,
+            eventName,
+            style: defaultTextStyle.copyWith(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w600,
             ),
+            softWrap: true,
           ),
         ],
       ),
