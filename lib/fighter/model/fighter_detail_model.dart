@@ -11,7 +11,6 @@ class FighterDetailModel extends FighterModel {
   final DateTime? birthday;
   final int? reach;
   final String? nation;
-  final bool like;
   final bool alert;
   final List<FighterFightEventModel>? fighterFightEvents;
 
@@ -26,7 +25,6 @@ class FighterDetailModel extends FighterModel {
     required this.weight,
     required this.birthday,
     required this.reach,
-    required this.like,
     required this.alert,
     required this.nation,
     required this.fighterFightEvents,
@@ -35,7 +33,7 @@ class FighterDetailModel extends FighterModel {
   factory FighterDetailModel.fromJson(Map<String, dynamic> json) =>
       _$FighterDetailModelFromJson(json);
 
-  FighterDetailModel copyWith({bool? like, bool? alert}) {
+  FighterDetailModel copyWith({bool? like, }) {
     return FighterDetailModel(
       id: id,
       name: name,
@@ -47,8 +45,7 @@ class FighterDetailModel extends FighterModel {
       height: height,
       birthday: birthday,
       reach: reach,
-      like: like ?? this.like,
-      alert: alert ?? this.alert,
+      alert: like ?? this.alert,
       nation: nation,
       fighterFightEvents: fighterFightEvents,
     );

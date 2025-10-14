@@ -34,7 +34,6 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
   late TabController controller;
   int index = 0;
   IconData? _heart;
-  IconData? _alert;
 
   @override
   void initState() {
@@ -106,16 +105,8 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                   children: [
                     Row(
                       children: [
-                        _headerText(data.name),
-                        _alert != null
-                            ? _headerIcon(icon: _alert!, isAlert: true)
-                            : const SizedBox.shrink(),
-                      ],
-                    ),
-                    Row(
-                      children: [
                         _heart != null
-                            ? _headerIcon(icon: _heart!, isAlert: false)
+                            ? _headerIcon(icon: _heart!,)
                             : const SizedBox.shrink(),
                       ],
                     ),
@@ -202,14 +193,10 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
 
   _renderDetailInfo(FighterDetailModel fighter) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_alert == null && _heart == null) {
+      if (_heart == null) {
         setState(() {
-          _alert =
-              fighter.alert
-                  ? FontAwesomeIcons.solidBell
-                  : FontAwesomeIcons.bell;
           _heart =
-              fighter.like
+              fighter.alert
                   ? FontAwesomeIcons.solidHeart
                   : FontAwesomeIcons.heart;
         });
@@ -274,14 +261,6 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     return age;
   }
 
-  Widget _headerText(String data) {
-    return Expanded(
-      child: Center(
-        child: Text(data, style: defaultTextStyle.copyWith(fontSize: 40)),
-      ),
-    );
-  }
-
   Widget _footer(FighterDetailModel data) {
     return Column(
       children: [
@@ -320,16 +299,13 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     );
   }
 
-  _headerIcon({required bool isAlert, required IconData icon}) {
+  _headerIcon({required IconData icon}) {
     return GestureDetector(
       child: FaIcon(icon, size: 24.0, color: Colors.white),
       onTap: () {
-        final category =
-            isAlert ? PreferenceCategory.alert : PreferenceCategory.like;
-        final isOn =
-            icon == (isAlert ? FontAwesomeIcons.bell : FontAwesomeIcons.heart);
+        final isOn = icon == FontAwesomeIcons.heart;
         print('isOn=$isOn');
-        if (isOn && category == PreferenceCategory.alert) {
+        if (isOn) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('이제부터 해당 선수에 대한 경기 알림을 받습니다.')),
           );
@@ -337,21 +313,11 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
         ref
             .read(fighterProvider.notifier)
             .updatePreference(
-              model: UpdatePreferenceModel(
-                category: category,
-                targetId: widget.id,
-                on: isOn,
-              ),
-              like: category == PreferenceCategory.like ? isOn : null,
-              alert: category == PreferenceCategory.alert ? isOn : null,
+              model: UpdatePreferenceModel(targetId: widget.id, on: isOn),
+              like: isOn,
             );
         setState(() {
-          if (isAlert) {
-            _alert = isOn ? FontAwesomeIcons.solidBell : FontAwesomeIcons.bell;
-          } else {
-            _heart =
-                isOn ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart;
-          }
+          _heart = isOn ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart;
         });
       },
     );

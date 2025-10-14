@@ -78,7 +78,6 @@ class FighterStateNotifier
 
   Future<void> updatePreference({
     required UpdatePreferenceModel model,
-    bool? alert,
     bool? like,
   }) async {
     print(state[model.targetId]);
@@ -87,7 +86,7 @@ class FighterStateNotifier
     state = {
       ...state,
       model.targetId: StateData<FighterDetailModel>(
-        data: fState.data?.copyWith(alert: alert, like: like),
+        data: fState.data?.copyWith(like: like),
       ),
     };
   }

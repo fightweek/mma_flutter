@@ -39,7 +39,10 @@ class BetCard extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        color: BLACK_COLOR,
+        decoration: BoxDecoration(
+          color: BLACK_COLOR,
+          borderRadius: BorderRadius.circular(8.r)
+        ),
         child: Column(
           children: [
             Padding(

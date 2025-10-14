@@ -8,6 +8,7 @@ import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/stream/bet/component/bet_history_card.dart';
+import 'package:mma_flutter/stream/bet/component/bet_point_box.dart';
 import 'package:mma_flutter/stream/bet/model/bet_request_model.dart';
 import 'package:mma_flutter/stream/bet/model/bet_response_model.dart';
 import 'package:mma_flutter/stream/model/stream_fight_event_model.dart';
@@ -152,7 +153,7 @@ class BetHistoryScreen extends ConsumerWidget {
                           singleBet: sortedSingleBets[index],
                           eventId: eventId,
                           ref: ref,
-                          context: context
+                          context: context,
                         );
                       },
                       separatorBuilder: (context, index) {
@@ -191,86 +192,11 @@ class BetHistoryScreen extends ConsumerWidget {
           ),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(width: 6.w),
-                  ElevatedButton(
-                    onPressed: () async {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return CustomAlertDialog(
-                            contentMsg: '해당 배팅을 취소하시겠습니까?',
-                            actions: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  fixedSize: Size(40.w, 24.h),
-                                  backgroundColor: DARK_GREY_COLOR,
-                                ),
-                                child: Text('아니오', style: defaultTextStyle),
-                              ),
-                              ElevatedButton(
-                                onPressed: () async{
-                                  ref
-                                      .read(userProvider.notifier)
-                                      .updatePoint(
-                                    userPoint + singleBet.seedPoint,
-                                  );
-                                  await ref
-                                      .read(
-                                    betHistoryProvider(eventId).notifier,
-                                  )
-                                      .deleteBet(
-                                    eventId: eventId,
-                                    seedPoint: singleBet.seedPoint,
-                                    betId: singleBet.betId,
-                                    userPoint: userPoint,
-                                  );
-                                  Navigator.of(context).pop();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  fixedSize: Size(40.w, 24.h),
-                                  backgroundColor: DARK_GREY_COLOR,
-                                ),
-                                child: Text('예', style: defaultTextStyle),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: BLACK_COLOR,
-                    ),
-                    child: Icon(
-                      FontAwesomeIcons.x,
-                      color: WHITE_COLOR,
-                      size: 15.sp,
-                    ),
-                  ),
-                  // GestureDetector(
-                  //   onTap: () async {
-                  //
-                  //   },
-                  //   child: Icon(
-                  //     FontAwesomeIcons.x,
-                  //     color: WHITE_COLOR,
-                  //     size: 15.sp,
-                  //   ),
-                  // ),
-                ],
-              ),
               ...List.generate(singleBet.betCards.length, (index) {
                 return BetHistoryCard(betCard: singleBet.betCards[index]);
               }),
-              _renderPoint(point: singleBet.seedPoint, isSeedPoint: true),
-              _renderPoint(
+              BetPointBox(point: singleBet.seedPoint, isSeedPoint: true),
+              BetPointBox(
                 point: _calculateTotalProfit(
                   singleBet.seedPoint,
                   singleBet.betCards,
@@ -279,6 +205,107 @@ class BetHistoryScreen extends ConsumerWidget {
                 borderColor: WHITE_COLOR,
               ),
               SizedBox(height: 21.h),
+              SizedBox(
+                width: 127.w,
+                height: 31.h,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+                          backgroundColor: DARK_GREY_COLOR,
+                          title: Text(
+                            '배팅을 취소하시겠습니까?',
+                            style: defaultTextStyle.copyWith(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          content: Text(
+                            '\n배팅을 취소할 경우, 포인트는 환불됩니다.',
+                            style: defaultTextStyle.copyWith(fontSize: 12.sp),
+                          ),
+                          actions: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      backgroundColor: BLACK_COLOR,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                        BorderRadiusGeometry.circular(
+                                          8.r,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      '닫기',
+                                      style: defaultTextStyle,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 12.w),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      ref
+                                          .read(userProvider.notifier)
+                                          .updatePoint(
+                                        userPoint + singleBet.seedPoint,
+                                      );
+                                      await ref
+                                          .read(
+                                        betHistoryProvider(
+                                          eventId,
+                                        ).notifier,
+                                      )
+                                          .deleteBet(
+                                        eventId: eventId,
+                                        seedPoint: singleBet.seedPoint,
+                                        betId: singleBet.betId,
+                                        userPoint: userPoint,
+                                      );
+                                      Navigator.of(context).pop();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      backgroundColor: BLUE_COLOR,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                        BorderRadiusGeometry.circular(
+                                          8.r,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      '배팅 취소하기',
+                                      style: defaultTextStyle,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    backgroundColor: RED_COLOR,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8.r))
+                  ),
+                  child: Text('배팅 취소하기',style: defaultTextStyle.copyWith(fontSize: 14.sp),)
+                ),
+              ),
+              SizedBox(height: 12.h,),
             ],
           ),
         ),
@@ -314,62 +341,6 @@ class BetHistoryScreen extends ConsumerWidget {
     return eventName.contains(keyword)
         ? eventName.replaceAll(keyword, 'UFN')
         : eventName;
-  }
-
-  Widget _renderPoint({
-    required int point,
-    required bool isSeedPoint,
-    Color? borderColor,
-  }) {
-    return Padding(
-      padding: EdgeInsets.only(top: 21.h),
-      child: Column(
-        children: [
-          _renderDividerWithLabel(
-            label: isSeedPoint ? '배팅 포인트' : '성공 시 획득 가능 포인트',
-          ),
-          isSeedPoint
-              ? Container(
-                decoration: BoxDecoration(
-                  color: DARK_GREY_COLOR,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                height: 25.h,
-                width: 132.w,
-                child: Center(child: PointWithIcon(point: point)),
-              )
-              : Container(
-                height: 35.h,
-                width: 276.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.r),
-                  color: BLACK_COLOR,
-                  border: Border.all(color: borderColor!),
-                ),
-                child: Center(child: PointWithIcon(point: point)),
-              ),
-        ],
-      ),
-    );
-  }
-
-  Widget _renderDividerWithLabel({required String label}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12.w),
-      child: Row(
-        children: [
-          Expanded(child: Divider(thickness: 1, color: DARK_GREY_COLOR)),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-            child: Text(
-              label,
-              style: defaultTextStyle.copyWith(fontSize: 12.sp),
-            ),
-          ),
-          Expanded(child: Divider(thickness: 1, color: DARK_GREY_COLOR)),
-        ],
-      ),
-    );
   }
 
   int _calculateTotalProfit(

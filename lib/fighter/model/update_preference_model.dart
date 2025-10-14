@@ -4,12 +4,10 @@ part 'update_preference_model.g.dart';
 
 @JsonSerializable()
 class UpdatePreferenceModel {
-  final PreferenceCategory category;
   final int targetId;
   final bool on;
 
   UpdatePreferenceModel({
-    required this.category,
     required this.targetId,
     required this.on,
   });
