@@ -29,7 +29,7 @@ class CustomAlertDialog extends StatelessWidget {
                 titleMsg!,
                 style: defaultTextStyle.copyWith(
                   fontSize: 17.sp,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
               )
               : null,

@@ -7,6 +7,7 @@ import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
+import 'package:mma_flutter/stream/bet/component/bet_alert_dialog.dart';
 import 'package:mma_flutter/stream/bet/component/bet_card.dart';
 import 'package:mma_flutter/stream/bet/model/bet_request_model.dart';
 import 'package:mma_flutter/stream/bet/provider/bet_card_provider.dart';
@@ -93,7 +94,19 @@ class _BetScreenState extends ConsumerState<BetScreen> {
                     },
                   );
                 },
-                child: Icon(Icons.question_mark_sharp, color: GREY_COLOR),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      '포인트 배당 ',
+                      style: defaultTextStyle.copyWith(
+                        color: GREY_COLOR,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                    Icon(Icons.help_outline_sharp, color: GREY_COLOR, size: 16),
+                  ],
+                ),
               ),
             ),
             Expanded(
@@ -185,96 +198,9 @@ class _BetScreenState extends ConsumerState<BetScreen> {
                         showDialog(
                           context: context,
                           builder: (context) {
-                            return CustomAlertDialog(
-                              contentMsg:
-                                  '\n${_betCardsTextInfoForDialog(cards: ref.read(betCardProvider).values.toList(), seedPoint: int.parse(controller.text))}\n배팅하시겠습니까?',
-                              actions: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    fixedSize: Size(40.w, 24.h),
-                                    backgroundColor: DARK_GREY_COLOR,
-                                  ),
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: Text(
-                                    '취소',
-                                    style: defaultTextStyle.copyWith(
-                                      fontSize: 12.sp,
-                                    ),
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    final singleBets =
-                                        ref
-                                            .read(betCardProvider)
-                                            .entries
-                                            .map(
-                                              (e) => SingleBetCardRequestModel(
-                                                fighterFightEventId:
-                                                    e.value.ffeId,
-                                                betPrediction: BetPredictionModel(
-                                                  myWinnerName:
-                                                      e.value.winnerName,
-                                                  myLoserName:
-                                                      e.value.loserName,
-                                                  draw: e.value.drawSelected,
-                                                  winMethod:
-                                                      e.value.winMethodIndex !=
-                                                              null
-                                                          ? WinMethodForBet
-                                                              .values[e
-                                                              .value
-                                                              .winMethodIndex!]
-                                                          : null,
-                                                  winRound:
-                                                      e.value.winRoundIndex !=
-                                                              null
-                                                          ? e
-                                                                  .value
-                                                                  .winRoundIndex! +
-                                                              1
-                                                          : null,
-                                                ),
-                                              ),
-                                            )
-                                            .toList();
-                                    ref.read(
-                                      betCreateFutureProvider(
-                                        BetRequestModel(
-                                          seedPoint: int.parse(controller.text),
-                                          eventId:
-                                              (ref.read(
-                                                        streamFightEventProvider,
-                                                      )
-                                                      as StateData<
-                                                        StreamFightEventModel
-                                                      >)
-                                                  .data!
-                                                  .id,
-                                          singleBetCards: singleBets,
-                                        ),
-                                      ),
-                                    );
-                                    Navigator.of(context).pop();
-                                    ref.invalidate(betTargetProvider);
-                                    ref.invalidate(betCardProvider);
-                                    widget.tabController.animateTo(3);
-                                    print('성공');
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    fixedSize: Size(40.w, 24.h),
-                                    backgroundColor: DARK_GREY_COLOR,
-                                  ),
-                                  child: Text(
-                                    '확인',
-                                    style: defaultTextStyle.copyWith(
-                                      fontSize: 12.sp,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            return BetAlertDialog(
+                              tabController: widget.tabController,
+                              textEditingController: controller,
                             );
                           },
                         );
@@ -303,65 +229,6 @@ class _BetScreenState extends ConsumerState<BetScreen> {
         ),
       ),
     );
-  }
-
-  String? _betCardsTextInfoForDialog({
-    required List<BetCardModel> cards,
-    required int seedPoint,
-  }) {
-    if (cards.length != ref.read(betTargetProvider).length) {
-      return null;
-    }
-    String str = '';
-    for (int i = 0; i < cards.length; i++) {
-      if (cards[i].drawSelected) {
-        final redName = ref.read(betTargetProvider)[i].winnerName;
-        final blueName = ref.read(betTargetProvider)[i].winnerName;
-        str += '카드 ${i + 1} | $redName VS $blueName\n\n예측: 무승부\n';
-      } else {
-        final myWinnerName = cards[i].winnerName;
-        final myLoserName = cards[i].loserName;
-        str +=
-            '카드 ${i + 1} | $myWinnerName VS $myLoserName\n\n예측 승자: $myWinnerName\n';
-        if (cards[i].winMethodIndex != null) {
-          str +=
-              '승리 방식: ${WinMethodForBet.values[cards[i].winMethodIndex!].label}\n';
-        }
-        if (cards[i].winRoundIndex != null) {
-          str += '승리 라운드: ${cards[i].winRoundIndex! + 1}\n';
-        }
-      }
-      str += '\n';
-    }
-    str += '배팅 포인트: $seedPoint\n예측 성공 시 획득 가능한 포인트: ${_calculateTotalProfit(seedPoint,cards)}\n';
-    return str;
-  }
-
-  int _calculateTotalProfit(
-      int seedMoney,
-      List<BetCardModel> betCards,
-      ) {
-    double total = seedMoney.toDouble();
-    for (BetCardModel betCard in betCards) {
-      total *= 2;
-      final winMethod = betCard.winMethodIndex != null ? WinMethodForBet.values[betCard.winMethodIndex!] : null;
-      if (winMethod != null) {
-        if (winMethod == WinMethodForBet.dec) {
-          total *= 1.5;
-        } else {
-          if (betCard.winRoundIndex != null) {
-            total *= 4;
-          } else {
-            total *= 2;
-          }
-        }
-      } else {
-        if (betCard.drawSelected) {
-          total *= 15;
-        }
-      }
-    }
-    return total.toInt();
   }
 
   String? _validator(String? val) {

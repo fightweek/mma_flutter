@@ -70,7 +70,6 @@ class FightEventCardHeader extends ConsumerWidget {
                       .read(fightEventProvider.notifier)
                       .updatePreference(
                         model: UpdatePreferenceModel(
-                          category: PreferenceCategory.alert,
                           targetId: eventId,
                           on: !isOn,
                         ),
