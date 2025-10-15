@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/common/screen/root_tab.dart';
 import 'package:mma_flutter/common/screen/splash_screen.dart';
-import 'package:mma_flutter/fight_event/screen/fight_event_detail_screen.dart';
+import 'package:mma_flutter/fight_event/screen/fight_event_detail/fight_event_detail_screen.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
 import 'package:mma_flutter/game/screen/game_description_screen.dart';
 import 'package:mma_flutter/game/screen/game_end_screen.dart';
