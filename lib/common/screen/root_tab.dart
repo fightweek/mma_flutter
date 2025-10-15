@@ -5,7 +5,7 @@ import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/common/screen/home_splash_screen.dart';
-import 'package:mma_flutter/fight_event/screen/fight_event_screen.dart';
+import 'package:mma_flutter/fight_event/screen/fight_event/fight_event_screen.dart';
 import 'package:mma_flutter/search/screen/search_screen.dart';
 import 'package:mma_flutter/game/screen/game_main_screen.dart';
 import 'package:mma_flutter/user/screen/logout_screen.dart';
