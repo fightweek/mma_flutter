@@ -37,7 +37,6 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
 
   @override
   void initState() {
-    print('initialize detail screen');
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(fighterProvider.notifier).detail(id: widget.id);
@@ -103,28 +102,49 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
               children: [
                 Column(
                   children: [
-                    Row(
-                      children: [
-                        _heart != null
-                            ? _headerIcon(icon: _heart!,)
-                            : const SizedBox.shrink(),
-                      ],
+                    SizedBox(
+                      width: 292.w,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                data.name,
+                                style: defaultTextStyle.copyWith(
+                                  fontSize: 24.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                          _heart != null
+                              ? _headerIcon(icon: _heart!)
+                              : const SizedBox.shrink(),
+                        ],
+                      ),
                     ),
                     if (data.ranking != null)
                       Text('랭킹 ${data.ranking} 위', style: defaultTextStyle),
-                    _imageCard(
-                      data.headshotUrl,
-                      data.name.replaceAll(' ', '-'),
-                    ),
+                    if (data is FighterDetailModel)
+                      _imageCard(data.bodyUrl, data.name.replaceAll(' ', '-')),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildRecord('승', data.record.win),
-                    _buildRecord('패', data.record.loss),
-                    _buildRecord('무', data.record.draw),
-                  ],
+                Container(
+                  height: 116.h,
+                  width: 362.w,
+                  decoration: BoxDecoration(
+                    color: DARK_GREY_COLOR,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildRecord('승', data.record.win),
+                      _buildRecord('패', data.record.loss),
+                      _buildRecord('무', data.record.draw),
+                    ],
+                  ),
                 ),
                 data is FighterDetailModel
                     ? _renderDetailInfo(data)
@@ -142,41 +162,44 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
 
   _imageCard(String imgUrl, String name) {
     final role = (ref.read(userProvider) as UserModel).role;
-    return GestureDetector(
-      onTap:
-          role == 'ROLE_ADMIN'
-              ? () async {
-                try {
-                  await ref
-                      .read(adminFighterRepositoryProvider)
-                      .updateImage(fighterNameMap: {'fighterName': name});
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('이미지 업데이트 성공')));
-                } catch (e) {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return CustomAlertDialog(
-                        titleMsg: '에러',
-                        contentMsg: 'reason : $e',
-                      );
-                    },
-                  );
+    return Padding(
+      padding: EdgeInsets.only(top: 30.h),
+      child: GestureDetector(
+        onTap:
+            role == 'ROLE_ADMIN'
+                ? () async {
+                  try {
+                    await ref
+                        .read(adminFighterRepositoryProvider)
+                        .updateImage(fighterNameMap: {'fighterName': name});
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text('이미지 업데이트 성공')));
+                  } catch (e) {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return CustomAlertDialog(
+                          titleMsg: '에러',
+                          contentMsg: 'reason : $e',
+                        );
+                      },
+                    );
+                  }
                 }
-              }
-              : null,
-      child: CachedNetworkImage(
-        imageUrl: imgUrl,
-        height: 200.h,
-        width: 200.w,
-        errorWidget: (context, url, error) {
-          return Image.asset(
-            'asset/img/component/default-headshot.png',
-            height: 200.h,
-            width: 200.w,
-          );
-        },
+                : null,
+        child: CachedNetworkImage(
+          imageUrl: imgUrl,
+          height: 246.h,
+          width: 223.w,
+          errorWidget: (context, url, error) {
+            return Image.asset(
+              'asset/img/component/default-headshot.png',
+              height: 200.h,
+              width: 200.w,
+            );
+          },
+        ),
       ),
     );
   }
@@ -184,9 +207,21 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
   _buildRecord(String name, int value) {
     return Column(
       children: [
-        Text(name, style: defaultTextStyle.copyWith(fontSize: 30)),
-        SizedBox(height: 4.0),
-        Text(value.toString(), style: defaultTextStyle.copyWith(fontSize: 30)),
+        Padding(
+          padding: EdgeInsets.only(top: 14.h),
+          child: Text(
+            name,
+            style: TextStyle(color: GREY_COLOR, fontSize: 18.sp),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 10.h, bottom: 17.h),
+          child: Container(color: GREY_COLOR, height: 2.h, width: 65.w),
+        ),
+        Text(
+          value.toString(),
+          style: defaultTextStyle.copyWith(fontSize: 24.sp),
+        ),
       ],
     );
   }
@@ -203,51 +238,71 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
       }
     });
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        color: DARK_GREY_COLOR,
+      padding: EdgeInsets.only(top: 31.h,bottom: 16.h),
+      child: SizedBox(
+        width: 300.w,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '신장: ${fighter.height} cm',
-                  style: defaultTextStyle.copyWith(fontSize: 20),
+                _renderLabelWithValue(
+                  label: '출생',
+                  value:
+                      fighter.birthday != null
+                          ? DataUtils.formatDateTime(fighter.birthday!)
+                          : '-',
                 ),
-                SizedBox(height: 8),
-                Text(
-                  '무게: ${fighter.weight} Kg',
-                  style: defaultTextStyle.copyWith(fontSize: 20),
+                _renderLabelWithValue(
+                  label: '나이',
+                  value:
+                      '${fighter.birthday != null ? _calculateAge(fighter.birthday!) : '-'}',
                 ),
-                SizedBox(height: 8),
-                Text(
-                  '생일: ${fighter.birthday != null ? DataUtils.formatDateTime(fighter.birthday!) : '-'}',
-                  style: defaultTextStyle.copyWith(fontSize: 20),
-                ),
+                _renderLabelWithValue(label: '국적', value: '${fighter.nation}'),
               ],
             ),
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '팔길이: ${fighter.reach} cm',
-                  style: defaultTextStyle.copyWith(fontSize: 20),
+                _renderLabelWithValue(
+                  label: '신장',
+                  value: '${fighter.height} cm',
                 ),
-                SizedBox(height: 8),
-                Text(
-                  '나이:${fighter.birthday != null ? _calculateAge(fighter.birthday!) : '-'}',
-                  style: defaultTextStyle.copyWith(fontSize: 20),
+                _renderLabelWithValue(
+                  label: '무게',
+                  value: '${fighter.weight} Kg',
                 ),
-                SizedBox(height: 8),
-                Text(
-                  '국적: ${fighter.nation}',
-                  style: defaultTextStyle.copyWith(fontSize: 20),
+                _renderLabelWithValue(
+                  label: '리치',
+                  value: '${fighter.reach} cm',
                 ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _renderLabelWithValue({required String label, required String value}) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text(
+              label,
+              style: defaultTextStyle.copyWith(color: GREY_COLOR, fontSize: 13.sp),
+            ),
+            SizedBox(width: 22.w),
+            Text(
+              value,
+              style: defaultTextStyle.copyWith(color: WHITE_COLOR, fontSize: 14.sp),
+            ),
+          ],
+        ),
+        SizedBox(height: 15.h,),
+      ],
     );
   }
 
@@ -265,15 +320,17 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     return Column(
       children: [
         Container(
-          color: Colors.grey[800],
+          color: DARK_GREY_COLOR,
           child: TabBar(
             controller: controller,
-            indicatorColor: Colors.white,
+            indicatorColor: BLUE_COLOR,
+            dividerColor: Colors.transparent,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey[400],
+            unselectedLabelColor: GREY_COLOR,
             tabs: const [Tab(text: '최근 경기'), Tab(text: '다음 경기')],
           ),
         ),
+        SizedBox(height: 9.h,),
         index == 0
             ? _filterFightEvent(data: data, isUpcoming: false)
             : _filterFightEvent(data: data, isUpcoming: true),
@@ -301,7 +358,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
 
   _headerIcon({required IconData icon}) {
     return GestureDetector(
-      child: FaIcon(icon, size: 24.0, color: Colors.white),
+      child: FaIcon(icon, size: 24.0, color: GREY_COLOR),
       onTap: () {
         final isOn = icon == FontAwesomeIcons.heart;
         print('isOn=$isOn');

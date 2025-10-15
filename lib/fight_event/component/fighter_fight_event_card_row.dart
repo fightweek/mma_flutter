@@ -155,7 +155,7 @@ class FighterFightEventCardRow extends StatelessWidget {
           key: ValueKey(fighter.id),
           width: 86.w,
           height: 55.h,
-          imageUrl: fighter.headshotUrl,
+          imageUrl: fighter.headshotUrl!,
           placeholder: (context, url) => CircularProgressIndicator(),
           errorWidget: (context, url, error) {
             return Image.asset('asset/img/component/default-headshot.png');

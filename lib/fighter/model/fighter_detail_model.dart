@@ -12,6 +12,7 @@ class FighterDetailModel extends FighterModel {
   final int? reach;
   final String? nation;
   final bool alert;
+  final String bodyUrl;
   final List<FighterFightEventModel>? fighterFightEvents;
 
   FighterDetailModel({
@@ -27,6 +28,7 @@ class FighterDetailModel extends FighterModel {
     required this.reach,
     required this.alert,
     required this.nation,
+    required this.bodyUrl,
     required this.fighterFightEvents,
   });
 
@@ -45,7 +47,8 @@ class FighterDetailModel extends FighterModel {
       height: height,
       birthday: birthday,
       reach: reach,
-      alert: like ?? this.alert,
+      alert: like ?? alert,
+      bodyUrl: bodyUrl,
       nation: nation,
       fighterFightEvents: fighterFightEvents,
     );

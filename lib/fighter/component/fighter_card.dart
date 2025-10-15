@@ -18,7 +18,7 @@ class FighterCard extends ConsumerWidget {
         CachedNetworkImage(
           width: 80.w,
           height: 80.h,
-          imageUrl: fighter.headshotUrl,
+          imageUrl: fighter.headshotUrl!,
           placeholder: (context, url) => CircularProgressIndicator(),
           errorWidget: (context, url, error) {
             print('no such image.${fighter.name}');
