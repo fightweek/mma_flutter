@@ -56,10 +56,12 @@ class FightEventModel extends IFightEventModel<FighterFightEventModel> {
 class FighterFightEventModel extends IFighterFightEvent<FighterModel> {
   final int eventId;
   final String eventName;
+  final DateTime eventDate;
 
   FighterFightEventModel({
     required this.eventId,
     required this.eventName,
+    required this.eventDate,
     required super.fightWeight,
     required super.winner,
     required super.loser,

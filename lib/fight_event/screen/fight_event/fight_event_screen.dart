@@ -43,10 +43,7 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
               formatButtonVisible: false,
               titleCentered: true,
               leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
-              rightChevronIcon: Icon(
-                Icons.chevron_right,
-                color: Colors.white,
-              ),
+              rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
               titleTextStyle: TextStyle(
                 color: Colors.white,
                 fontSize: 17.sp,
@@ -126,8 +123,11 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
         builder: (context) {
           return Consumer(
             builder: (context, ref, child) {
-              final state =
-                  ref.watch(fightEventProvider)[formatDateKey(_selectedDay)];
+              final state = ref.watch(
+                fightEventProvider.select(
+                  (state) => state[formatDateKey(_selectedDay)],
+                ),
+              );
               return DraggableScrollableSheet(
                 expand: false,
                 initialChildSize: 0.4,
@@ -171,7 +171,9 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                                     currentStateData
                                         .data!
                                         .earlyCardDateTimeInfo ??
-                                    currentStateData.data!.prelimCardDateTimeInfo,
+                                    currentStateData
+                                        .data!
+                                        .prelimCardDateTimeInfo,
                               ),
                               FightEventCardList(
                                 ife: currentStateData.data!,

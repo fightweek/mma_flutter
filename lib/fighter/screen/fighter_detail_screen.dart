@@ -63,7 +63,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     final state = ref.watch(fighterProvider)[widget.id];
 
     if (state == null || state is StateLoading) {
-      return DefaultLayout(child: Center(child: CircularProgressIndicator()));
+      return Center(child: CircularProgressIndicator());
     }
 
     if (state is StateError) {
@@ -82,7 +82,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     final fighter = state as StateData;
     final data = fighter.data;
     if (data == null) {
-      return DefaultLayout(child: Center(child: Text('데이터 없음')));
+      return Center(child: Text('데이터 없음'));
     }
     return DefaultLayout(child: _renderInfo(data));
   }

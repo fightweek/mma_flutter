@@ -52,7 +52,7 @@ class ChatBox extends ConsumerWidget {
                         text: TextSpan(
                           children: [
                             WidgetSpan(
-                              child: tierIcon(chatModel.point),
+                              child: beltByPoint(point: chatModel.point,width: 20.w,height: 20.h),
                               style: TextStyle(fontSize: 4.0),
                             ),
                             WidgetSpan(child: SizedBox(width: 4.0)),

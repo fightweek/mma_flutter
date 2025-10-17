@@ -14,14 +14,11 @@ class FighterNameCheckBoxForGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(32.0),
-      child: Checkbox(
-        value: isSelected,
-        onChanged:  (value) {
-          if (value != null) onChanged(value);
-        },
-      ),
+    return Checkbox(
+      value: isSelected,
+      onChanged:  (value) {
+        if (value != null) onChanged(value);
+      },
     );
   }
 }

@@ -74,7 +74,7 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
                 ),
               ],
             ),
-            FighterFightEventCardRow(ffe: widget.ffe, context: context, ref: ref),
+            FighterFightEventCardRow(ffe: widget.ffe, context: context,),
             if (widget.upcoming)
               showVoteBar(
                 expanded: isExpanded,
