@@ -10,120 +10,128 @@ import 'package:mma_flutter/fight_event/model/i_fighter_fight_event_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
 
-class FighterFightEventCardRow extends StatelessWidget {
+class FighterFightEventCardRow extends ConsumerWidget {
   final IFighterFightEvent ffe;
   final BuildContext context;
-  final WidgetRef ref;
 
   const FighterFightEventCardRow({
     super.key,
     required this.ffe,
     required this.context,
-    required this.ref,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _imageCard(context, ffe.winner, ref, true),
-              Expanded(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: 70,
-                      child: Column(
-                        children: [
-                          Text(
-                            _firstName(ffe.winner.name),
-                            style: defaultTextStyle.copyWith(fontSize: 14.h),
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.right,
-                          ),
-                          Text(
-                            _lastName(ffe.winner.name),
-                            style: defaultTextStyle.copyWith(fontSize: 14.h),
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.right,
-                          ),
-                          Text(
-                            '${ffe.winner.record.win}-${ffe.winner.record.loss}-${ffe.winner.record.draw}',
-                            style: defaultTextStyle.copyWith(
-                              fontSize: 14.h,
-                              color: GREY_COLOR,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (ffe.result != null)
-                      _renderWinMethodFromWinner(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          width: 24,
-          child: Center(
-            child: Column(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      height: 86.h,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        border: BoxBorder.all(color: GREY_COLOR, width: 1.w),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (ffe.title)
-                  Text(
-                    '타이틀전',
-                    style: defaultTextStyle.copyWith(
-                      color: Colors.yellow,
-                      fontSize: 5.0,
-                    ),
+                _imageCard(context, ffe.winner, ref, true),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 70,
+                        child: Column(
+                          children: [
+                            Text(
+                              _firstName(ffe.winner.name),
+                              style: defaultTextStyle.copyWith(fontSize: 14.h),
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.right,
+                            ),
+                            Text(
+                              _lastName(ffe.winner.name),
+                              style: defaultTextStyle.copyWith(fontSize: 14.h),
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.right,
+                            ),
+                            Text(
+                              '${ffe.winner.record.win}-${ffe.winner.record.loss}-${ffe.winner.record.draw}',
+                              style: defaultTextStyle.copyWith(
+                                fontSize: 14.h,
+                                color: GREY_COLOR,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (ffe.result != null)
+                        _renderWinMethodFromWinner(),
+                    ],
                   ),
-                Text('VS', style: defaultTextStyle.copyWith(fontSize: 12)),
+                ),
               ],
             ),
           ),
-        ),
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 70,
-                child: Column(
-                  children: [
+          SizedBox(
+            width: 24,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (ffe.title)
                     Text(
-                      _firstName(ffe.loser.name),
-                      style: defaultTextStyle.copyWith(fontSize: 14.0),
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                    ),
-                    Text(
-                      _lastName(ffe.loser.name),
-                      style: defaultTextStyle.copyWith(fontSize: 14.0),
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                    ),
-                    Text(
-                      '${ffe.loser.record.win}-${ffe.loser.record.loss}-${ffe.loser.record.draw}',
+                      '타이틀전',
                       style: defaultTextStyle.copyWith(
-                        fontSize: 14.0,
-                        color: GREY_COLOR,
+                        color: Colors.yellow,
+                        fontSize: 5.0,
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
+                  Text('VS', style: defaultTextStyle.copyWith(fontSize: 12)),
+                ],
               ),
-              _imageCard(context, ffe.loser, ref, false),
-            ],
+            ),
           ),
-        ),
-      ],
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 70,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _firstName(ffe.loser.name),
+                        style: defaultTextStyle.copyWith(fontSize: 14.0),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.right,
+                      ),
+                      Text(
+                        _lastName(ffe.loser.name),
+                        style: defaultTextStyle.copyWith(fontSize: 14.0),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.right,
+                      ),
+                      Text(
+                        '${ffe.loser.record.win}-${ffe.loser.record.loss}-${ffe.loser.record.draw}',
+                        style: defaultTextStyle.copyWith(
+                          fontSize: 14.0,
+                          color: GREY_COLOR,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                _imageCard(context, ffe.loser, ref, false),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -3,7 +3,9 @@ import 'dart:io' as data;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
 import 'package:mma_flutter/stream/bet/model/bet_request_model.dart';
 
@@ -35,26 +37,36 @@ final Map<String, String> weightClassMap = {
 };
 
 final Map<WinMethod, String> winMethodMap = {
-  WinMethod.sub : '서브미션',
-  WinMethod.koTko : 'KO/TKO',
-  WinMethod.sDec : '판정(스플릿)',
-  WinMethod.mDec : '판정(다수결)',
-  WinMethod.uDec : '판정(만장일치)',
+  WinMethod.sub: '서브미션',
+  WinMethod.koTko: 'KO/TKO',
+  WinMethod.sDec: '판정(스플릿)',
+  WinMethod.mDec: '판정(다수결)',
+  WinMethod.uDec: '판정(만장일치)',
 };
 
-Icon tierIcon(int point) {
+Image beltByPoint({
+  required int point,
+  double? width,
+  double? height
+}) {
+  String beltUrl = 'asset/img/icon/white_belt.png';
   switch (point) {
     case < 10000:
-      return Icon(Icons.star, color: Colors.white);
-    case < 10000:
-      return Icon(Icons.star, color: Colors.blue);
-    case < 10000:
-      return Icon(Icons.star, color: Colors.purple);
-    case < 10000:
-      return Icon(Icons.star, color: Colors.brown);
+      break;
+    case < 20000:
+      beltUrl = 'asset/img/icon/blue_belt.png';
+    case < 50000:
+      beltUrl = 'asset/img/icon/purple_belt.png';
+    case < 100000:
+      beltUrl = 'asset/img/icon/brown_belt.png';
     default:
-      return Icon(Icons.star, color: Colors.black);
+      beltUrl = 'asset/img/icon/black_belt.png';
   }
+  return Image.asset(
+    beltUrl,
+    width: width ?? 66.w,
+    height: height ?? 66.h,
+  );
 }
 
 final newsSources = [
@@ -87,7 +99,8 @@ Future<bool> isEmulator() async {
   return false;
 }
 
-final betDescription = ''
+final betDescription =
+    ''
     '승자 예측 성공: 2배\n\n'
     'KO/서브미션 예측 성공: 4배\n\n'
     'KO/서브미션 + 라운드 예측 성공: 8배\n\n'

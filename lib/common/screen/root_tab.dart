@@ -10,6 +10,7 @@ import 'package:mma_flutter/search/screen/search_screen.dart';
 import 'package:mma_flutter/game/screen/game_main_screen.dart';
 import 'package:mma_flutter/user/screen/logout_screen.dart';
 import 'package:mma_flutter/home/screen/home_screen.dart';
+import 'package:mma_flutter/user/screen/profile_screen.dart';
 
 class RootTab extends ConsumerStatefulWidget {
   static String get routeName => 'home';
@@ -98,7 +99,7 @@ class _RootTabState extends ConsumerState<RootTab>
           // SearchScreen(),
           FightEventScreen(),
           GameMainScreen(),
-          LogoutScreen(),
+          ProfileScreen(),
         ],
       ),
     );

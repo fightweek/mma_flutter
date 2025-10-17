@@ -4,6 +4,7 @@ import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/provider/dio/dio_provider.dart';
 import 'package:mma_flutter/user/model/join_request.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
+import 'package:mma_flutter/user/model/user_profile_model.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/error_logger.dart';
 
@@ -36,4 +37,8 @@ abstract class UserRepository {
 
   @POST('/join')
   Future<void> join({@Body() required JoinRequest request});
+
+  @GET('/profile')
+  @Headers({'accessToken' : 'true'})
+  Future<UserProfileModel> profile();
 }

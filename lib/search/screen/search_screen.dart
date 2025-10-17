@@ -187,7 +187,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       child: PaginationListView<FighterModel, FighterRepository>(
         provider: fighterPaginationProvider,
         itemBuilder: (context, index, model) {
-          return Row(
+          return Column(
             children: [
               InkWell(
                 onTap: () {
