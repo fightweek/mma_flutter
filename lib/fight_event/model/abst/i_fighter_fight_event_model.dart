@@ -10,6 +10,7 @@ abstract class IFighterFightEvent<T extends FighterModel> implements ModelWithId
   final T loser;
   final FightResultModel? result;
   final bool title;
+  final String eventName;
 
   IFighterFightEvent({
     required this.id,
@@ -18,5 +19,6 @@ abstract class IFighterFightEvent<T extends FighterModel> implements ModelWithId
     required this.loser,
     required this.result,
     required this.title,
+    required this.eventName,
   });
 }

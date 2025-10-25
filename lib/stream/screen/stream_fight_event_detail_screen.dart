@@ -89,6 +89,7 @@ class _EventDetailScreenState
                   FightEventCardList(
                     ife: event.data!,
                     stream: true,
+                    isFirstCardExcluded: false,
                     checkBoxValues: checkBoxValues,
                     checkBoxOnChanged: (value, index) {
                       setState(() {

@@ -178,6 +178,7 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                               FightEventCardList(
                                 ife: currentStateData.data!,
                                 stream: false,
+                                isFirstCardExcluded: false,
                               ),
                             ],
                           ),

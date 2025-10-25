@@ -14,7 +14,7 @@ const REFRESH_TOKEN_KEY = 'REFRESH_TOKEN';
 
 final emulatorIp = '10.0.2.2:8080';
 final simulatorIp = '127.0.0.1:8080';
-final localNetworkIp = '10.173.152.108:8080';
+final localNetworkIp = '10.111.195.108:8080';
 late final ip;
 // final ip = data.Platform.isIOS ? simulatorIp : emulatorIp;
 // final ip = '192.168.0.13:8080';
@@ -35,6 +35,28 @@ final Map<String, String> weightClassMap = {
   'Light Heavyweight': '라이트 헤비급',
   'Heavyweight': '헤비급',
 };
+
+String weightClassFromWeight(double weight){
+  if(weight <= 53){
+    return '여성 스트로급';
+  }else if(weight <= 57.7){
+    return '플라이급';
+  }else if(weight <= 62){
+    return '벤텀급';
+  }else if(weight <= 67){
+    return '페더급';
+  }else if(weight <= 72){
+    return '라이트급';
+  }else if(weight <= 78){
+    return '웰터급';
+  }else if(weight <= 85){
+    return '미들급';
+  }else if(weight <= 94){
+    return '라이트 헤비급';
+  }else{
+    return '헤비급';
+  }
+}
 
 final Map<WinMethod, String> winMethodMap = {
   WinMethod.sub: '서브미션',
@@ -106,3 +128,7 @@ final betDescription =
     'KO/서브미션 + 라운드 예측 성공: 8배\n\n'
     '판정승 예측 성공: 3배\n\n'
     '무승부 예측 성공: 30배\n\n';
+
+final int mainCard = 1;
+final int prelimCard = 2;
+final int earlyCard = 3;

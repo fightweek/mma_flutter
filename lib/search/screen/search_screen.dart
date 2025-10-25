@@ -13,6 +13,7 @@ import 'package:mma_flutter/fight_event/component/fighter_fight_event_card.dart'
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
 import 'package:mma_flutter/fight_event/provider/fight_event_pagination_provider.dart';
 import 'package:mma_flutter/fight_event/repository/fight_event_repository.dart';
+import 'package:mma_flutter/fight_event/screen/fighter_fight_event/fighter_fight_event_detail_screen.dart';
 import 'package:mma_flutter/fighter/component/fighter_card.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/provider/fighter_pagination_provider.dart';
@@ -58,7 +59,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      _renderCategoryButton(label: '선수', isFighterCategory: true),
+                      _renderCategoryButton(
+                        label: '선수',
+                        isFighterCategory: true,
+                      ),
                       SizedBox(width: 7.w),
                       _renderCategoryButton(
                         label: '이벤트',
@@ -117,12 +121,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               fontWeight: FontWeight.w700,
             ),
             border: linearGradientInputBorder,
-            prefixIcon: IconButton(
-              onPressed: () {
-                context.pushNamed("");
-              },
-              icon: Icon(Icons.search, color: WHITE_COLOR),
-            ),
+            prefixIcon: Icon(Icons.search, color: WHITE_COLOR),
           ),
         ),
       ),
@@ -133,24 +132,24 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     print(_inputText);
     print(value);
     if (_inputText.length > value.length) {
-      if(isFighterCategorySelected){
+      if (isFighterCategorySelected) {
         ref
             .read(fighterPaginationProvider.notifier)
             .paginate(params: {'name': value}, forceRefetch: true);
-      }else{
+      } else {
         ref
             .read(fightEventPaginationProvider.notifier)
             .paginate(params: {'name': value}, forceRefetch: true);
       }
     } else {
-      if(isFighterCategorySelected){
+      if (isFighterCategorySelected) {
         ref
             .read(fighterPaginationProvider.notifier)
-            .paginate(params: {'name': value},);
-      }else{
+            .paginate(params: {'name': value});
+      } else {
         ref
             .read(fightEventPaginationProvider.notifier)
-            .paginate(params: {'name': value},);
+            .paginate(params: {'name': value});
       }
     }
     setState(() {
@@ -228,11 +227,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       child: PaginationListView<FighterFightEventModel, FightEventRepository>(
         provider: fightEventPaginationProvider,
         itemBuilder: (context, index, model) {
+          print(model.winner.name);
           return Row(
             children: [
-              InkWell(
-                onTap: () {},
-                child: FighterFightEventCard(ffe: model, isFightEventCard: true),
+              FighterFightEventCard(
+                ffe: model,
+                isFightEventCard: true,
               ),
             ],
           );

@@ -6,7 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
-import 'package:mma_flutter/fight_event/model/i_fighter_fight_event_model.dart';
+import 'package:mma_flutter/fight_event/model/abst/i_fighter_fight_event_model.dart';
+import 'package:mma_flutter/fight_event/screen/fighter_fight_event/fighter_fight_event_detail_screen.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/screen/fighter_detail_screen.dart';
 
@@ -24,7 +25,9 @@ class FighterFightEventCardRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       height: 86.h,
+      width: 362.w,
       decoration: BoxDecoration(
+        color: BLACK_COLOR,
         borderRadius: BorderRadius.circular(8.0),
         border: BoxBorder.all(color: GREY_COLOR, width: 1.w),
       ),
@@ -46,13 +49,17 @@ class FighterFightEventCardRow extends ConsumerWidget {
                           children: [
                             Text(
                               _firstName(ffe.winner.name),
-                              style: defaultTextStyle.copyWith(fontSize: 14.h),
+                              style: defaultTextStyle.copyWith(
+                                fontSize: 14.h,
+                              ),
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.right,
                             ),
                             Text(
                               _lastName(ffe.winner.name),
-                              style: defaultTextStyle.copyWith(fontSize: 14.h),
+                              style: defaultTextStyle.copyWith(
+                                fontSize: 14.h,
+                              ),
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.right,
                             ),
@@ -67,8 +74,7 @@ class FighterFightEventCardRow extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      if (ffe.result != null)
-                        _renderWinMethodFromWinner(),
+                      if (ffe.result != null) _renderWinMethodFromWinner(),
                     ],
                   ),
                 ),
@@ -164,7 +170,18 @@ class FighterFightEventCardRow extends ConsumerWidget {
           width: 86.w,
           height: 55.h,
           imageUrl: fighter.headshotUrl!,
-          placeholder: (context, url) => CircularProgressIndicator(),
+          placeholder:
+              (context, url) => Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: DARK_GREY_COLOR,
+                    border: Border.all(width: 1.w, color: GREY_COLOR),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  width: 86.w,
+                  height: 86.h,
+                ),
+              ),
           errorWidget: (context, url, error) {
             return Image.asset('asset/img/component/default-headshot.png');
           },

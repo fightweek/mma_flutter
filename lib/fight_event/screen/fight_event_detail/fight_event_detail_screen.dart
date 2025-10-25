@@ -10,7 +10,7 @@
 // import 'package:mma_flutter/fight_event/provider/fight_event_provider.dart';
 //
 // import '../../common/model/base_state_model.dart';
-// import '../component/stream_fight_event_card.dart';
+// import '../component/stream_fighter_fight_event_card.dart';
 //
 // class FightEventDetailScreen extends ConsumerStatefulWidget {
 //   static String get routeName => 'event_detail';

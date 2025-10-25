@@ -1,6 +1,6 @@
 import 'package:mma_flutter/common/model/model_with_id.dart';
 import 'package:mma_flutter/fight_event/model/card_date_time_info_model.dart';
-import 'package:mma_flutter/fight_event/model/i_fighter_fight_event_model.dart';
+import 'package:mma_flutter/fight_event/model/abst/i_fighter_fight_event_model.dart';
 
 abstract class IFightEventModel<T extends IFighterFightEvent> implements ModelWithId {
   @override
