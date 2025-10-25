@@ -12,13 +12,13 @@ import 'package:mma_flutter/stream/provider/stream_fight_event_provider.dart';
 import 'package:mma_flutter/stream/vote/model/vote_request_model.dart';
 import 'package:mma_flutter/stream/vote/repository/vote_repository.dart';
 
-class StreamFightEventCard extends ConsumerStatefulWidget {
+class StreamFighterFightEventCard extends ConsumerStatefulWidget {
   final StreamFighterFightEventModel ffe;
   final bool upcoming;
   final bool checkboxValue;
   final void Function(bool?) checkboxOnChanged;
 
-  const StreamFightEventCard({
+  const StreamFighterFightEventCard({
     super.key,
     required this.ffe,
     required this.upcoming,
@@ -27,10 +27,10 @@ class StreamFightEventCard extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<StreamFightEventCard> createState() => _FightEventCardState();
+  ConsumerState<StreamFighterFightEventCard> createState() => _FightEventCardState();
 }
 
-class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
+class _FightEventCardState extends ConsumerState<StreamFighterFightEventCard> {
   bool isExpanded = false;
 
   @override
@@ -40,7 +40,6 @@ class _FightEventCardState extends ConsumerState<StreamFightEventCard> {
 
   @override
   Widget build(BuildContext context) {
-    print('${widget.ffe.winner.name} : ${widget.ffe.status}');
     bool? checkBoxValue = widget.checkboxValue;
 
     return Padding(

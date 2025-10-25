@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mma_flutter/admin/fighter/repository/admin_fighter_repository.dart';
 import 'package:mma_flutter/common/component/custom_alert_dialog.dart';
 import 'package:mma_flutter/common/const/colors.dart';
+import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/layout/default_layout.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
@@ -102,20 +103,39 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
               children: [
                 Column(
                   children: [
+                    if (data is FighterDetailModel && data.weight != null)
+                      Text(
+                        '${weightClassFromWeight(data.weight!)} ${data.ranking == 0 ? '챔피언' : '파이터'}',
+                        style: TextStyle(
+                          color: GREY_COLOR,
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     SizedBox(
                       width: 292.w,
                       child: Row(
                         children: [
-                          Expanded(
-                            child: Center(
+                          if (data.ranking != null && data.ranking! > 0)
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 2.w),
+                              color: WHITE_COLOR,
                               child: Text(
-                                data.name,
-                                style: defaultTextStyle.copyWith(
-                                  fontSize: 24.sp,
-                                  fontWeight: FontWeight.w600,
+                                '# ${data.ranking}',
+                                style: TextStyle(
+                                  color: BLACK_COLOR,
+                                  fontSize: 13.sp,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
+                            ),
+                          Expanded(
+                            child: Text(
+                              data.name,
+                              style: defaultTextStyle.copyWith(
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
                           _heart != null
@@ -124,8 +144,6 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                         ],
                       ),
                     ),
-                    if (data.ranking != null)
-                      Text('랭킹 ${data.ranking} 위', style: defaultTextStyle),
                     if (data is FighterDetailModel)
                       _imageCard(data.bodyUrl, data.name.replaceAll(' ', '-')),
                   ],
@@ -140,9 +158,21 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildRecord('승', data.record.win),
-                      _buildRecord('패', data.record.loss),
-                      _buildRecord('무', data.record.draw),
+                      _buildRecord(
+                        name: '승',
+                        value: data.record.win,
+                        color: BLUE_COLOR,
+                      ),
+                      _buildRecord(
+                        name: '패',
+                        value: data.record.loss,
+                        color: RED_COLOR,
+                      ),
+                      _buildRecord(
+                        name: '무',
+                        value: data.record.draw,
+                        color: GREY_COLOR,
+                      ),
                     ],
                   ),
                 ),
@@ -204,19 +234,20 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
     );
   }
 
-  _buildRecord(String name, int value) {
+  _buildRecord({
+    required String name,
+    required int value,
+    required Color color,
+  }) {
     return Column(
       children: [
         Padding(
           padding: EdgeInsets.only(top: 14.h),
-          child: Text(
-            name,
-            style: TextStyle(color: GREY_COLOR, fontSize: 18.sp),
-          ),
+          child: Text(name, style: TextStyle(color: color, fontSize: 18.sp)),
         ),
         Padding(
           padding: EdgeInsets.only(top: 10.h, bottom: 17.h),
-          child: Container(color: GREY_COLOR, height: 2.h, width: 65.w),
+          child: Container(color: color, height: 2.h, width: 65.w),
         ),
         Text(
           value.toString(),
@@ -238,7 +269,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
       }
     });
     return Padding(
-      padding: EdgeInsets.only(top: 31.h,bottom: 16.h),
+      padding: EdgeInsets.only(top: 31.h, bottom: 16.h),
       child: SizedBox(
         width: 300.w,
         child: Row(
@@ -292,16 +323,22 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
           children: [
             Text(
               label,
-              style: defaultTextStyle.copyWith(color: GREY_COLOR, fontSize: 13.sp),
+              style: defaultTextStyle.copyWith(
+                color: GREY_COLOR,
+                fontSize: 13.sp,
+              ),
             ),
             SizedBox(width: 22.w),
             Text(
               value,
-              style: defaultTextStyle.copyWith(color: WHITE_COLOR, fontSize: 14.sp),
+              style: defaultTextStyle.copyWith(
+                color: WHITE_COLOR,
+                fontSize: 14.sp,
+              ),
             ),
           ],
         ),
-        SizedBox(height: 15.h,),
+        SizedBox(height: 15.h),
       ],
     );
   }
@@ -330,7 +367,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
             tabs: const [Tab(text: '최근 경기'), Tab(text: '다음 경기')],
           ),
         ),
-        SizedBox(height: 9.h,),
+        SizedBox(height: 9.h),
         index == 0
             ? _filterFightEvent(data: data, isUpcoming: false)
             : _filterFightEvent(data: data, isUpcoming: true),

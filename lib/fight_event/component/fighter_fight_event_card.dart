@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
@@ -9,6 +10,7 @@ import 'package:mma_flutter/fight_event/component/fight_event_card_list.dart';
 import 'package:mma_flutter/fight_event/component/fighter_fight_event_card_row.dart';
 import 'package:mma_flutter/fight_event/model/card_date_time_info_model.dart';
 import 'package:mma_flutter/fight_event/provider/fight_event_provider.dart';
+import 'package:mma_flutter/fight_event/screen/fighter_fight_event/fighter_fight_event_detail_screen.dart';
 
 import '../model/fight_event_model.dart';
 
@@ -17,13 +19,15 @@ class FighterFightEventCard extends ConsumerStatefulWidget {
 
   /// fightEventCard or fighterFightEventCard
   final bool isFightEventCard;
-  final CardDateTimeInfoModel? eventStartTimeInfo;
+  final CardDateTimeInfoModel? cardStartDateTimeInfo;
+  final int? whichCard;
 
   const FighterFightEventCard({
     super.key,
     required this.ffe,
     required this.isFightEventCard,
-    this.eventStartTimeInfo,
+    this.cardStartDateTimeInfo,
+    this.whichCard,
   });
 
   @override
@@ -48,7 +52,7 @@ class _FighterFightEventCardState extends ConsumerState<FighterFightEventCard> {
           FightEventCardHeader(
             eventId: widget.ffe.eventId,
             eventName: widget.ffe.eventName,
-            eventStartDateTimeInfo: widget.eventStartTimeInfo,
+            eventStartDateTimeInfo: null,
           ),
         if (widget.isFightEventCard)
           Stack(
@@ -58,7 +62,29 @@ class _FighterFightEventCardState extends ConsumerState<FighterFightEventCard> {
                 duration: Duration(milliseconds: 300),
                 child: Column(
                   children: [
-                    FighterFightEventCardRow(ffe: widget.ffe, context: context),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return FighterFightEventDetailScreen(
+                                eventName: widget.ffe.eventName,
+                                id: widget.ffe.id,
+                                fightWeight: widget.ffe.fightWeight,
+                                isTitle: widget.ffe.title,
+                                cardStartDateTimeInfo:
+                                    widget.cardStartDateTimeInfo,
+                                whichCard: widget.whichCard,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: FighterFightEventCardRow(
+                        ffe: widget.ffe,
+                        context: context,
+                      ),
+                    ),
                     if (_isExpanded) _renderAllCards(eventState: eventState),
                   ],
                 ),
@@ -97,7 +123,25 @@ class _FighterFightEventCardState extends ConsumerState<FighterFightEventCard> {
             ],
           ),
         if (!widget.isFightEventCard)
-          FighterFightEventCardRow(ffe: widget.ffe, context: context),
+          InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return FighterFightEventDetailScreen(
+                      eventName: widget.ffe.eventName,
+                      id: widget.ffe.id,
+                      fightWeight: widget.ffe.fightWeight,
+                      isTitle: widget.ffe.title,
+                      cardStartDateTimeInfo: widget.cardStartDateTimeInfo,
+                      whichCard: widget.whichCard,
+                    );
+                  },
+                ),
+              );
+            },
+            child: FighterFightEventCardRow(ffe: widget.ffe, context: context),
+          ),
       ],
     );
   }
@@ -109,6 +153,10 @@ class _FighterFightEventCardState extends ConsumerState<FighterFightEventCard> {
       return Center(child: CircularProgressIndicator());
     }
     final event = eventState as StateData<FightEventModel>;
-    return FightEventCardList(ife: event.data!, stream: false);
+    return FightEventCardList(
+      ife: event.data!,
+      stream: false,
+      isFirstCardExcluded: true,
+    );
   }
 }

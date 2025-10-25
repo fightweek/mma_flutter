@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
+import 'package:mma_flutter/fight_event/model/fighter_fight_event_detail_model.dart';
 import 'package:mma_flutter/fight_event/provider/fight_event_alert_provider.dart';
 import 'package:mma_flutter/fight_event/repository/fight_event_repository.dart';
 import 'package:mma_flutter/fighter/model/update_preference_model.dart';
@@ -18,6 +19,17 @@ final fightEventProvider = StateNotifierProvider<
     scheduleRepository: scheduleRepository,
   );
 });
+
+final fighterFightEventDetailFutureProvider =
+    FutureProvider.family<FighterFightEventDetailModel, int>((
+      ref,
+      ffeId,
+    ) async {
+      final res = await ref
+          .read(fightEventRepositoryProvider)
+          .getFighterFightEventDetail(ffeId: ffeId.toString());
+      return res;
+    });
 
 class ScheduleStateNotifier
     extends StateNotifier<Map<String, StateBase<FightEventModel>>> {

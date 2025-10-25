@@ -1,11 +1,11 @@
 import 'dart:developer';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mma_flutter/fight_event/model/abst/i_fight_event_model.dart';
+import 'package:mma_flutter/fight_event/model/abst/i_fighter_fight_event_model.dart';
 import 'package:mma_flutter/fight_event/model/card_date_time_info_model.dart';
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
-import 'package:mma_flutter/fight_event/model/i_fight_event_model.dart';
-import 'package:mma_flutter/fight_event/model/i_fighter_fight_event_model.dart';
-import 'package:mma_flutter/fighter/model/fighter_model.dart';
+import 'package:mma_flutter/fight_event/model/fighter_fight_event_detail_model.dart';
 
 part 'stream_fight_event_model.g.dart';
 
@@ -50,33 +50,22 @@ class StreamFightEventModel extends IFightEventModel<StreamFighterFightEventMode
 
 @JsonSerializable()
 class StreamFighterFightEventModel
-    implements IFighterFightEvent<StreamFighterModel> {
-  @override
-  final int id;
-  @override
-  final String fightWeight;
-  @override
-  final FightResultModel? result;
-  @override
-  final StreamFighterModel winner;
-  @override
-  final StreamFighterModel loser;
-  @override
-  final bool title;
+    extends IFighterFightEvent<FighterFightEventFighterModel> {
   final StreamFighterFightEventStatus status;
   final double winnerVoteRate;
   final double loserVoteRate;
 
   StreamFighterFightEventModel({
-    required this.id,
     required this.status,
-    required this.winner,
-    required this.loser,
-    required this.fightWeight,
-    required this.result,
     required this.winnerVoteRate,
     required this.loserVoteRate,
-    required this.title,
+    required super.id,
+    required super.winner,
+    required super.loser,
+    required super.fightWeight,
+    required super.result,
+    required super.title,
+    required super.eventName,
   });
 
   factory StreamFighterFightEventModel.fromJson(Map<String, dynamic> json) {
@@ -105,36 +94,11 @@ class StreamFighterFightEventModel
       fightWeight: fightWeight,
       result: result,
       title: title,
+      eventName: eventName,
       winnerVoteRate: newWinnerVoteRate,
       loserVoteRate: newLoserVoteRate,
     );
   }
-}
-
-@JsonSerializable()
-class StreamFighterModel extends FighterModel {
-  final int? reach;
-  final DateTime birthday;
-  final int height;
-  final String bodyUrl;
-  final double? weight;
-
-  StreamFighterModel({
-    required super.id,
-    required super.name,
-    required super.nickname,
-    required super.record,
-    required super.ranking,
-    required super.headshotUrl,
-    required this.weight,
-    required this.height,
-    required this.birthday,
-    required this.reach,
-    required this.bodyUrl,
-  });
-
-  factory StreamFighterModel.fromJson(Map<String, dynamic> json) =>
-      _$StreamFighterModelFromJson(json);
 }
 
 enum StreamFighterFightEventStatus {

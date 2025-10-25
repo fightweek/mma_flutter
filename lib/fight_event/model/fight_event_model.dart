@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mma_flutter/fight_event/model/i_fight_event_model.dart';
-import 'package:mma_flutter/fight_event/model/i_fighter_fight_event_model.dart';
+import 'package:mma_flutter/fight_event/model/abst/i_fight_event_model.dart';
+import 'package:mma_flutter/fight_event/model/abst/i_fighter_fight_event_model.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 
 import 'card_date_time_info_model.dart';
@@ -55,14 +55,13 @@ class FightEventModel extends IFightEventModel<FighterFightEventModel> {
 @JsonSerializable()
 class FighterFightEventModel extends IFighterFightEvent<FighterModel> {
   final int eventId;
-  final String eventName;
   final DateTime eventDate;
 
   FighterFightEventModel({
     required this.eventId,
-    required this.eventName,
     required this.eventDate,
     required super.fightWeight,
+    required super.eventName,
     required super.winner,
     required super.loser,
     required super.result,

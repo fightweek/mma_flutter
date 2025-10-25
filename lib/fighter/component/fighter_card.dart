@@ -47,7 +47,6 @@ class FighterCard extends ConsumerWidget {
               Text(
                 _splitNameAndNickname(
                   name: fighter.name,
-                  nickname: fighter.nickname,
                 ),
                 style: defaultTextStyle.copyWith(
                   fontSize: 16.sp
@@ -69,12 +68,10 @@ class FighterCard extends ConsumerWidget {
 
   String _splitNameAndNickname({
     required String name,
-    required String? nickname,
   }) {
     if (name.contains(' ')) {
       final names = name.split(' ');
-      final midNickname = nickname != null ? '\'$nickname\'\n' : '';
-      return '${names[0]}\n$midNickname${names.sublist(1).join(' ')}';
+      return '${names[0]}\n${names.sublist(1).join(' ')}';
     }
     return name;
   }

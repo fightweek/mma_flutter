@@ -10,40 +10,37 @@ class HomeSplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      backGroundColor: BLACK_COLOR,
-      child: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 37.h, bottom: 13.h),
-              child: _basicContainer(width: 233.w, height: 18.h),
-            ),
-            _basicContainer(width: 293.w, height: 58.h),
-            Padding(
-              padding: EdgeInsets.only(top: 36.h, bottom: 33.h),
-              child: _basicContainer(width: 45.h, height: 34.w)
-            ),
-            _basicContainer(width: 293.w, height: 58.h),
-            Padding(
-              padding: EdgeInsets.only(top: 36.h, bottom: 42.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [_personShapeWidget(), _personShapeWidget()],
-              ),
-            ),
-            Row(
+    return SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(top: 37.h, bottom: 13.h),
+            child: _basicContainer(width: 233.w, height: 18.h),
+          ),
+          _basicContainer(width: 293.w, height: 58.h),
+          Padding(
+            padding: EdgeInsets.only(top: 36.h, bottom: 33.h),
+            child: _basicContainer(width: 45.h, height: 34.w)
+          ),
+          _basicContainer(width: 293.w, height: 58.h),
+          Padding(
+            padding: EdgeInsets.only(top: 36.h, bottom: 42.h),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [_nameShapeContainer(), _nameShapeContainer()],
+              children: [_personShapeWidget(), _personShapeWidget()],
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 26.h, bottom: 10.h),
-              child: _basicContainer(width: 205.w, height: 18.h),
-            ),
-            _basicContainer(width: 230.w, height: 37.h)
-          ],
-        ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [_nameShapeContainer(), _nameShapeContainer()],
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 26.h, bottom: 10.h),
+            child: _basicContainer(width: 205.w, height: 18.h),
+          ),
+          _basicContainer(width: 230.w, height: 37.h)
+        ],
       ),
     );
   }
