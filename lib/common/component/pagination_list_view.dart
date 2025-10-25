@@ -6,24 +6,32 @@ import 'package:mma_flutter/common/model/pagination_model.dart';
 import 'package:mma_flutter/common/provider/pagination_provider.dart';
 import 'package:mma_flutter/common/repository/pagination_base_repository.dart';
 
-class PaginationListView<T extends ModelWithId, U extends PaginationBaseRepository<T>> extends ConsumerStatefulWidget {
-  final StateNotifierProvider<PaginationProvider<T,U>, PaginationBase> provider;
+class PaginationListView<
+  T extends ModelWithId,
+  U extends PaginationBaseRepository<T>
+>
+    extends ConsumerStatefulWidget {
+  final StateNotifierProvider<PaginationProvider<T, U>, PaginationBase>
+  provider;
   final Widget Function(BuildContext context, int index, T model) itemBuilder;
-  final Map<String,dynamic>? params;
+  final Map<String, dynamic>? params;
+  // final Widget loadingWidget;
 
   const PaginationListView({
     super.key,
     required this.provider,
     required this.itemBuilder,
+    // required this.loadingWidget,
     this.params,
   });
 
   @override
-  ConsumerState<PaginationListView> createState() => _PaginationListViewState<T>();
+  ConsumerState<PaginationListView> createState() =>
+      _PaginationListViewState<T>();
 }
 
 class _PaginationListViewState<T extends ModelWithId>
-    extends ConsumerState<PaginationListView<T,PaginationBaseRepository<T>>> {
+    extends ConsumerState<PaginationListView<T, PaginationBaseRepository<T>>> {
   final ScrollController _controller = ScrollController();
 
   @override
@@ -36,8 +44,10 @@ class _PaginationListViewState<T extends ModelWithId>
     if (_controller.offset > _controller.position.maxScrollExtent - 300) {
       final state = ref.read(widget.provider) as Pagination;
       print(state.meta.number);
-      final updatedParams = {'page':state.meta.number+1,...?widget.params};
-      ref.read(widget.provider.notifier).paginate(fetchMore: true,params: updatedParams);
+      final updatedParams = {'page': state.meta.number + 1, ...?widget.params};
+      ref
+          .read(widget.provider.notifier)
+          .paginate(fetchMore: true, params: updatedParams);
     }
   }
 
@@ -52,7 +62,16 @@ class _PaginationListViewState<T extends ModelWithId>
   Widget build(BuildContext context) {
     final state = ref.watch(widget.provider);
     if (state is PaginationLoading) {
-      return Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator(),);
+      // return ListView.separated(
+      //   itemBuilder: (context, index) {
+      //     return widget.loadingWidget;
+      //   },
+      //   separatorBuilder: (context, index) {
+      //     return SizedBox(height: 16.h);
+      //   },
+      //   itemCount: 10,
+      // );
     }
     if (state is PaginationError) {
       return Column(

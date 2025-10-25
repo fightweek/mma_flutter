@@ -28,7 +28,7 @@ class FighterFightEventCardRow extends ConsumerWidget {
       width: 362.w,
       decoration: BoxDecoration(
         color: BLACK_COLOR,
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(8.r),
         border: BoxBorder.all(color: GREY_COLOR, width: 1.w),
       ),
       child: Row(

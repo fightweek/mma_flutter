@@ -8,6 +8,7 @@ import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/fight_event/component/fight_event_card_header.dart';
 import 'package:mma_flutter/fight_event/component/fight_event_card_list.dart';
+import 'package:mma_flutter/fight_event/component/fighter_fight_event_card_skeleton.dart';
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
 import 'package:mma_flutter/fight_event/provider/fight_event_provider.dart';
 import 'package:mma_flutter/fight_event/screen/fight_event/component/fight_event_date_picker.dart';
@@ -136,7 +137,20 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                 maxChildSize: 1.0,
                 builder: (context, scrollController) {
                   if (state == null || state is StateLoading) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator(),);
+                    // return SingleChildScrollView(
+                    //   physics: AlwaysScrollableScrollPhysics(),
+                    //   child: Column(
+                    //     children: [
+                    //       SizedBox(height: 28.h,),
+                    //       ...List.generate(10, (index) {
+                    //         return FighterFightEventCardSkeleton(
+                    //           isHeaderIncluded: false,
+                    //         );
+                    //       }),
+                    //     ],
+                    //   ),
+                    // );
                   }
                   if (state is StateError) {
                     return Center(
