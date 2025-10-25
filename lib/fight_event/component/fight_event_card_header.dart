@@ -34,13 +34,13 @@ class FightEventCardHeader extends ConsumerWidget {
     final isOn = ref.watch(eventAlertStatusProvider(eventId));
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.symmetric(vertical: 8.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (eventStartDateTimeInfo != null)
             SizedBox(
-              width: 36.0,
+              width: 36.w,
               child: InkWell(
                 splashColor: Colors.blueAccent,
                 onTap: () {

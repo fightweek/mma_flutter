@@ -28,7 +28,6 @@ class FighterCard extends ConsumerWidget {
             width: 80.w,
             height: 80.h,
             imageUrl: fighter.headshotUrl!,
-            placeholder: (context, url) => CircularProgressIndicator(),
             errorWidget: (context, url, error) {
               print('no such image.${fighter.name}');
               return ElevatedButton(

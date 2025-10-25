@@ -8,6 +8,7 @@ import 'package:mma_flutter/common/model/base_state_model.dart';
 import 'package:mma_flutter/fight_event/component/fight_event_card_header.dart';
 import 'package:mma_flutter/fight_event/component/fight_event_card_list.dart';
 import 'package:mma_flutter/fight_event/component/fighter_fight_event_card_row.dart';
+import 'package:mma_flutter/fight_event/component/fighter_fight_event_card_skeleton.dart';
 import 'package:mma_flutter/fight_event/model/card_date_time_info_model.dart';
 import 'package:mma_flutter/fight_event/provider/fight_event_provider.dart';
 import 'package:mma_flutter/fight_event/screen/fighter_fight_event/fighter_fight_event_detail_screen.dart';
@@ -150,7 +151,12 @@ class _FighterFightEventCardState extends ConsumerState<FighterFightEventCard> {
 
   Widget _renderAllCards({required StateBase<FightEventModel>? eventState}) {
     if (eventState == null || eventState is StateLoading) {
-      return Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator(),);
+      // return Column(
+      //   children: List.generate(10, (index) {
+      //     return FighterFightEventCardSkeleton(isHeaderIncluded: false);
+      //   }),
+      // );
     }
     final event = eventState as StateData<FightEventModel>;
     return FightEventCardList(

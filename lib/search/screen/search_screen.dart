@@ -8,13 +8,13 @@ import 'package:mma_flutter/common/component/custom_alert_dialog.dart';
 import 'package:mma_flutter/common/component/pagination_list_view.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/style.dart';
-import 'package:mma_flutter/common/model/pagination_model.dart';
 import 'package:mma_flutter/fight_event/component/fighter_fight_event_card.dart';
+import 'package:mma_flutter/fight_event/component/fighter_fight_event_card_skeleton.dart';
 import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
 import 'package:mma_flutter/fight_event/provider/fight_event_pagination_provider.dart';
 import 'package:mma_flutter/fight_event/repository/fight_event_repository.dart';
-import 'package:mma_flutter/fight_event/screen/fighter_fight_event/fighter_fight_event_detail_screen.dart';
 import 'package:mma_flutter/fighter/component/fighter_card.dart';
+import 'package:mma_flutter/fighter/component/fighter_card_skeleton.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/provider/fighter_pagination_provider.dart';
 import 'package:mma_flutter/fighter/provider/fighter_provider.dart';
@@ -45,7 +45,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: BACKGROUND_COLOR,
+      backgroundColor: BLACK_COLOR,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -218,6 +218,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           );
         },
         params: {'name': _inputText},
+        // loadingWidget: FighterCardSkeleton(),
       ),
     );
   }
@@ -230,14 +231,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           print(model.winner.name);
           return Row(
             children: [
-              FighterFightEventCard(
-                ffe: model,
-                isFightEventCard: true,
-              ),
+              FighterFightEventCard(ffe: model, isFightEventCard: true),
             ],
           );
         },
         params: {'name': _inputText},
+        // loadingWidget: FighterFightEventCardSkeleton(isHeaderIncluded: true),
       ),
     );
   }

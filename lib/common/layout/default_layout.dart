@@ -39,6 +39,12 @@ class DefaultLayout extends ConsumerWidget {
                   children: [
                     ListTile(
                       onTap: () {
+                        ref.read(userProvider.notifier).logout();
+                      },
+                      title: Text('로그아웃'),
+                    ),
+                    ListTile(
+                      onTap: () {
                         print(user.role);
                       },
                       title: Text('게임'),
