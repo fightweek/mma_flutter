@@ -37,13 +37,7 @@ class ScheduleStateNotifier
   final Ref ref;
 
   ScheduleStateNotifier({required this.ref, required this.scheduleRepository})
-    : super({
-        DateFormat('yyyy-MM-dd').format(DateTime.now()):
-            StateLoading<FightEventModel>(),
-      }) {
-    print('ScheduleStateNotifier 생성됨');
-    getSchedule(date: DateTime.now());
-  }
+    : super({});
 
   Future<void> getSchedule({required DateTime date, bool? isRefresh}) async {
     try {

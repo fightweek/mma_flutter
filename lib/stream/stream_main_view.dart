@@ -229,7 +229,7 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
     final rightPercent = ffe.loserVoteRate.toInt();
     final winnerRate = leftPercent > rightPercent ? leftPercent : rightPercent;
     return Container(
-      height: 226.h,
+      height: 190.h,
       color: BLACK_COLOR,
       child: Column(
         children: [
@@ -259,7 +259,7 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
                   top: 20.h,
                   left: 0.w,
                   right: 0.w,
-                  child: _renderCurrentFighterBodyImages(ffe),
+                  child: _renderCurrentFighterInfo(ffe),
                 ),
               ],
             ),
@@ -308,18 +308,18 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
     );
   }
 
-  Widget _renderCurrentFighterBodyImages(StreamFighterFightEventModel ffe) {
+  Widget _renderCurrentFighterInfo(StreamFighterFightEventModel ffe) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _renderHeaderFighterInfo(
           name: ffe.winner.name,
-          bodyUrl: ffe.winner.bodyUrl,
+          headshotUrl: ffe.winner.headshotUrl!,
           color: RED_COLOR,
         ),
         _renderHeaderFighterInfo(
           name: ffe.loser.name,
-          bodyUrl: ffe.loser.bodyUrl,
+          headshotUrl: ffe.loser.headshotUrl!,
           color: BLUE_COLOR,
         ),
       ],
@@ -327,19 +327,21 @@ class _StreamMainViewState extends ConsumerState<StreamMainView>
   }
 
   _renderHeaderFighterInfo({
-    required String bodyUrl,
+    required String headshotUrl,
     required String name,
     required Color color,
   }) {
-    final imageHeight = 135.h;
-    final imageWidth = 105.w;
+    final imageHeight = 90.h;
+    final imageWidth = 100.w;
     return Column(
       children: [
         CachedNetworkImage(
-          imageUrl: bodyUrl,
+          imageUrl: headshotUrl,
           height: imageHeight,
           width: imageWidth,
+          fit: BoxFit.fitHeight,
         ),
+        SizedBox(height: 4.h,),
         Container(
           padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 4.w),
           decoration: BoxDecoration(

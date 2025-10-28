@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mma_flutter/common/component/point_with_icon.dart';
 import 'package:mma_flutter/common/const/colors.dart';
 import 'package:mma_flutter/common/const/data.dart';
 import 'package:mma_flutter/common/const/style.dart';
 import 'package:mma_flutter/common/model/base_state_model.dart';
-import 'package:mma_flutter/fight_event/component/fighter_fight_event_card.dart';
-import 'package:mma_flutter/fighter/component/fighter_card.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:mma_flutter/user/model/user_profile_model.dart';
 import 'package:mma_flutter/user/provider/user_profile_provider.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
+import 'package:mma_flutter/user/screen/profile/footer.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -34,16 +32,15 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         _renderNicknameWithEdit(nickname: userState.nickname!),
-        if (profileState is StateData<UserProfileModel>)
-          Padding(
-            padding: EdgeInsets.only(top: 19.h, bottom: 40.h),
-            child: _renderBetRecordWithBelt(
-              betRecord: profileState.data!.userBetRecord,
-              point: userState.point,
-            ),
+        Padding(
+          padding: EdgeInsets.only(top: 19.h, bottom: 40.h),
+          child: _renderBetRecordWithBelt(
+            profileState: profileState,
+            point: userState.point,
           ),
+        ),
         _renderBeltSequence(point: userState.point),
-        Expanded(child: _footer(profileState)),
+        Expanded(child: Footer(profileState: profileState)),
       ],
     );
   }
@@ -60,7 +57,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _renderBetRecordWithBelt({
-    required UserBetRecordModel betRecord,
+    required StateBase<UserProfileModel> profileState,
     required int point,
   }) {
     return Container(
@@ -89,10 +86,11 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ),
               SizedBox(height: 6.h),
-              Text(
-                _betRecord(betRecord: betRecord),
-                style: TextStyle(color: BLACK_COLOR, fontSize: 12.sp),
-              ),
+              if (profileState is StateData<UserProfileModel>)
+                Text(
+                  _betRecord(betRecord: profileState.data!.userBetRecord),
+                  style: TextStyle(color: BLACK_COLOR, fontSize: 12.sp),
+                ),
             ],
           ),
           Expanded(child: SizedBox()),
@@ -179,59 +177,5 @@ class ProfileScreen extends ConsumerWidget {
 
   String _betRecord({required UserBetRecordModel betRecord}) {
     return '${betRecord.win}승 ${betRecord.loss}패(배팅 전적)';
-  }
-
-  Widget _footer(StateBase<UserProfileModel> profileState) {
-    if (profileState is StateLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-    final profile = profileState as StateData<UserProfileModel>;
-    return DefaultTabController(
-      length: 2,
-      child: SizedBox(
-        width: 362.w,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 38.h, bottom: 10.h),
-              child: SizedBox(
-                height: 45.h,
-                child: TabBar(
-                  indicatorColor: BLUE_COLOR,
-                  dividerColor: Colors.transparent,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: GREY_COLOR,
-                  tabs: const [Tab(text: '즐겨 찾는 선수'), Tab(text: '관심 있는 이벤트')],
-                ),
-              ),
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  ListView.separated(
-                    itemCount: profile.data!.alertFighters.length,
-                    itemBuilder: (context, index) {
-                      return FighterCard(fighter: profile.data!.alertFighters[index]);
-                    },
-                    separatorBuilder: (context, index) {
-                      return SizedBox(height: 11.h,);
-                    },
-                  ),
-                  ListView.separated(
-                    itemCount: profile.data!.alertEvents.length,
-                    itemBuilder: (context, index) {
-                      return FighterFightEventCard(ffe: profile.data!.alertEvents[index],isFightEventCard: true,);
-                    },
-                    separatorBuilder: (context, index) {
-                      return SizedBox(height: 11.h,);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
