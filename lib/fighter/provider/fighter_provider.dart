@@ -82,12 +82,14 @@ class FighterStateNotifier
   }) async {
     print(state[model.targetId]);
     fighterRepository.updatePreference(request: model);
-    final fState = state[model.targetId] as StateData<FighterDetailModel>;
-    state = {
-      ...state,
-      model.targetId: StateData<FighterDetailModel>(
-        data: fState.data?.copyWith(like: like),
-      ),
-    };
+    if (state[model.targetId] is StateData<FighterDetailModel>) {
+      final fState = state[model.targetId] as StateData<FighterDetailModel>;
+      state = {
+        ...state,
+        model.targetId: StateData<FighterDetailModel>(
+          data: fState.data?.copyWith(like: like),
+        ),
+      };
+    }
   }
 }

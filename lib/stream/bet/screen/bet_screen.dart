@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,6 +49,7 @@ class _BetScreenState extends ConsumerState<BetScreen> {
   @override
   Widget build(BuildContext context) {
     final betList = ref.watch(betTargetProvider);
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     print('rebuild');
     final user = ref.watch(userProvider) as UserModel;
@@ -65,167 +67,173 @@ class _BetScreenState extends ConsumerState<BetScreen> {
     }
 
     return SafeArea(
-      child: Container(
-        color: DARK_GREY_COLOR,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 10.h, bottom: 10.h, right: 20.w),
-              child: PointWithIcon(point: user.point),
-            ),
-            Center(
-              child: Text(
-                '다음 경기의 승자는?',
-                style: defaultTextStyle.copyWith(fontSize: 17.sp),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 2.h, bottom: 2.h, right: 20.w),
-              child: GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return CustomAlertDialog(
-                        titleMsg: '포인트 배당',
-                        contentMsg: betDescription,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: Container(
+          color: DARK_GREY_COLOR,
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 10.h, bottom: 10.h, right: 20.w),
+                  child: PointWithIcon(point: user.point),
+                ),
+                Center(
+                  child: Text(
+                    '다음 경기의 승자는?',
+                    style: defaultTextStyle.copyWith(fontSize: 17.sp),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 2.h, bottom: 2.h, right: 20.w),
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return CustomAlertDialog(
+                            titleMsg: '포인트 배당',
+                            contentMsg: betDescription,
+                          );
+                        },
                       );
                     },
-                  );
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      '포인트 배당 ',
-                      style: defaultTextStyle.copyWith(
-                        color: GREY_COLOR,
-                        fontSize: 12.sp,
-                      ),
-                    ),
-                    Icon(Icons.help_outline_sharp, color: GREY_COLOR, size: 16),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  print(index);
-                  return BetCard(bet: betList[index], user: user, index: index);
-                },
-                separatorBuilder: (context, index) => SizedBox(height: 8.h),
-                itemCount: betList.length,
-              ),
-            ),
-            Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.h),
-                child: Form(
-                  key: formKey,
-                  child: SizedBox(
-                    width: 362.w,
-                    child: TextFormField(
-                      controller: controller,
-                      onChanged: (val) {
-                        if (int.tryParse(val) != null) {
-                          formKey.currentState!.validate();
-                        }
-                      },
-                      style: TextStyle(color: Colors.white),
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(
-                          left: 16.w,
-                          bottom: 10.h,
-                          top: 10.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          '포인트 배당 ',
+                          style: defaultTextStyle.copyWith(
+                            color: GREY_COLOR,
+                            fontSize: 12.sp,
+                          ),
                         ),
-                        prefixIcon: Image.asset(
-                          'asset/img/icon/point.png',
-                          width: 12.w,
-                          height: 12.h,
+                        Icon(
+                          Icons.help_outline_sharp,
+                          color: GREY_COLOR,
+                          size: 16,
                         ),
-                        filled: true,
-                        fillColor: BLACK_COLOR,
-                        border: linearGradientInputBorder,
-                        enabledBorder: linearGradientInputBorder,
-                        focusedBorder: linearGradientInputBorder,
-                      ),
-                      validator: _validator,
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 18.h),
-                child: SizedBox(
-                  width: 127.w,
-                  height: 31.h,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      backgroundColor: BLUE_COLOR,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
+                ...betList.mapIndexed(
+                  (index, element) =>
+                      BetCard(bet: betList[index], user: user, index: index),
+                ),
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15.h),
+                    child: Form(
+                      key: formKey,
+                      child: SizedBox(
+                        width: 362.w,
+                        child: TextFormField(
+                          controller: controller,
+                          onChanged: (val) {
+                            if (int.tryParse(val) != null) {
+                              formKey.currentState!.validate();
+                            }
+                          },
+                          style: TextStyle(color: Colors.white),
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(
+                              left: 16.w,
+                              bottom: 10.h,
+                              top: 10.h,
+                            ),
+                            prefixIcon: Image.asset(
+                              'asset/img/icon/point.png',
+                              width: 12.w,
+                              height: 12.h,
+                            ),
+                            filled: true,
+                            fillColor: BLACK_COLOR,
+                            border: linearGradientInputBorder,
+                            enabledBorder: linearGradientInputBorder,
+                            focusedBorder: linearGradientInputBorder,
+                          ),
+                          validator: _validator,
+                        ),
                       ),
-                    ),
-                    onPressed: () {
-                      bool allValid = formKey.currentState?.validate() ?? false;
-                      print(allValid);
-                      if (allValid) {
-                        int seedPoint = int.parse(controller.text);
-                        print(seedPoint);
-                        allValid = seedPoint <= user.point;
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return CustomAlertDialog(
-                              titleMsg: '실패',
-                              contentMsg:
-                                  '배팅 실패. 선택하신 모든 배팅 항목들에 대해 값을 입력해주세요.',
-                            );
-                          },
-                        );
-                        return;
-                      }
-                      if (allValid) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return BetAlertDialog(
-                              tabController: widget.tabController,
-                              textEditingController: controller,
-                            );
-                          },
-                        );
-                      } else {
-                        print('실패');
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return CustomAlertDialog(
-                              titleMsg: '실패',
-                              contentMsg: '배팅 실패. 전체 입력 포인트가 보유하신 포인트보다 높습니다.',
-                            );
-                          },
-                        );
-                      }
-                    },
-                    child: Text(
-                      '전체 배팅하기',
-                      style: defaultTextStyle.copyWith(fontSize: 14.sp),
                     ),
                   ),
                 ),
-              ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 18.h),
+                    child: SizedBox(
+                      width: 127.w,
+                      height: 31.h,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          backgroundColor: BLUE_COLOR,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                        ),
+                        onPressed: () {
+                          bool allValid =
+                              formKey.currentState?.validate() ?? false;
+                          print(allValid);
+                          if (allValid) {
+                            int seedPoint = int.parse(controller.text);
+                            print(seedPoint);
+                            allValid = seedPoint <= user.point;
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return CustomAlertDialog(
+                                  titleMsg: '실패',
+                                  contentMsg:
+                                      '배팅 실패. 선택하신 모든 배팅 항목들에 대해 값을 입력해주세요.',
+                                );
+                              },
+                            );
+                            return;
+                          }
+                          if (allValid) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return BetAlertDialog(
+                                  tabController: widget.tabController,
+                                  textEditingController: controller,
+                                );
+                              },
+                            );
+                          } else {
+                            print('실패');
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return CustomAlertDialog(
+                                  titleMsg: '실패',
+                                  contentMsg:
+                                      '배팅 실패. 전체 입력 포인트가 보유하신 포인트보다 높습니다.',
+                                );
+                              },
+                            );
+                          }
+                        },
+                        child: Text(
+                          '전체 배팅하기',
+                          style: defaultTextStyle.copyWith(fontSize: 14.sp),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

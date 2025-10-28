@@ -16,9 +16,19 @@ class UserProfileModel {
     required this.alertEvents,
   });
 
-  factory UserProfileModel.fromJson(Map<String, dynamic> json)
-  => _$UserProfileModelFromJson(json);
+  factory UserProfileModel.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileModelFromJson(json);
 
+  UserProfileModel copyWith({
+    List<FighterModel>? newAlertFighters,
+    List<FighterFightEventModel>? newAlertEvents,
+  }) {
+    return UserProfileModel(
+      userBetRecord: userBetRecord,
+      alertFighters: newAlertFighters ?? alertFighters,
+      alertEvents: newAlertEvents ?? alertEvents,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -33,6 +43,6 @@ class UserBetRecordModel {
     required this.noContest,
   });
 
-  factory UserBetRecordModel.fromJson(Map<String, dynamic> json)
-  => _$UserBetRecordModelFromJson(json);
+  factory UserBetRecordModel.fromJson(Map<String, dynamic> json) =>
+      _$UserBetRecordModelFromJson(json);
 }
