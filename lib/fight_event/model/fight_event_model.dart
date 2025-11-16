@@ -12,7 +12,7 @@ part 'fight_event_model.g.dart';
 @JsonSerializable()
 class FightEventModel extends IFightEventModel<FighterFightEventModel> {
   final bool upcoming;
-  final bool? alert;
+  final bool alert;
 
   FightEventModel({
     required this.upcoming,
@@ -33,23 +33,23 @@ class FightEventModel extends IFightEventModel<FighterFightEventModel> {
   factory FightEventModel.fromJson(Map<String, dynamic> json) =>
       _$FightEventModelFromJson(json);
 
-  FightEventModel copyWith({bool? alert, bool? like}) {
-    return FightEventModel(
-      id: id,
-      upcoming: upcoming,
-      name: name,
-      date: date,
-      mainCardDateTimeInfo: mainCardDateTimeInfo,
-      prelimCardDateTimeInfo: prelimCardDateTimeInfo,
-      earlyCardDateTimeInfo: earlyCardDateTimeInfo,
-      mainCardCnt: mainCardCnt,
-      prelimCardCnt: prelimCardCnt,
-      earlyCardCnt: earlyCardCnt,
-      location: location,
-      fighterFightEvents: fighterFightEvents,
-      alert: alert,
-    );
-  }
+  // FightEventModel copyWith({bool? alert, bool? like}) {
+  //   return FightEventModel(
+  //     id: id,
+  //     upcoming: upcoming,
+  //     name: name,
+  //     date: date,
+  //     mainCardDateTimeInfo: mainCardDateTimeInfo,
+  //     prelimCardDateTimeInfo: prelimCardDateTimeInfo,
+  //     earlyCardDateTimeInfo: earlyCardDateTimeInfo,
+  //     mainCardCnt: mainCardCnt,
+  //     prelimCardCnt: prelimCardCnt,
+  //     earlyCardCnt: earlyCardCnt,
+  //     location: location,
+  //     fighterFightEvents: fighterFightEvents,
+  //     alert: alert,
+  //   );
+  // }
 }
 
 @JsonSerializable()
