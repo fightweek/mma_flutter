@@ -12,16 +12,16 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../fixture/fighter/fighter_detail_model_json_fixture.dart';
 
-class MockFighterRepo extends Mock implements FighterRepository {}
+class _MockFighterRepo extends Mock implements FighterRepository {}
 
 void main() {
-  late MockFighterRepo mockFighterRepo;
+  late _MockFighterRepo mockFighterRepo;
   late ProviderContainer container;
   late FighterStateNotifier notifier;
   late FighterDetailModel fighterDetailModel;
 
   setUp(() {
-    mockFighterRepo = MockFighterRepo();
+    mockFighterRepo = _MockFighterRepo();
     container = ProviderContainer(
       overrides: [fighterRepositoryProvider.overrideWithValue(mockFighterRepo)],
     );
@@ -32,10 +32,9 @@ void main() {
   test('FighterProvider detail() test [successful case]', () async {
     // given
     final fighterId = fighterDetailModel.id;
-    final ffes = fighterDetailModel.fighterFightEvents!;
 
     when(() => mockFighterRepo.detail(fighterId: fighterId)).thenAnswer(
-      (invocation) async => FighterDetailModel.fromJson(fighterDetailModelJson),
+      (invocation) async => fighterDetailModel,
     );
 
     // when
@@ -53,7 +52,7 @@ void main() {
     verify(() => mockFighterRepo.detail(fighterId: fighterId)).called(1);
 
     /// Also needs to make sure that each opponent's state is StateData<FighterModel>
-    for (FighterFightEventModel ffe in ffes) {
+    for (FighterFightEventModel ffe in fighterDetailModel.fighterFightEvents!) {
       final opponentModel =
           ffe.winner.name == fighterDetailModel.name ? ffe.loser : ffe.winner;
       expect(
@@ -61,6 +60,25 @@ void main() {
         isA<StateData<FighterModel>>(),
       );
     }
+  });
+
+  test('FighterProvider detail(forceRefetch=true) test', () async {
+    // given
+    final fighterId = fighterDetailModel.id;
+    when(
+          () => mockFighterRepo.detail(fighterId: fighterId),
+    ).thenAnswer((invocation) async => fighterDetailModel);
+
+    // when
+    await notifier.detail(id: fighterId);
+    await notifier.detail(id: fighterId, forceRefetch: true);
+
+    // then
+    expect(
+      container.read(fighterProvider)[fighterId],
+      isA<StateData<FighterDetailModel>>(),
+    );
+    verify(() => mockFighterRepo.detail(fighterId: fighterId)).called(2);
   });
 
   test('FighterProvider detail() test [Exception case]', () async {

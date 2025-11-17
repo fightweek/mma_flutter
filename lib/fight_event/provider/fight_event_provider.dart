@@ -39,14 +39,13 @@ class ScheduleStateNotifier
   ScheduleStateNotifier({required this.ref, required this.scheduleRepository})
     : super({});
 
-  Future<void> getSchedule({required DateTime date, bool? isRefresh}) async {
+  Future<void> getSchedule({required DateTime date, bool forceRefetch = false}) async {
     try {
       final key = _stringDate(date);
-      print(state[key]);
       /** 1. refresh true -> 무조건 재요청
        * 2. 혹은 해당 날짜에 데이터 로딩 아직 안 된 경우, 요청
        */
-      if (isRefresh != null || state[key] is! StateData) {
+      if (forceRefetch || state[key] is! StateData) {
         print('get schedule');
         state = {...state, key: StateLoading()};
         final resp = await scheduleRepository.getSchedule(date: key);
@@ -54,14 +53,15 @@ class ScheduleStateNotifier
         if (resp != null) {
           if (resp.upcoming) {
             ref.read(eventAlertStatusProvider(resp.id).notifier).state =
-                resp.alert!;
+                resp.alert;
           }
-          resp.fighterFightEvents.forEach((e) {
+          for (FighterFightEventModel e in resp.fighterFightEvents) {
             ref.read(fighterProvider.notifier).updateFighter(e.winner);
             ref.read(fighterProvider.notifier).updateFighter(e.loser);
-          });
+          }
         }
       } else {
+        print('--${state[key]}--');
         // 이미 데이터가 있음과 동시에 refresh 하는 것도 아닌 경우, 그대로 빠져나감
         return;
       }
