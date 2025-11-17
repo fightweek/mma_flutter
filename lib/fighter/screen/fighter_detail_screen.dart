@@ -408,7 +408,7 @@ class _FighterDetailScreenState extends ConsumerState<FighterDetailScreen>
             .read(fighterProvider.notifier)
             .updatePreference(
               model: UpdatePreferenceModel(targetId: widget.id, on: isOn),
-              like: isOn,
+              alert: isOn,
             );
         setState(() {
           _heart = isOn ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart;

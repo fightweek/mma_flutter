@@ -35,7 +35,7 @@ class FighterDetailModel extends FighterModel {
   factory FighterDetailModel.fromJson(Map<String, dynamic> json) =>
       _$FighterDetailModelFromJson(json);
 
-  FighterDetailModel copyWith({bool? like, }) {
+  FighterDetailModel copyWith({bool? alert, }) {
     return FighterDetailModel(
       id: id,
       name: name,
@@ -47,7 +47,7 @@ class FighterDetailModel extends FighterModel {
       height: height,
       birthday: birthday,
       reach: reach,
-      alert: like ?? alert,
+      alert: alert ?? this.alert,
       bodyUrl: bodyUrl,
       nation: nation,
       fighterFightEvents: fighterFightEvents,
