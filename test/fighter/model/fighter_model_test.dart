@@ -24,7 +24,6 @@ void expectFighterModel({
 void main() {
   test('FighterModel fromJson parsing test', () {
     // given
-
     final idNullJson = {...fighterModelJson}..remove('id');
     final nameNullJson = {...fighterModelJson}..remove('name');
     final nicknameNullJson = {...fighterModelJson}..remove('nickname');
