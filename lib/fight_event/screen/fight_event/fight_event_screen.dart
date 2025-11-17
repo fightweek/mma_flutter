@@ -158,7 +158,7 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                         onPressed: () {
                           ref
                               .read(fightEventProvider.notifier)
-                              .getSchedule(date: _selectedDay, isRefresh: true);
+                              .getSchedule(date: _selectedDay, forceRefetch: true);
                         },
                         child: Text('다시시도'),
                       ),
@@ -171,7 +171,7 @@ class _ScheduleScreenState extends ConsumerState<FightEventScreen> {
                         onRefresh: () async {
                           ref
                               .read(fightEventProvider.notifier)
-                              .getSchedule(date: _selectedDay, isRefresh: true);
+                              .getSchedule(date: _selectedDay, forceRefetch: true);
                         },
                         child: SingleChildScrollView(
                           controller: scrollController,

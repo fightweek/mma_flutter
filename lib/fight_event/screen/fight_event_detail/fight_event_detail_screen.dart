@@ -7,7 +7,7 @@
 // import 'package:mma_flutter/common/layout/default_layout.dart';
 // import 'package:mma_flutter/fight_event/component/fighter_fight_event_card.dart';
 // import 'package:mma_flutter/fight_event/model/fight_event_model.dart';
-// import 'package:mma_flutter/fight_event/provider/fight_event_provider.dart';
+// import 'package:mma_flutter/fight_event/provider/fight_event_provider_test.dart';
 //
 // import '../../common/model/base_state_model.dart';
 // import '../component/stream_fighter_fight_event_card.dart';
