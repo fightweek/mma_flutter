@@ -91,12 +91,16 @@ class FightResultModel {
   final int round;
   @JsonKey(fromJson: parseEndTime)
   final Duration endTime;
+  final bool draw;
+  final bool nc;
 
   FightResultModel({
     required this.winMethod,
     required this.description,
     required this.round,
     required this.endTime,
+    required this.draw,
+    required this.nc,
   });
 
   factory FightResultModel.fromJson(Map<String, dynamic> json) =>
