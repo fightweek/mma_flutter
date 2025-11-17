@@ -76,18 +76,14 @@ class FighterStateNotifier
     return url;
   }
 
-  Future<void> updatePreference({
-    required UpdatePreferenceModel model,
-    bool? like,
-  }) async {
-    print(state[model.targetId]);
+  void updatePreference({required UpdatePreferenceModel model, bool? alert}) {
     fighterRepository.updatePreference(request: model);
     if (state[model.targetId] is StateData<FighterDetailModel>) {
       final fState = state[model.targetId] as StateData<FighterDetailModel>;
       state = {
         ...state,
         model.targetId: StateData<FighterDetailModel>(
-          data: fState.data?.copyWith(like: like),
+          data: fState.data?.copyWith(alert: alert),
         ),
       };
     }
