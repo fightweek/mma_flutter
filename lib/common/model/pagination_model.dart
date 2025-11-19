@@ -98,15 +98,6 @@ class PaginationMeta {
   };
 }
 
-/** 데이터가 존재하는 상황에서 새로고침할 때 => 따라서 meta와 data field가 있을 것임
- * (엄밀히 말하면 로딩이지만, 데이터가 기존에 있던 상태 +
- * 처음부터 데이터를 가져오는 작업(로딩)이므로 둘이 상태를 다르게 정의함)
- */
-/// instance is Paginarion & instance is PaginationBase
-class PaginationRefetching<T> extends Pagination<T> {
-  PaginationRefetching({required super.meta, required super.content});
-}
-
 // 이미 데이터가 있는 상태에서 추가 데이터를 요청하는 상태
 // (엄밀히 말하면 로딩이지만, 데이터가 있는 상태에서 로딩하는 것이므로 둘이 상태를 다르게 정의함)
 class PaginationFetchingMore<T> extends Pagination<T> {

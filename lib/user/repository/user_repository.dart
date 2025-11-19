@@ -24,12 +24,12 @@ abstract class UserRepository {
   @Headers({'accessToken': 'true'})
   Future<UserModel> getMe();
 
-  @GET('/check_dup_nickname')
+  @GET('/dup_nickname')
   Future<bool> checkDuplicatedNickname({
     @Body() required Map<String, String> nickname,
   });
 
-  @POST('/update_nickname')
+  @POST('/nickname')
   @Headers({'accessToken': 'true'})
   Future<UserModel> updateNickname({
     @Body() required Map<String, String> nickname,

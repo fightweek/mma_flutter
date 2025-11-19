@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mma_flutter/common/model/pagination_model.dart';
-import 'package:mma_flutter/common/provider/pagination_provider.dart';
+import 'package:mma_flutter/common/provider/pagination_notifier.dart';
 import 'package:mma_flutter/fighter/model/fighter_model.dart';
 import 'package:mma_flutter/fighter/repository/fighter_repository.dart';
 
@@ -13,6 +13,6 @@ final fighterPaginationProvider =
     });
 
 class FighterPaginationStateNotifier
-    extends PaginationProvider<FighterModel, FighterRepository> {
+    extends PaginationNotifier<FighterModel, FighterRepository> {
   FighterPaginationStateNotifier({required super.repository});
 }
