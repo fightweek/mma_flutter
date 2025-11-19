@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mma_flutter/common/model/model_with_id.dart';
 import 'package:mma_flutter/common/model/pagination_model.dart';
-import 'package:mma_flutter/common/provider/pagination_provider.dart';
+import 'package:mma_flutter/common/provider/pagination_notifier.dart';
 import 'package:mma_flutter/common/repository/pagination_base_repository.dart';
 
 class PaginationListView<
@@ -11,7 +11,7 @@ class PaginationListView<
   U extends PaginationBaseRepository<T>
 >
     extends ConsumerStatefulWidget {
-  final StateNotifierProvider<PaginationProvider<T, U>, PaginationBase>
+  final StateNotifierProvider<PaginationNotifier<T, U>, PaginationBase>
   provider;
   final Widget Function(BuildContext context, int index, T model) itemBuilder;
   final Map<String, dynamic>? params;
@@ -47,7 +47,7 @@ class _PaginationListViewState<T extends ModelWithId>
       final updatedParams = {'page': state.meta.number + 1, ...?widget.params};
       ref
           .read(widget.provider.notifier)
-          .paginate(fetchMore: true, params: updatedParams);
+          .paginateWithThrottle(fetchMore: true, params: updatedParams);
     }
   }
 
@@ -81,7 +81,7 @@ class _PaginationListViewState<T extends ModelWithId>
           Text(state.message, textAlign: TextAlign.center),
           ElevatedButton(
             onPressed: () {
-              ref.read(widget.provider.notifier).paginate(forceRefetch: true);
+              ref.read(widget.provider.notifier).paginateWithThrottle(forceRefetch: true);
             },
             child: Text('다시 시도'),
           ),
@@ -91,7 +91,7 @@ class _PaginationListViewState<T extends ModelWithId>
     final page = state as Pagination<T>;
     return RefreshIndicator(
       onRefresh: () async {
-        ref.read(widget.provider.notifier).paginate(forceRefetch: true);
+        ref.read(widget.provider.notifier).paginateWithThrottle(forceRefetch: true);
       },
       child: ListView.separated(
         physics: AlwaysScrollableScrollPhysics(),

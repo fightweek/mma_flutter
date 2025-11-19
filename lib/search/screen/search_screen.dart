@@ -135,21 +135,21 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       if (isFighterCategorySelected) {
         ref
             .read(fighterPaginationProvider.notifier)
-            .paginate(params: {'name': value}, forceRefetch: true);
+            .paginateWithThrottle(params: {'name': value}, forceRefetch: true);
       } else {
         ref
             .read(fightEventPaginationProvider.notifier)
-            .paginate(params: {'name': value}, forceRefetch: true);
+            .paginateWithThrottle(params: {'name': value}, forceRefetch: true);
       }
     } else {
       if (isFighterCategorySelected) {
         ref
             .read(fighterPaginationProvider.notifier)
-            .paginate(params: {'name': value});
+            .paginateWithThrottle(params: {'name': value});
       } else {
         ref
             .read(fightEventPaginationProvider.notifier)
-            .paginate(params: {'name': value});
+            .paginateWithThrottle(params: {'name': value});
       }
     }
     setState(() {
