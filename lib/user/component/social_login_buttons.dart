@@ -1,13 +1,15 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mma_flutter/common/const/colors.dart';
+import 'package:mma_flutter/common/firebase/provider/fcm_token_provider.dart';
 import 'package:mma_flutter/user/component/basic_button.dart';
 import 'package:mma_flutter/user/enumtype/login_platform.dart';
-import 'package:mma_flutter/user/model/naver_login_request.dart';
+import 'package:mma_flutter/user/model/social_login_request.dart';
 import 'package:mma_flutter/user/model/user_model.dart';
 import 'package:mma_flutter/user/provider/user_provider.dart';
+import 'package:mma_flutter/user/service/google_login_service.dart';
+import 'package:mma_flutter/user/service/kakao_login_service.dart';
 import 'package:naver_login_sdk/naver_login_sdk.dart';
 
 class SocialLoginButtons extends ConsumerWidget {
@@ -15,6 +17,10 @@ class SocialLoginButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final kakaoLoginService = ref.read(kakaoLoginServiceProvider);
+    final googleLoginService = ref.read(googleLoginServiceProvider);
+    final fcmTokenProvider = ref.read(firebaseFcmTokenProvider);
+
     return Column(
       children: [
         _socialLoginButton(
@@ -25,10 +31,14 @@ class SocialLoginButtons extends ConsumerWidget {
             width: 16.w,
           ),
           buttonText: '카카오로 시작하기',
-          onPressed: () {
+          onPressed: () async {
             ref
                 .read(userProvider.notifier)
-                .socialLogin(platform: LoginPlatform.kakao);
+                .socialLogin(
+                  request: await googleLoginService.login(
+                    fcmToken: await fcmTokenProvider.getToken(),
+                  ),
+                );
           },
         ),
         const SizedBox(height: 12),
@@ -42,10 +52,14 @@ class SocialLoginButtons extends ConsumerWidget {
             width: 16.w,
           ),
           buttonText: '구글로 시작하기',
-          onPressed: () {
+          onPressed: () async {
             ref
                 .read(userProvider.notifier)
-                .socialLogin(platform: LoginPlatform.google);
+                .socialLogin(
+                  request: await kakaoLoginService.login(
+                    fcmToken: await fcmTokenProvider.getToken(),
+                  ),
+                );
           },
         ),
       ],
@@ -73,7 +87,7 @@ class SocialLoginButtons extends ConsumerWidget {
                     onSuccess: () async {
                       final accessToken = await NaverLoginSDK.getAccessToken();
                       final fcmToken =
-                          await FirebaseMessaging.instance.getToken();
+                          await ref.read(firebaseFcmTokenProvider).getToken();
                       NaverLoginSDK.profile(
                         callback: ProfileCallback(
                           onSuccess: (resultCode, message, response) {
@@ -81,9 +95,8 @@ class SocialLoginButtons extends ConsumerWidget {
                               response: response,
                             );
                             userNotifier.socialLogin(
-                              platform: LoginPlatform.naver,
                               request: SocialLoginRequest(
-                                domain: "NAVER",
+                                domain: LoginPlatform.naver.name.toUpperCase(),
                                 accessToken: accessToken,
                                 email: profile.email!,
                                 socialId: profile.id!,
