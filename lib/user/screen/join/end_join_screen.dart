@@ -173,8 +173,8 @@ class _EndJoinScreenState extends ConsumerState<EndJoinScreen> {
                             (isNicknameDup ?? true) ||
                             password.length < 6
                         ? null
-                        : () {
-                          ref
+                        : () async {
+                          await ref
                               .read(userProvider.notifier)
                               .join(
                                 request: JoinRequest(
@@ -183,6 +183,9 @@ class _EndJoinScreenState extends ConsumerState<EndJoinScreen> {
                                   password: password,
                                 ),
                               );
+                          ref
+                              .read(userProvider.notifier)
+                              .login(email: widget.email, password: password);
                         },
                 text: '회원가입 완료',
               ),

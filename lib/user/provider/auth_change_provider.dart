@@ -40,7 +40,7 @@ class AuthNotifier extends ChangeNotifier {
       return state.location == '/home_splash' ? null : '/home_splash';
     }
     if (user == null) {
-      print(state.location);
+      print('user state is null. state location = ${state.location}');
       return loggingIn ? null : '/login';
     }
 

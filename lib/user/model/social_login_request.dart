@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'naver_login_request.g.dart';
+part 'social_login_request.g.dart';
 
 @JsonSerializable()
 class SocialLoginRequest {

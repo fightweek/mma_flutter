@@ -12,6 +12,7 @@ class UserModelError extends UserModelBase {
 
 class UserModelLoading extends UserModelBase {}
 
+// Skeleton UI
 class UserModelLoadingToHome extends UserModelBase {}
 
 class UserModelNicknameSetting extends UserModelBase {}
